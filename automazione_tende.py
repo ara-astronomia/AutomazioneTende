@@ -26,8 +26,8 @@ def move_curtains_height(coord):
 def park_curtains():
 
     """Metti a zero l'altezza delle tende"""
-
-    pass
+    # TODO muovi i motori portando a zero le tendine
+    return { 'alt': "0", 'az': None}
 
 def diff_coordinates(prevCoord, coord):
 
@@ -35,8 +35,9 @@ def diff_coordinates(prevCoord, coord):
 
     pass
 
+coord = park_curtains()
 while True:
-    prevCoord = park_curtains()
+    prevCoord = coord
     coord = read_altaz_mount_coordinate()
     if diff_coordinates(prevCoord, coord):
         move_curtains_height(coord)
