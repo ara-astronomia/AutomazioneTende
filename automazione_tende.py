@@ -1,4 +1,5 @@
-import time, read_altaz_mount_coord_from_theskyx, config
+import time, read_altaz_mount_coord_from_theskyx, config, motorControl ,encoder
+
 
 def read_altaz_mount_coordinate():
 
@@ -23,24 +24,54 @@ def read_curtains_height():
     pass
 
 def move_curtains_height(coord):
-
+7.71
     """Muovi l'altezza delle tende"""
 
     # TODO verifica altezza del tele:
     # if inferiore a est_min_height e ovest_min_height
     #   muovi entrambe le tendine a 0
+        go_in_closed_motor_e.motor_control()
+        if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()
+        
+        go_in_closed_motor_w.motor_control()
+        if encoder_west.encoder(condition_w) == 'Stop':
+            stop_motor_w.motor_control()    
+            
+              
     # else if superiore a est_max_height e ovest_max_height
     #   entrambe le tendine completamente alzate
+        go_in_open_motor_e.motor_control()
+        if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()
+        
+        go_in_open_motor_w.motor_control()
+        if encoder_west.encoder(condition_w) == 'Stop':
+            stop_motor_w.motor_control() 
+                
+                
     # else if superiore a est_min_height e azimut del tele a ovest
     #   alza completamente la tendina est
+        go_in_open_motor_e.motor_control()
+        if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()  
     #   if inferiore a ovest_min_height
     #     muovi la tendina ovest a 0
+        go_in_closed_motor_w.motor_control()
+        if encoder_west.encoder(condition_w) == 'Stop':
+            stop_motor_w.motor_control()
     #   else
     #     muovi la tendina ovest a f(altezza telescopio - x)
     # else if superiore a ovest_min_height e azimut del tele a est
     #   alza completamente la tendina est
+        go_in_open_motor_e.motor_control()
+        if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()
     #   if inferiore a est_min_height
     #     muovi la tendina est a 0
+        go_in_closed_motor_e.motor_control()
+        if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()    
     #   else
     #     muovi la tendina est a f(altezza telescopio - x)
 
@@ -50,6 +81,13 @@ def park_curtains():
 
     """Metti a zero l'altezza delle tende"""
     # TODO muovi i motori portando a zero le tendine
+    go_in_open_motor_e.motor_control()
+    if encoder_est.encoder(condition_e) == 'Stop':
+            stop_motor_e.motor_control()
+    
+    go_in_open_motor_w.motor_control()
+    if encoder_west.encoder(condition_w) == 'Stop':
+            stop_motor_w.motor_control()     
     return { 'alt': "0", 'az': None}
 
 def diff_coordinates(prevCoord, coord):
@@ -64,4 +102,4 @@ while True:
     coord = read_altaz_mount_coordinate()
     if diff_coordinates(prevCoord, coord):
         move_curtains_height(coord)
-    time.sleep(int(config.Config.getValue("sleep")))
+time.sleep(int(config.Config.getValue("sleep")))
