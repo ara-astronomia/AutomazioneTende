@@ -51,6 +51,7 @@ def move_curtains_height(coord):
                 
                 
     # else if superiore a est_min_height e azimut del tele a ovest
+    # else if azimut compreso tra azSE e azNE: (qui bisognerà fare dei conti differenziali perchè passiamo lo 0 dell'azimut e giriamo in senso oriario) 
     #   alza completamente la tendina est
         go_in_open_motor_e.motor_control()
         if encoder_est.encoder(condition_e) == 'Stop':
