@@ -1,11 +1,12 @@
+import config
 from RPi import GPIO
 from time import sleep
 
-clk_e = 17
-dt_e = 18
+clk_e = config.Config.getValue("clk_e") #17
+dt_e = config.Config.getValue("dt_e") #18
 
-clk_w = 22
-dt_w= 23
+clk_w = config.Config.getValue("clk_w") #22
+dt_w= config.Config.getValue("dt_w") #23
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(clk_e, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
