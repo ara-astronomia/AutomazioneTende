@@ -29,7 +29,11 @@ def read_curtains_height():
 def move_curtains_height(prevCoord,coord):
 
     """Muovi l'altezza delle tende"""
-
+    alt_max_tend_e = config.Config.getValue("tenda_max_est")
+    alt_max_tend_w = config.Config.getValue("tenda_max_west")
+    alt_min_tel_e = config.Config.getValue("alt_min_tel_e")
+    alt_min_tel_w = config.Config.getValue("alt_min_tel_w")
+    
     condition_e = None # da calcolare
     condition_w = None # da calcolare
     # TODO verifica altezza del tele:
@@ -37,22 +41,30 @@ def move_curtains_height(prevCoord,coord):
     # telescopio sopra tenda Est
     # alza completamente tenda West
     if azSE > (coord['az']) > azNE:
-        # h_tenda_W = max
+        # controllo h_tenda_W = max
         motor_control.go_in_open_motor_w()
         if encoder.encoder_west(condition_w) == 'Stop':
             motor_control.stop_motor_w()
-        #h_tenda_E = (coord['alt']) - x #x = parametro di sicurezza
+        # controllo h_tenda_E = (coord['alt']) - x # x = parametro di sicurezza
         if prevCoord['alt'] > coord['alt']:
-            motor_control.go_in_closed_motor_e()
-            # inserire controllo posizione encoder
+            if coord['alt'] <= alt_min_tel_e: #y altezza minima puntamento telescopio
+                # h_tenda_E = 0
+                motor_control.go_in_closed_motor_e()
+                if encoder.encoder_est(condition_e) == 'Stop':
+                    motor_control.stop_motor_e()
+            else:
+                motor_control.go_in_closed_motor_e()
+                # inserire controllo posizione da encoder    
         else:
-            motor_control.go_in_open_motor_e()
-            # inserire controllo posizione encoder   
-    if altTele < y: #y altezza minima puntamento telescopio
-        # h_tenda_E = 0
-        motor_control.go_in_closed_motor_e()
-        if encoder.encoder_est(condition_e) == 'Stop':
-            motor_control.stop_motor_e()
+            #controllo altezza minima puntamento telescopio
+            if coord['alt'] <= alt_min_tel_e: #y altezza minima puntamento telescopio
+                # h_tenda_E = 0
+                motor_control.go_in_closed_motor_e()
+                if encoder.encoder_est(condition_e) == 'Stop':
+                    motor_control.stop_motor_e()
+            else:
+                motor_control.go_in_open_motor_e()   
+                # inserire controllo posizione da encoder
     
     # telescopio sopra tenda West
     # alza completamente la tendina est
@@ -67,8 +79,9 @@ def move_curtains_height(prevCoord,coord):
             # inserire controllo posizione encoder
         else: 
             motor_control.go_in_open_motor_w()
-                    
-    if (coord['az']) < y:
+            # inserire controllo posizione encoder        
+    
+    if (coord['alt']) <= alt_min_tel_w:
         #h_tenda_W = 0
         motor_control.go_in_closed_motor_w()
         if encoder.encoder_west(condition_w) == 'Stop':
@@ -76,7 +89,7 @@ def move_curtains_height(prevCoord,coord):
     
     # if inferiore a est_min_height e ovest_min_height
     # muovi entrambe le tendine a 0
-    if (coord['az']) = az_park_tend_e and (coord['alt']) = alt_park_tend_e: #az_park_tend e alt_park_tend valori di az e alt tende in posozione chiusura
+    if (coord['alt']) <= az_park_tend_e and (coord['alt']) <= alt_park_tend_w: #az_park_tend e alt_park_tend valori di az e alt tende in posizione chiusura
         # h_tenda_E = 0
         motor_control.go_in_closed_motor_e()
         if encoder.encoder_est(condition_e) == 'Stop':
