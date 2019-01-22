@@ -28,6 +28,7 @@ def encoder_est(condition):
                     counter -= 1
                 print(counter)
             clkLastState_e = clkState_e
+            condition_e = 'Stop'
             sleep(0.01)
     except:
         pass
@@ -46,6 +47,7 @@ def encoder_west(condition):
                     counter -= 1
                 print(counter)
             clkLastState_w = clkState_w
+            condition_w = 'Stop'
             sleep(0.01)
     except:
         pass
