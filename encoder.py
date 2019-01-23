@@ -27,9 +27,9 @@ def encoder_est(condition):
                 else:
                     counter -= 1
                 print(counter)
-            clkLastState_e = clkState_e
-            condition_e = 'Stop'
-            sleep(0.01)
+            if clkLastState_e = clkState_e or clkLastState_e = config.Config.getValue("n_step_finecorsa"):
+                condition_e = 'Stop'
+                sleep(0.01)
     except:
         pass
 
@@ -46,9 +46,9 @@ def encoder_west(condition):
                 else:
                     counter -= 1
                 print(counter)
-            clkLastState_w = clkState_w
-            condition_w = 'Stop'
-            sleep(0.01)
+            if clkLastState_w = clkState_w or clkLastState_w = config.Config.getValue("n_step_finecorsa"):
+                condition_w = 'Stop'
+                sleep(0.01)
     except:
         pass
 

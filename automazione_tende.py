@@ -34,6 +34,10 @@ def move_curtains_height(prevCoord,coord):
     alt_min_tel_e = config.Config.getValue("alt_min_tel_e")
     alt_min_tel_w = config.Config.getValue("alt_min_tel_w")
     
+    # stabilisco il valore di increm per ogni tenda, increm corrisponde al valore dell'angolo della tenda coperto da 1 step)
+    increm_e = (config.Config.getValue("tenda_max_est")-config.Config.getValue("tenda_park_est"))/config.Config.getValue('n_step_corsa_tot')
+    increm_w = (config.Config.getValue("tenda_max_west")-config.Config.getValue("tenda_park_west"))/config.Config.getValue('n_step_corsa_tot')
+    
     condition_e = None # da calcolare
     condition_w = None # da calcolare
     # TODO verifica altezza del tele:
@@ -42,50 +46,82 @@ def move_curtains_height(prevCoord,coord):
     # alza completamente tenda West
     if azSE > (coord['az']) > azNE:
         # controllo h_tenda_W = max
-        motor_control.go_in_open_motor_w()
-        if encoder.encoder_west(condition_w) == 'Stop':
-            motor_control.stop_motor_w()
+        motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
+        if encoder.encoder_west(condition_w) == 'Stop': # controllo condizione encoder
+            motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+            
         # controllo h_tenda_E = (coord['alt']) - x # x = parametro di sicurezza
         if prevCoord['alt'] > coord['alt']:
             if coord['alt'] <= alt_min_tel_e: #y altezza minima puntamento telescopio
                 # h_tenda_E = 0
-                motor_control.go_in_closed_motor_e()
-                if encoder.encoder_est(condition_e) == 'Stop':
-                    motor_control.stop_motor_e()
+                motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
+                if encoder.encoder_est(condition_e) == 'Stop': # controllo condizione encoder
+                    motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
             else:
-                motor_control.go_in_closed_motor_e()
-                # inserire controllo posizione da encoder    
+                delta_coord= prevCoord['alt']-coord['alt'] # calcolo la differenza del valore di altezza tra le ultime due posizioni del tele
+                move_for_step = delta_coord/increm_e # calcolo gli step corrispondenti al delta_coord
+                last_encoder_est_condition = encoder.encoder_est(condition) # leggo l'ultima posizione dell'encoder
+                motor_control.go_in_closed_motor_e() # chiamo la funzione di start del motore verso chiusura
+                    if encoder.encoder_est(condition) <= last_encoder_est_condition - move_for_step): # comparo la lettura dell'encoder con il valore raggiungere
+                        motor_control.stop_motor_e()  # chiamo il comando per lo stop del motore
+                                
+                   
         else:
             #controllo altezza minima puntamento telescopio
             if coord['alt'] <= alt_min_tel_e: #y altezza minima puntamento telescopio
                 # h_tenda_E = 0
-                motor_control.go_in_closed_motor_e()
-                if encoder.encoder_est(condition_e) == 'Stop':
-                    motor_control.stop_motor_e()
+                motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
+                if encoder.encoder_est(condition_e) == 'Stop': # controllo condizione encoder
+                    motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
             else:
-                motor_control.go_in_open_motor_e()   
-                # inserire controllo posizione da encoder
+                delta_coord= coord['alt']-prevCoord['alt'] # calcolo la differenza del valore di altezza tra le ultime due posizioni del tele
+                move_for_step = delta_coord/increm_e # calcolo gli step corrispondenti al delta_coord
+                last_encoder_est_condition = encoder.encoder_est(condition) # leggo l'ultima posizione dell'encoder
+                motor_control.go_in_open_motor_e() # chiamo la funzione di start del motore verso apertura   
+                    if encoder.encoder_est(condition) => last_encoder_est_condition + move_for_step): # comparo la lettura dell'encoder con il valore da raggiungere
+                        motor_control.stop_motor_e()  # chiamo il comando per lo stop del motore
+                
+               
     
     # telescopio sopra tenda West
     # alza completamente la tendina est
     if azNW > (coord['az']) > azSW:
-        #h_tenda_E = max  
-        motor_control.go_in_open_motor_e()
-        if encoder.encoder_est(condition_e) == 'Stop':
-            motor_control.stop_motor_e()
-        # h_tenda_W = (coord['alt']) - x
+        # controllo h_tenda_E = max
+        motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
+        if encoder.encoder_est(condition_e) == 'Stop': # controllo condizione encoder
+            motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+            
+        # controllo h_tenda_W = (coord['alt']) - x # x = parametro di sicurezza
         if prevCoord['alt'] > coord['alt']:
-            motor_control.go_in_closed_motor_w()
-            # inserire controllo posizione encoder
-        else: 
-            motor_control.go_in_open_motor_w()
-            # inserire controllo posizione encoder        
-    
-    if (coord['alt']) <= alt_min_tel_w:
-        #h_tenda_W = 0
-        motor_control.go_in_closed_motor_w()
-        if encoder.encoder_west(condition_w) == 'Stop':
-            motor_control.stop_motor_w()
+            if coord['alt'] <= alt_min_tel_w: #y altezza minima puntamento telescopio
+                # h_tenda_W = 0
+                motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
+                if encoder.encoder_est(condition_w) == 'Stop': # controllo condizione encoder
+                    motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+            else:
+                delta_coord= prevCoord['alt']-coord['alt'] # calcolo la differenza del valore di altezza tra le ultime due posizioni del tele
+                move_for_step = delta_coord/increm_w # calcolo gli step corrispondenti al delta_coord
+                last_encoder_west_condition = encoder.encoder_west(condition) # leggo l'ultima posizione dell'encoder
+                motor_control.go_in_closed_motor_w() # chiamo la funzione di start del motore verso chiusura
+                    if encoder.encoder_west(condition) <= last_encoder_west_condition - move_for_step): # comparo la lettura dell'encoder con il valore raggiungere
+                        motor_control.stop_motor_w()  # chiamo il comando per lo stop del motore
+                                
+                   
+        else:
+            #controllo altezza minima puntamento telescopio
+            if coord['alt'] <= alt_min_tel_w: #y altezza minima puntamento telescopio
+                # h_tenda_W = 0
+                motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
+                if encoder.encoder_west(condition_w) == 'Stop': # controllo condizione encoder
+                    motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+            else:
+                delta_coord= coord['alt']-prevCoord['alt'] # calcolo la differenza del valore di altezza tra le ultime due posizioni del tele
+                move_for_step = delta_coord/increm_w # calcolo gli step corrispondenti al delta_coord
+                last_encoder_west_condition = encoder.encoder_west(condition) # leggo l'ultima posizione dell'encoder
+                motor_control.go_in_open_motor_w() # chiamo la funzione di start del motore verso apertura   
+                    if encoder.encoder_west(condition) => last_encoder_west_condition + move_for_step): # comparo la lettura dell'encoder con il valore da raggiungere
+                        motor_control.stop_motor_w()  # chiamo il comando per lo stop del motore
+         
     
     # if inferiore a est_min_height e ovest_min_height
     # muovi entrambe le tendine a 0
@@ -141,5 +177,5 @@ while True:
     prevCoord = coord
     coord = read_altaz_mount_coordinate()
     if diff_coordinates(prevCoord, coord):
-        move_curtains_height(coord)
+        move_curtains_height(pervCoord, coord)
     time.sleep(int(config.Config.getValue("sleep")))
