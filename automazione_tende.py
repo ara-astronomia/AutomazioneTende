@@ -13,7 +13,7 @@ alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
 alt_min_tend_w = int(config.Config.getValue("park_west", "tende"))
 alt_min_tel_e = config.Config.getValue("alt_min_tel_e")
 alt_min_tel_w = config.Config.getValue("alt_min_tel_w")
-n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder"))
+n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
 
 # stabilisco il valore di increm per ogni tenda, increm corrisponde al valore dell'angolo della tenda coperto da 1 step)
 increm_e = (alt_max_tend_e-alt_min_tend_e)/n_step_corsa_tot
@@ -50,7 +50,6 @@ def move_curtains_height(coord):
     # if inferiore a est_min_height e ovest_min_height
     if coord["alt"] <= alt_min_tend_e and coord["alt"] <= alt_min_tend_w:
         #   muovi entrambe le tendine a 0
-        print("coord1")
         park_curtains()
         # else if superiore a est_max_height e ovest_max_height
     elif coord["alt"] >= alt_max_tend_e and coord["alt"] >= alt_max_tend_w:

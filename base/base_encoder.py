@@ -18,8 +18,6 @@ class BaseEncoder:
         else:
             raise ValueError("Errore misurazione")
 
-        print("direction: "+direction)
-
         while(self.__condition__(length, direction)):
             self.__save_current_step__(direction)
 
