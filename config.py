@@ -9,10 +9,19 @@ class Config:
         self.configparser.read('config.ini')
 
     @staticmethod
-    def getValue(key):
+    def getValue(key, section='automazione'):
         if Config.config is None:
             Config.config = Config()
         try:
-            return Config.config.configparser['automazione'][key]
+            return Config.config.configparser[section][key]
+        except KeyError:
+            return None
+
+    @staticmethod
+    def getFloat(key, section='automazione'):
+        if Config.config is None:
+            Config.config = Config()
+        try:
+            return Config.config.configparser[section].getfloat(key)
         except KeyError:
             return None

@@ -16,7 +16,10 @@ def parse_result(data):
         jsonString = data[:jsonStringEnd]
     else:
         jsonString = '{"error": true}'
-    return json.loads(jsonString)
+    coord = json.loads(jsonString)
+    coord["alt"] = int(coord["alt"])
+    coord["az"] = int(coord["az"])
+    return coord
 
 if __name__ == '__main__':
     netcat("192.168.0.9", 3040, 'MountGetAltAzi.js')

@@ -25,25 +25,25 @@ def go_in_open_motor_e():
     GPIO.output(MotorE_A,GPIO.HIGH)
     GPIO.output(MotorE_B,GPIO.LOW)
     GPIO.output(MotorE_E,GPIO.HIGH)
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_open_motor_w():
     GPIO.output(MotorW_A,GPIO.HIGH)
     GPIO.output(MotorW_B,GPIO.LOW)
     GPIO.output(MotorW_E,GPIO.HIGH)
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_closed_motor_e():
     GPIO.output(MotorE_A,GPIO.LOW)
     GPIO.output(MotorE_B,GPIO.HIGH)
     GPIO.output(MotorE_E,GPIO.HIGH)
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_closed_motor_w():
     GPIO.output(MotorW_A,GPIO.LOW)
     GPIO.output(MotorW_B,GPIO.HIGH)
     GPIO.output(MotorW_E,GPIO.HIGH)
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def stop_motor_e():
     GPIO.output(MotorE_E,GPIO.LOW)

@@ -1,18 +1,57 @@
 import config
 from RPi import GPIO
 from time import sleep
+from base.base_encoder import BaseEncoder
 
-clk_e = config.Config.getValue("clk_e") #17
-dt_e = config.Config.getValue("dt_e") #18
+class Encoder(BaseEncoder):
+    def __init__(self, orientation: "E or W"):
+        self.current_step = 0
+        self.__min_step__ = 0
+        self.__max_step__ = int(config.Config.getValue("n_step_finecorsa"))
+        # TODO set the GPIO pin based on orientation
+        self.orientation = orientation
+        if self.orientation == "E":
+            self.clk = config.Config.getValue("clk_e") #17
+            self.dt = config.Config.getValue("dt_e") #18
+        elif self.orientation == "W":
+            self.clk = config.Config.getValue("clk_w") #22
+            self.dt = config.Config.getValue("dt_w") #23pass
+        else:
+            raise ValueError("devi passare E per Est e W per Ovest")
 
-clk_w = config.Config.getValue("clk_w") #22
-dt_w= config.Config.getValue("dt_w") #23
+    def __save_current_step__(self, direction):
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(clk_e, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(dt_e, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(clk_w, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(dt_w, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        """
+            solo questo metodo andrebbe implementato diversamente nella classe che comunica con l'encoder reale:
+            si dovrebbe lusare RPi.GPIO per andare a leggere l'hardware e aggiornare di conseguenza il valore degli step
+        """
+
+        self.clk_last_state = self.clk_state
+        self.clk_state = GPIO.input(self.clk)
+        self.dt_state = GPIO.input(self.dt)
+        if direction == "F" :
+            if self.clk_state != self.clk_last_state and self.dt_state == self.clk_state:
+                self.__motion_step__ = self.current_step + self.clk_state
+            elif self.dt_state != self.clk_state:
+                raise ValueError("Motori in direzione inversa a quanto aspettato")
+        elif direction == "B":
+            if self.clk_state != self.clk_last_state and self.dt_state != self.clk_state:
+                self.__motion_step__ = self.current_step + self.clk_state
+            elif self.dt_state == self.clk_state:
+                raise ValueError("Motori in direzione inversa a quanto aspettato")
+        sleep(config.Config.getFloat("sleep"))
+
+    def listen_until(self, length):
+        try:
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+            GPIO.setup(self.dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+            self.clk_state = GPIO.input(self.clk)
+            self.clk_last_state = self.clk_state
+            self.dt_state = GPIO.input(self.dt)
+            super().listen_until(length)
+        finally:
+            GPIO.cleanup()
 
 def encoder_est(condition):
     counter = 0
@@ -29,7 +68,7 @@ def encoder_est(condition):
                 print(counter)
             if clkLastState_e = clkState_e or clkLastState_e = config.Config.getValue("n_step_finecorsa"):
                 condition_e = 'Stop'
-                sleep(0.01)
+                sleep(config.Config.getFloat("sleep"))
     except:
         pass
 
@@ -48,7 +87,7 @@ def encoder_west(condition):
                 print(counter)
             if clkLastState_w = clkState_w or clkLastState_w = config.Config.getValue("n_step_finecorsa"):
                 condition_w = 'Stop'
-                sleep(0.01)
+                sleep(config.Config.getFloat("sleep"))
     except:
         pass
 

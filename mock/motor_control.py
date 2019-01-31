@@ -2,16 +2,16 @@ import config
 from time import sleep
 
 def go_in_open_motor_e():
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_open_motor_w():
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_closed_motor_e():
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def go_in_closed_motor_w():
-    sleep(2)
+    sleep(config.Config.getFloat("sleep"))
 
 def stop_motor_e():
     pass
