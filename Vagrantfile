@@ -59,7 +59,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell" do |s|
-    s.inline = 'sudo apt update; sudo apt install python3-pip -y'
+    s.inline = 'sudo apt update; sudo apt install python3-pip python3-tk -y'
 
   end
 
