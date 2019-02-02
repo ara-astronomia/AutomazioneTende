@@ -61,18 +61,14 @@ class AutomazioneTende:
         # if inferiore a est_min_height e ovest_min_height
         if coord["alt"] <= self.alt_min_tend_e and coord["alt"] <= self.alt_min_tend_w:
             #   muovi entrambe le tendine a 0
-            park_curtains()
+            self.park_curtains()
             # else if superiore a est_max_height e ovest_max_height
         elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w:
             #   entrambe le tendine completamente alzate
-            motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
-            self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
-
-            motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
-            self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+            self.open_all_curtains()
             # else if superiore a est_min_height e azimut del tele a ovest
+        elif self.azimut_ne > (coord['az']) > 0 or self.azimut_sw > (coord['az']) > self.azimut_se or 360 > (coord['az']) > self.azimut_nw or ((coord['alt']) > self.alt_max_tend_e and (coord['alt']) > self.alt_max_tend_w):
+            self.open_all_curtains()
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
             motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
@@ -115,15 +111,6 @@ class AutomazioneTende:
                 self.encoder_est.listen_until(step_e) # controllo condizione encoder
                 motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
 
-        elif self.azimut_ne > (coord['az']) > 0 or self.azimut_sw > (coord['az']) > self.azimut_se or 360 > (coord['az']) > self.azimut_nw or ((coord['alt']) > self.alt_max_tend_e and (coord['alt']) > self.alt_max_tend_w):
-            motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
-            self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
-
-            motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
-            self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
-
     def park_curtains(self):
 
         """Metti a zero l'altezza delle tende"""
@@ -137,6 +124,15 @@ class AutomazioneTende:
         motor_control.stop_motor_w()
 
         return { 'alt': 0, 'az': 0}
+
+    def open_all_curtains(self):
+        motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
+        self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
+        motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+
+        motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
+        self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
+        motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
 
     def diff_coordinates(self, prevCoord, coord):
 
