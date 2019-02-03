@@ -11,10 +11,10 @@ class Telescopio(BaseTelescopio):
         az = input("Inserisci l'azimut del telescopio: ")
         if not self.__is_number__(alt) or int(alt) < 0 or int(alt) > 90:
             print("Inserire un numero compreso tra 0 e 90 per l'altezza")
-            return netcat()
+            return self.coords()
         if not self.__is_number__(az) or int(az) < 0 or int(az) > 360:
             print("Inserire un numero compreso tra 0 e 360 per l'azimut")
-            return coords()
+            return self.coords()
         return {'alt': int(alt), 'az': int(az)}
 
     def __is_number__(self, s):
