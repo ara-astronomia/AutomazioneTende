@@ -1,11 +1,11 @@
 import PySimpleGUI as sg
 import time, config
 if config.Config.getValue("test") is "1":
-    import mock.read_altaz_mount_coord_from_theskyx as read_altaz_mount_coord_from_theskyx
+    import mock.telescopio as telescopio
     import mock.motor_control as motor_control
     import mock.encoder as encoder
 else:
-    import read_altaz_mount_coord_from_theskyx, motor_control, encoder
+    import telescopio, motor_control, encoder
 
 class AutomazioneTende:
     def __init__(self):
@@ -26,24 +26,23 @@ class AutomazioneTende:
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
 
+        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
+
         self.encoder_est = encoder.Encoder("E")
         self.encoder_west = encoder.Encoder("W")
-
-        self.theskyx_server = config.Config.getValue("theskyx_server")
-        self.altaz_mount_file = config.Config.getValue('altaz_mount_file')
 
     def read_altaz_mount_coordinate(self):
 
         """Leggi le coordinate della montatura"""
         try:
-            coord = read_altaz_mount_coord_from_theskyx.netcat(self.theskyx_server, 3040, self.altaz_mount_file)
+            coords = self.telescopio.coords()
         except ConnectionRefusedError:
             print("Server non raggiungibile, se si è in test, portare la relativa chiave a 1")
-            exit(-1)
+            coords = {"alt": 0, "az": 0}
 
-        print("Altezza Telescopio: "+str(coord['alt']))
-        print("Azimut Telescopio: "+str(coord['az']))
-        return coord
+        print("Altezza Telescopio: "+str(coords['alt']))
+        print("Azimut Telescopio: "+str(coords['az']))
+        return coords
 
     def read_curtains_height(self):
 
@@ -140,6 +139,14 @@ class AutomazioneTende:
 
         return abs(coord["alt"] - prevCoord["alt"]) > 5 or abs(coord["az"] - prevCoord["az"]) > 5
 
+    def exit_program(self,n=0):
+        print("")
+        print("Uscita dall'applicazione")
+        if config.Config.getValue("test") is not "1":
+            import RPi.GPIO as GPIO
+            GPIO.cleanup()
+        exit(n)
+
     def console_gui(self):
         try:
             coord = self.park_curtains()
@@ -153,9 +160,11 @@ class AutomazioneTende:
                     prevCoord = coord
                 time.sleep(config.Config.getFloat("sleep"))
         except KeyboardInterrupt:
-            print("")
-            print("Uscita dall'applicazione")
-            exit(0)
+            print("Intercettato CTRL+C")
+        except Exception as e:
+            print("altro errore: "+str(e))
+        finally:
+            self.exit_program()
 
 if __name__ == '__main__':
     automazioneTende = AutomazioneTende()
