@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import time, config
+from threading import Thread
 if config.Config.getValue("test") is "1":
     import mock.telescopio as telescopio
     import mock.motor_control as motor_control
@@ -7,8 +8,10 @@ if config.Config.getValue("test") is "1":
 else:
     import telescopio, motor_control, encoder
 
-class AutomazioneTende:
+class AutomazioneTende(Thread):
     def __init__(self):
+        Thread.__init__(self)
+        self.started = False
         self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
         self.alt_max_tend_w = int(config.Config.getValue("max_west", "tende"))
         self.alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
@@ -147,25 +150,36 @@ class AutomazioneTende:
             GPIO.cleanup()
         exit(n)
 
-    def console_gui(self):
+    def run(self):
+        self.exec()
+
+    def exec(self):
+        self.started = True
+        coord = self.park_curtains()
+        prevCoord = coord
+        while True:
+            if not self.started:
+                self.park_curtains()
+                break
+            coord = self.read_altaz_mount_coordinate()
+            if self.diff_coordinates(prevCoord, coord):
+                self.move_curtains_height(coord)
+                # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
+                # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
+                prevCoord = coord
+            time.sleep(config.Config.getFloat("sleep"))
+
+    def console_ui(self):
         try:
-            coord = self.park_curtains()
-            prevCoord = coord
-            while True:
-                coord = self.read_altaz_mount_coordinate()
-                if self.diff_coordinates(prevCoord, coord):
-                    self.move_curtains_height(coord)
-                    # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
-                    # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
-                    prevCoord = coord
-                time.sleep(config.Config.getFloat("sleep"))
+            self.exec()
         except KeyboardInterrupt:
-            print("Intercettato CTRL+C")
+          print("Intercettato CTRL+C")
         except Exception as e:
-            print("altro errore: "+str(e))
+          print("altro errore: "+str(e))
         finally:
-            self.exit_program()
+          self.exit_program()
+
 
 if __name__ == '__main__':
     automazioneTende = AutomazioneTende()
-    automazioneTende.console_gui()
+    automazioneTende.console_ui()
