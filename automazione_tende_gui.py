@@ -58,12 +58,10 @@ def window_prime():
         elif ev1 == 'Start Tende':
             if vals1['aperturatetto']=='Tetto chiuso':
                 canvas = win1.FindElement('canvas')
-                
                 canvas= canvas.TKCanvas.create_text(l/2, h/2, font= ('Arial', 25), fill='#FE2E2E', text= "Attenzione aprire il tetto")
             else:
-                #canvas = win1.FindElement('canvas')
-                #create_text(l/2, h/2, font= ('Arial', 25), fill='#6E6E6E', text= "Tetto aperto")
-                
+                canvas = win1.FindElement('canvas')
+                canvas.TKCanvas.create_rectangle(0,0,l,h, fill='#045FB4')
                 win1.FindElement('aperturatetto').Update('Tetto aperto')
                 print ("corsa in step: "+str(automazioneTende.n_step_corsa_tot))
                 print ("gradi escursione tende: "+ str(automazioneTende.alt_max_tend_e-automazioneTende.alt_min_tend_e))
@@ -127,6 +125,7 @@ def window_prime():
                     
                     #-------vertici poligoni tende----------#
                     #delete = canvas.TKCanvas.delete(canvas)
+                    
                     canvas = win1.FindElement('canvas')
                     
                     pt_e = (x_e, y_e)
