@@ -67,11 +67,8 @@ def window_prime():
                 print ("gradi escursione tende: "+ str(automazioneTende.alt_max_tend_e-automazioneTende.alt_min_tend_e))
                 print ("gradi per step: "+ "{0:.3f}".format(automazioneTende.increm_e))
                 print ("primi per step: "+ "{0:.3f}".format(automazioneTende.increm_e*60))
-                #print (str(prog_e) +'progressivo')
-                
-                
-                #print(encoder_west.listen_until(current_step))
                 coord = automazioneTende.read_altaz_mount_coordinate()
+                
                 if automazioneTende.diff_coordinates(prevCoord, coord):
                     automazioneTende.move_curtains_height(coord)
                     # solo se la differenza e' misurabile imposto le coordinate precedenti uguali a quelle attuali
@@ -107,14 +104,8 @@ def window_prime():
                     angolo2_w = ((alpha_w/2)+alpha_w_min) * conv
                     angolo3_w = (((alpha_w/4)*3)+alpha_w_min) * conv
                     angolo_w = (alpha_w + alpha_w_min)* conv
-                    
-                   
-                    #h_t =int(l/50) #parametro per definire la dimensione degli oggetti a schermo, in modo da scalarli con le misure della finestra
-                 
-                   
+                  
                   #-------------parametri grafici tende--------#  
-                    #t=int(l*(1.7/5)) #proporzione lunghezza braccio tende in funzione della grandezza della window
-                    
                     
                     #---origine tende----#
                     x_e = int((l/2)+(delta_pt/2)) # int(l/5)*3
@@ -169,16 +160,7 @@ def window_prime():
         elif ev1 =='Chiudi tetto':
             #chiudi tetto - mette alto o bvasso il gpio di controllo del pin di chiusura della scheda motori    
            pass
-   
-
-   
-    #win.getMouse()
-    #win.close()
-    
-    
-#window_graph()
-#sg.ProgressBar((automazioneTende.n_step_corsa_tot), orientation='v', size=(20, 20), key='progbar_e'),
-#sg.ProgressBar((automazioneTende.n_step_corsa_tot), orientation='v', size=(20, 20), key='progbar_w')
+ 
 
 window_prime()
     
