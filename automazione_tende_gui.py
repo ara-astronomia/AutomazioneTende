@@ -6,7 +6,10 @@ from automazione_tende import AutomazioneTende
 import image
 
 l=400
-h=int((l/3)*2)
+t=l/4.25
+delta_pt= 1.5*t
+
+h=int(l/1.8) # int((l/3)*2)
   
     
 def window_prime():
@@ -108,17 +111,18 @@ def window_prime():
                     angolo_w = (alpha_w + alpha_w_min)* conv
                     
                    
-                    h_t =int(l/50) #parametro per definire la dimensione degli oggetti a schermo, in modo da scalarli con le misure della finestra
+                    #h_t =int(l/50) #parametro per definire la dimensione degli oggetti a schermo, in modo da scalarli con le misure della finestra
                  
                    
                   #-------------parametri grafici tende--------#  
-                    t=int(l*(1.7/5)) #proporzione lunghezza braccio tende in funzione della grandezza della window
+                    #t=int(l*(1.7/5)) #proporzione lunghezza braccio tende in funzione della grandezza della window
+                    
                     
                     #---origine tende----#
-                    x_e = int(l/5)*3
+                    x_e = int((l/2)+(delta_pt/2)) # int(l/5)*3
                     y_e = int(h/3)*2
                     
-                    x_w = int(l/5)*2
+                    x_w = int((l/2)-(delta_pt/2)) # int(l/5)*2
                     y_w = int(h/3)*2
                     
                     #-------vertici poligoni tende----------#
@@ -140,11 +144,11 @@ def window_prime():
                     pt_e4= (x_e+(int(math.cos(angolo3_e)*t)),y_e-(int(math.sin(angolo3_e)*t)))
                     pt_e5= (x_e+(int(math.cos(angolo_e)*t)),y_e-(int(math.sin(angolo_e)*t)))
 
-                    canvas.TKCanvas.create_polygon((pt_e,pt_e1,pt_e2,pt_e3,pt_e4,pt_e5), width=2,outline='#E0F8F7',fill='#0B4C5F') # tenda_e
+                    canvas.TKCanvas.create_polygon((pt_e,pt_e1,pt_e2,pt_e3,pt_e4,pt_e5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_e
            
-                    canvas.TKCanvas.create_line((pt_e,pt_e2), width=2,fill='#E0F8F7') #line2_e
-                    canvas.TKCanvas.create_line((pt_e,pt_e3), width=2,fill='#E0F8F7') #line3_e
-                    canvas.TKCanvas.create_line((pt_e,pt_e4), width=2,fill='#E0F8F7') #line4_e
+                    canvas.TKCanvas.create_line((pt_e,pt_e2), width=1,fill='#E0F8F7') #line2_e
+                    canvas.TKCanvas.create_line((pt_e,pt_e3), width=1,fill='#E0F8F7') #line3_e
+                    canvas.TKCanvas.create_line((pt_e,pt_e4), width=1,fill='#E0F8F7') #line4_e
              
                     
                     pt_w1= (x_w-(int(math.cos(angolo_w_min)*t)),y_w-(int(math.sin(angolo_w_min)*t)))
@@ -153,11 +157,11 @@ def window_prime():
                     pt_w4= (x_w-(int(math.cos(angolo3_w)*t)),y_w-(int(math.sin(angolo3_w)*t)))
                     pt_w5= (x_w-(int(math.cos(angolo_w)*t)),y_w-(int(math.sin(angolo_w)*t)))
                     
-                    canvas.TKCanvas.create_polygon((pt_w,pt_w1,pt_w2,pt_w3,pt_w4,pt_w5), width=2,outline='#E0F8F7',fill='#0B4C5F') # tenda_w
+                    canvas.TKCanvas.create_polygon((pt_w,pt_w1,pt_w2,pt_w3,pt_w4,pt_w5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_w
                               
-                    canvas.TKCanvas.create_line((pt_w,pt_w2), width=2,fill='#E0F8F7') #line2_w
-                    canvas.TKCanvas.create_line((pt_w,pt_w3), width=2,fill='#E0F8F7') #line3_w
-                    canvas.TKCanvas.create_line((pt_w,pt_w4), width=2,fill='#E0F8F7') #line4_w
+                    canvas.TKCanvas.create_line((pt_w,pt_w2), width=1,fill='#E0F8F7') #line2_w
+                    canvas.TKCanvas.create_line((pt_w,pt_w3), width=1,fill='#E0F8F7') #line3_w
+                    canvas.TKCanvas.create_line((pt_w,pt_w4), width=1,fill='#E0F8F7') #line4_w
                     
                     
                 elif ev1 == 'Chiudi Tende':
