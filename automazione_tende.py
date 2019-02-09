@@ -11,7 +11,13 @@ else:
 class AutomazioneTende(Thread):
     def __init__(self):
         Thread.__init__(self)
+        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
+        self.encoder_est = encoder.Encoder("E")
+        self.encoder_west = encoder.Encoder("W")
+
         self.started = False
+        self.prevCoord = { 'alt': 0, 'az': 0 }
+
         self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
         self.alt_max_tend_w = int(config.Config.getValue("max_west", "tende"))
         self.alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
@@ -29,10 +35,6 @@ class AutomazioneTende(Thread):
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
 
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
-
-        self.encoder_est = encoder.Encoder("E")
-        self.encoder_west = encoder.Encoder("W")
 
     def read_altaz_mount_coordinate(self):
 
@@ -125,7 +127,7 @@ class AutomazioneTende(Thread):
         self.encoder_west.listen_until(0)
         motor_control.stop_motor_w()
 
-        return { 'alt': 0, 'az': 0}
+        return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
         motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
@@ -151,23 +153,26 @@ class AutomazioneTende(Thread):
         exit(n)
 
     def run(self):
-        self.exec()
+        self.started = True
+        self.coord = self.park_curtains()
+        self.prevCoord = self.coord
+        while True:
+            if not self.exec(prevCoord):
+                break
 
     def exec(self):
-        self.started = True
-        coord = self.park_curtains()
-        prevCoord = coord
-        while True:
-            if not self.started:
-                self.park_curtains()
-                break
-            coord = self.read_altaz_mount_coordinate()
-            if self.diff_coordinates(prevCoord, coord):
-                self.move_curtains_height(coord)
-                # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
-                # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
-                prevCoord = coord
-            time.sleep(config.Config.getFloat("sleep"))
+        if not self.started:
+            self.coord = self.park_curtains()
+            self.prevCoord = self.coord
+            return False
+        self.coord = self.read_altaz_mount_coordinate()
+        if self.diff_coordinates(self.prevCoord, self.coord):
+            self.move_curtains_height(self.coord)
+            # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
+            # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
+#            prevCoord = coord
+        time.sleep(config.Config.getFloat("sleep"))
+        return True
 
     def console_ui(self):
         try:
