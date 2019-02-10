@@ -11,9 +11,12 @@ else:
 class AutomazioneTende(Thread):
     def __init__(self):
         Thread.__init__(self)
+
+        self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
+
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
-        self.encoder_est = encoder.Encoder("E")
-        self.encoder_west = encoder.Encoder("W")
+        self.encoder_est = encoder.Encoder("E",self.n_step_corsa_tot)
+        self.encoder_west = encoder.Encoder("W",self.n_step_corsa_tot)
 
         self.started = False
         self.prevCoord = { 'alt': 0, 'az': 0 }
@@ -24,7 +27,6 @@ class AutomazioneTende(Thread):
         self.alt_min_tend_w = int(config.Config.getValue("park_west", "tende"))
         self.alt_min_tel_e = config.Config.getValue("alt_min_tel_e")
         self.alt_min_tel_w = config.Config.getValue("alt_min_tel_w")
-        self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
 
         self.azimut_ne = int(config.Config.getValue("azNE", "azimut"))
         self.azimut_se = int(config.Config.getValue("azSE", "azimut"))

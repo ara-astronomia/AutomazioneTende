@@ -3,11 +3,11 @@ from time import sleep
 from base.base_encoder import BaseEncoder
 
 class Encoder(BaseEncoder):
-    def __init__(self, orientation: "E or W"):
+    def __init__(self, orientation: "E or W", max_step):
         self.current_step = 0
         self.__motion_step__ = 0
         self.__min_step__ = 0
-        self.__max_step__ = 120
+        self.__max_step__ = max_step
         # TODO set the GPIO pin based on orientation
         self.orientation = orientation
 
