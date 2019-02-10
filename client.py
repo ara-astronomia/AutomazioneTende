@@ -1,47 +1,43 @@
 import PySimpleGUI as sg
-import time, config, socket
+import time, config, socket, gui
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
 PORT = 3000        # The port used by the server
 
-sg.ChangeLookAndFeel('GreenTan')
-# Design pattern 1 - First window does not remain active
-n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
-menu_def = [['File', ['Exit']],
-            ['Help', 'About...']]
-layout = [[sg.Menu(menu_def, tearoff=True)],
-         [sg.Text('Controllo movimento tende ', size=(30, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-         [sg.Text('altezza telescopio')],
-         [sg.ProgressBar(n_step_corsa_tot, orientation='h', size=(20, 20), key='progbar_e')],
-         [sg.ProgressBar(n_step_corsa_tot, orientation='h', size=(20, 20), key='progbar_w')],
-         [sg.Button('StartCurtains')],[sg.Button('StopCurtains')]]
-
-if config.Config.getValue("test") is "1":
-    layout.append([sg.Button('Shutdown')])
-
-win1 = sg.Window('Controllo tende Osservatorio').Layout(layout)
+g_ui = gui.Gui()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     while True:
-        ev1, vals1 = win1.Read(timeout=10)
-        if ev1 is None or ev1 == "Exit":
+        ev1, vals1 = g_ui.win.Read(timeout=10)
+        if ev1 is None or ev1 == "exit":
             v = b"E"
-        if ev1 == 'StartCurtains':
+        elif ev1 == 'open-roof':
+            g_ui.open_roof()
+            continue
+        elif ev1 == 'close-roof':
+            continue
+        elif ev1 == 'start-curtains':
+            if vals1['aperturatetto']=='Tetto chiuso':
+                g_ui.closed_roof_alert()
+                continue
+
+            g_ui.base_draw()
             v = b"1"
-        elif ev1 == 'StopCurtains':
+        elif ev1 == 'stop-curtains':
             v = b"0"
-        elif ev1 == "Shutdown":
+        elif ev1 == "shutdown":
             v = b"-"
         else:
             v = b"c"
         s.sendall(v)
         rcv = s.recv(6)
-        if ev1 is None or ev1 == "Exit" or ev1 == "Shutdown":
+        if ev1 is None or ev1 == "exit" or ev1 == "shutdown":
             s.close()
             break
         data = rcv.decode("UTF-8")
-        win1.FindElement('progbar_e').UpdateBar(int(data[0:3]))
-        win1.FindElement('progbar_w').UpdateBar(int(data[3:6]))
+        print("Data: "+data)
+        alpha_e, alpha_w = g_ui.update_curtains_text(int(data[0:3]), int(data[3:6]))
+        g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
 exit(0)

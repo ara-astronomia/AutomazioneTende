@@ -4,6 +4,14 @@ import math, config
 class Gui:
 
     def __init__(self):
+        self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
+        self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
+        self.alt_max_tend_w = int(config.Config.getValue("max_west", "tende"))
+        self.alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
+        self.alt_min_tend_w = int(config.Config.getValue("park_west", "tende"))
+        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
+        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
+
         self.l=400
         self.t=self.l/4.25
         self.delta_pt= 1.5*self.t
@@ -16,7 +24,7 @@ class Gui:
         layout = [[sg.Menu(menu_def, tearoff=True)],
 
                  [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Button('Apri tetto'),sg.Button('Start Tende')],
+                 [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Tetto chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= '#045FB4', key= 'canvas')],
@@ -26,9 +34,9 @@ class Gui:
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
-                 [sg.Button('Chiudi tende'), sg.Button('Chiudi tetto'),sg.Button('Exit')]]
+                 [sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
         if config.Config.getValue("test") is "1":
-            layout.append([sg.Button('Shutdown')])
+            layout.append([sg.Button('Spegni Server', key="shutdown")])
 
 
         self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
@@ -59,16 +67,17 @@ class Gui:
 
         """Disegna l'apertura del tetto"""
 
-        canvas = self.win.FindElement('canvas')
+        self.win.FindElement('progbar_tetto').UpdateBar(100)
         self.win.FindElement('aperturatetto').Update('Tetto aperto')
+        canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
 
-    def update_curtains_text(self, e_e, e_w, increm_e, increm_w):
+    def update_curtains_text(self, e_e, e_w):
 
         """Update valori angolari tende"""
 
-        alpha_e = int(e_e*float("{0:.3f}".format(increm_e))) # trasformazione posizione step in gradi
-        alpha_w = int(e_w*float("{0:.3f}".format(increm_w))) # COME SOPRA
+        alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
+        alpha_w = int(e_w*float("{0:.3f}".format(self.increm_w))) # COME SOPRA
 
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)

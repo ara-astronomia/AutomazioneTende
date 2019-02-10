@@ -17,21 +17,18 @@ def window_prime():
     #fig_photo = draw_figure(window.FindElement('canvas').TKCanvas, fig)
     while True:
         ev1, vals1 = g_ui.win.Read()
-        if ev1 == 'Exit':
+        print(ev1)
+        print(vals1)
+        if ev1 is None or ev1 == 'exit' or ev1 == 'shutdown':
             exit(0)
 
-        elif ev1 =='Apri tetto':
-            g_ui.win.FindElement('progbar_tetto').UpdateBar(100)
-            g_ui.win.FindElement('aperturatetto').Update('Tetto aperto')
-            #apri tetto - mette alto o basso il gpio di controllo del pin di aperutra della scheda motori
-            #pass
+        elif ev1 =='open-roof':
+            g_ui.open_roof()
 
-
-        elif ev1 == 'Start Tende':
+        elif ev1 == 'start-curtains':
             if vals1['aperturatetto']=='Tetto chiuso':
                 g_ui.closed_roof_alert()
             else:
-                g_ui.open_roof()
 
                 print ("corsa in step: "+str(automazioneTende.n_step_corsa_tot))
                 print ("gradi escursione tende: "+ str(automazioneTende.alt_max_tend_e-automazioneTende.alt_min_tend_e))
@@ -51,14 +48,14 @@ def window_prime():
 
                     #----------update valori angolari tende-------#
 
-                    alpha_e, alpha_w = g_ui.update_curtains_text(automazioneTende.encoder_est.current_step, automazioneTende.encoder_west.current_step, automazioneTende.increm_e, automazioneTende.increm_w)
+                    alpha_e, alpha_w = g_ui.update_curtains_text(automazioneTende.encoder_est.current_step, automazioneTende.encoder_west.current_step)
 
                     g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
-                elif ev1 == 'Chiudi Tende':
+                elif ev1 == 'stop-curtains':
                     automazioneTende.park_curtains()
 
-        elif ev1 =='Chiudi tetto':
+        elif ev1 =='close-roof':
             #chiudi tetto - mette alto o bvasso il gpio di controllo del pin di chiusura della scheda motori
            pass
 
