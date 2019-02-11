@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
 import math, config
+from graphics import *
+from tkinter import *
 
 class Gui:
 
@@ -16,6 +18,7 @@ class Gui:
         self.t=self.l/4.25
         self.delta_pt= 1.5*self.t
         self.h=int(self.l/1.8) # int((l/3)*2)
+        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         sg.ChangeLookAndFeel('GreenTan')
         # Design pattern 1 - First window does not remain active
 
@@ -27,9 +30,7 @@ class Gui:
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Tetto chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
-                 [sg.Canvas(size=(self.l,self.h), background_color= '#045FB4', key= 'canvas')],
-
-
+                 [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
                  [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
@@ -53,14 +54,16 @@ class Gui:
         p9 = self.l/2, (self.h/11)*4.5
         p10 = 1, (self.h/11)*8
         canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
         canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
-
+        
     def closed_roof_alert(self):
 
-        """Avvisa che il tetto non può essere aperto"""
+        """Avvisa che le tende non possono essere aperte"""
 
         canvas = self.win.FindElement('canvas')
+        self.win.FindElement('aperturatetto').Update('Attenzione aprire il tetto')
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Attenzione aprire il tetto")
 
     def open_roof(self):
@@ -69,9 +72,26 @@ class Gui:
 
         self.win.FindElement('progbar_tetto').UpdateBar(100)
         self.win.FindElement('aperturatetto').Update('Tetto aperto')
+        
         canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
-
+        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
+        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
+        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
+        p3 = self.l/2, 1.2*(self.h/2)
+        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
+        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
+        p6 = 1,self.h
+        p7 = self.l-1,self.h
+        p8 = self.l-1,(self.h/11)*8
+        p9 = self.l/2, (self.h/11)*4.5
+        p10 = 1, (self.h/11)*8
+        #canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
+        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
+        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
+        #canvas = self.win.FindElement('canvas')
+        #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
+        
     def update_curtains_text(self, e_e, e_w):
 
         """Update valori angolari tende"""
@@ -88,7 +108,7 @@ class Gui:
         """Disegna le tende con canvas"""
 
         #-------definizione settori angolari tende -----------#
-
+        
         conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
         alpha_e_min = -12
         alpha_w_min = -12
@@ -117,7 +137,21 @@ class Gui:
         #delete = canvas.TKCanvas.delete(canvas)
 
         canvas = self.win.FindElement('canvas')
-
+        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
+        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
+        p3 = self.l/2, 1.2*(self.h/2)
+        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
+        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
+        p6 = 1,self.h
+        p7 = self.l-1,self.h
+        p8 = self.l-1,(self.h/11)*8
+        p9 = self.l/2, (self.h/11)*4.5
+        p10 = 1, (self.h/11)*8
+        
+        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
+        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8') # pareti osservatorio
+        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484') # pareti osservatorio
+       
         pt_e = (x_e, y_e)
         pt_w = (x_w, y_w)
 
@@ -151,4 +185,5 @@ class Gui:
         canvas.TKCanvas.create_line((pt_w,pt_w2), width=1,fill='#E0F8F7') #line2_w
         canvas.TKCanvas.create_line((pt_w,pt_w3), width=1,fill='#E0F8F7') #line3_w
         canvas.TKCanvas.create_line((pt_w,pt_w4), width=1,fill='#E0F8F7') #line4_w
+
       #---------fine parte grafica ------#
