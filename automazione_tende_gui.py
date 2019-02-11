@@ -1,18 +1,16 @@
 import PySimpleGUI as sg
+import sys
 import time, config
 from graphics import *
 import math
 from automazione_tende import AutomazioneTende
-import image
-#from tkinter import *
-#from PIL import ImageTk 
+from tkinter import *
 
 l=400
 t=l/4.25
 delta_pt= 1.5*t
-h=int(l/1.8) # int((l/3)*2)
-#img = Image(file="cielo_stellato", imgtype=gif)  
-#img = open("cielo_stellato.gif", 'r+')
+h=int(l/1.8)
+img = PhotoImage(file = "cielo_stellato.gif")
     
 def window_prime():
     alpha_e=''
@@ -31,9 +29,7 @@ def window_prime():
              [sg.Button('Apri tetto'),sg.Button('Start Tende')],
              [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
              [sg.InputText('Tetto chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
-             [sg.Canvas(size=(l,h), background_color= '#045FB4', key= 'canvas')],
-             
-            
+             [sg.Canvas(size=(l,h), background_color= 'grey', key= 'canvas')],
              [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
              sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
              [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
@@ -41,11 +37,8 @@ def window_prime():
              [sg.Button('Chiudi tende'), sg.Button('Chiudi tetto'),sg.Button('Exit')]]
              
 
-    win1 = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
-    #win1.Finalize()
-    #[sg.Canvas(size=(l,h), background_color='#045FB4', key= 'canvas')],
-    #[sg.Image('cielo_stellato.gif',  key='canvas')],
-    #fig_photo = draw_figure(window.FindElement('canvas').TKCanvas, fig)
+    win1 = sg.Window('Osservatorio Virginio Cesarini', grab_anywhere=False).Layout(layout)
+
     while True:
         ev1, vals1 = win1.Read()
         if ev1 == 'Exit':
@@ -60,12 +53,27 @@ def window_prime():
            
         elif ev1 == 'Start Tende':
             if vals1['aperturatetto']=='Tetto chiuso':
+                win1.FindElement('aperturatetto').Update('ATTENZIONE APRIRE TETTO' )
                 canvas = win1.FindElement('canvas')
-                canvas= canvas.TKCanvas.create_text(l/2, h/2, font= ('Arial', 25), fill='#FE2E2E', text= "Attenzione aprire il tetto")
+                
             else:
-                canvas = win1.FindElement('canvas')
                 win1.FindElement('aperturatetto').Update('Tetto aperto')
-                canvas.TKCanvas.create_rectangle(0,0,l,h, fill='#045FB4')
+                canvas = win1.FindElement('canvas')
+                #canvas.TKCanvas.create_image(0,0, image=img, anchor=NW)
+                #----------disegno struttura base----------#
+                        
+                p1 = ( (int((l/2)-(delta_pt/2)))-(0.9*t),h)
+                p2 = ( (int((l/2)-(delta_pt/2)))-(0.9*t),((h/12)*10) )
+                p3 = l/2, 1.2*(h/2)
+                p4 = ( (int((l/2)+(delta_pt/2)))+(0.9*t),((h/12)*10) )
+                p5 = ( (int((l/2)+(delta_pt/2)))+(0.9*t),h)
+                p6 = 1,h
+                p7 = l-1,h
+                p8 = l-1,(h/11)*8
+                p9 = l/2, (h/11)*4.5
+                p10 = 1, (h/11)*8
+                canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
+                canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
 
                 print ("corsa in step: "+str(automazioneTende.n_step_corsa_tot))
                 print ("gradi escursione tende: "+ str(automazioneTende.alt_max_tend_e-automazioneTende.alt_min_tend_e))
@@ -81,9 +89,8 @@ def window_prime():
                     e_e=(automazioneTende.encoder_est.current_step)
                     e_w=(automazioneTende.encoder_west.current_step)
      
-                    pos_enc_e=e_e
-                    pos_enc_w=e_w
-                    
+                    #pos_enc_e=e_e
+                    #pos_enc_w=e_w
                     #alpha_e_min= int(config.Config.getValue("park_est", "tende")) # questo equivale al parametro di altezza minima esistente nel file ini
                     #alpha_w_min = int(config.Config.getValue("park_west", "tende")) 
                     alpha_e_min = -12
@@ -97,26 +104,12 @@ def window_prime():
                     win1.FindElement('apert_e').Update(alpha_e)
                     win1.FindElement('apert_w').Update(alpha_w)
 
-                    conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
+                    conv=2*math.pi/360.0 # conversione gradi in radianti per potere applicare gli algoritimi trigonometrici in math
                     
                     angolo_e_min=alpha_e_min*conv # valore dell'inclinazione della base della tenda est in radianti
                     angolo_w_min=alpha_w_min*conv # valore dell'inclinazione della base della tenda west in radianti
                     
-                 #----------disegno struttura base----------#
-                        
-                    p1 = ( (int((l/2)-(delta_pt/2)))-(0.9*t),h)
-                    p2 = ( (int((l/2)-(delta_pt/2)))-(0.9*t),((h/12)*10) )
-                    p3 = l/2, 1.2*(h/2)
-                    p4 = ( (int((l/2)+(delta_pt/2)))+(0.9*t),((h/12)*10) )
-                    p5 = ( (int((l/2)+(delta_pt/2)))+(0.9*t),h)
-                    p6 = 1,h
-                    p7 = l-1,h
-                    p8 = l-1,(h/11)*8
-                    p9 = l/2, (h/11)*4.5
-                    p10 = 1, (h/11)*8
-                    canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-                    canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
-                    
+                                    
                  #-------definizione settori angolari tende -----------# 
                     angolo1_e = ((alpha_e/4)+alpha_e_min) * conv
                     angolo2_e = ((alpha_e/2)+alpha_e_min) * conv
@@ -177,14 +170,17 @@ def window_prime():
                     canvas.TKCanvas.create_line((pt_w,pt_w4), width=1,fill='#E0F8F7') #line4_w
                   #---------fine parte grafica ------#  
                     
-                    
-                    
-                elif ev1 == 'Chiudi Tende':
-                    automazioneTende.park_curtains()        
-
+                   
+              
+        elif ev1 == 'Chiudi Tende':
+            print ('Chiudi Tende')
+            automazioneTende.park_curtains()
+            pass
+                
         elif ev1 =='Chiudi tetto':
+            print ('Chiudi tetto')
             #chiudi tetto - mette alto o bvasso il gpio di controllo del pin di chiusura della scheda motori    
-           pass
+            pass
  
 
 window_prime()

@@ -3,7 +3,7 @@ class BaseEncoder:
         self.current_step = 0
         self.__motion_step__ = 0
         self.__min_step__ = 0
-        self.__max_step__ = 120
+        self.__max_step__ = 350
         self.orientation = orientation
 
 
