@@ -91,6 +91,8 @@ class AutomazioneTende(Thread):
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
                 if self.encoder_west.current_step > step_w:
                     motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
+                    self.encoder_west.listen_until(step_w) # controllo condizione encoder
+                    motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
                 else:
                     motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
                     self.encoder_west.listen_until(step_w) # controllo condizione encoder
@@ -111,7 +113,9 @@ class AutomazioneTende(Thread):
                 #     muovi la tendina est a f(altezza telescopio - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 if self.encoder_est.current_step > step_e:
-                    motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso apertura
+                    motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
+                    self.encoder_est.listen_until(step_e) # controllo condizione encoder
+                    motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
                 else:
                     motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
                     self.encoder_est.listen_until(step_e) # controllo condizione encoder
