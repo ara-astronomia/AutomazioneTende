@@ -65,11 +65,22 @@ class Gui:
         canvas = self.win.FindElement('canvas')
         self.win.FindElement('aperturatetto').Update('Attenzione aprire il tetto')
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Attenzione aprire il tetto")
+    
+    def in_closed_roof_alert(self):
 
+        """Avvisa che il tetto è in chiusura"""
+
+        canvas = self.win.FindElement('canvas')
+        self.win.FindElement('aperturatetto').Update('Tetto in fase di chiusura')
+            
+    def opening_roof(self):
+        
+        canvas = self.win.FindElement('canvas')
+        self.win.FindElement('aperturatetto').Update('Tetto in fase di apertura')
+        
+    
     def open_roof(self):
-
         """Disegna l'apertura del tetto"""
-
         self.win.FindElement('progbar_tetto').UpdateBar(100)
         self.win.FindElement('aperturatetto').Update('Tetto aperto')
         
