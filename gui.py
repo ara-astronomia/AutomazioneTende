@@ -68,13 +68,13 @@ class Gui:
     
     def in_closed_roof_alert(self):
 
-        """Avvisa che il tetto è in chiusura"""
+        """Avvisa che il tetto è in fase chiusura"""
 
         canvas = self.win.FindElement('canvas')
         self.win.FindElement('aperturatetto').Update('Tetto in fase di chiusura')
             
     def opening_roof(self):
-        
+        """Avvisa che il tetto è in fase di apertura """
         canvas = self.win.FindElement('canvas')
         self.win.FindElement('aperturatetto').Update('Tetto in fase di apertura')
         
