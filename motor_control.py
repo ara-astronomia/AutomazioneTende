@@ -51,4 +51,4 @@ def stop_motor_e():
 def stop_motor_w():
     GPIO.output(MotorW_E,GPIO.LOW)
 
-GPIO.cleanup()
+
