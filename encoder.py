@@ -95,4 +95,4 @@ def encoder_west(condition):
 
 
 #finally:
-GPIO.cleanup()
+
