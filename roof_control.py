@@ -15,17 +15,25 @@ GPIO.setup(roof_closed,GPIO.OUT)
 
 def verify_closed_roof():
     GPIO.wait_for_edge(roof_verify_closed, GPIO.FALLING) # verifica che lo stato del pin sia alto, e restituisce O quando questo cambia alla pressione dell'interruttore
+    status_c = 1
     sleep(config.Config.getFloat("sleep"))
 
 def verify_open_roof():
     GPIO.wait_for_edge(roof_verify_open, GPIO.FALLING) # verifica che lo stato del pin sia alto, e restituisce O quando questo cambia alla pressione dell'interruttore
+    status_o = 0
     sleep(config.Config.getFloat("sleep"))
 
 def open_roof():
     GPIO.output(roof_open,GPIO.HIGH)
+ """ da implementare le condizioni che generano gli status """   
+    status_o = 1
+    status_c = 0
     sleep(config.Config.getFloat("sleep"))
 
 def closed_roof():
     GPIO.output(roof_closed,GPIO.HIGH)
+ """ da implementare le condizioni che generano gli status """  
+    status_o = 0
+    status_c = 1
     sleep(config.Config.getFloat("sleep"))
 
