@@ -59,7 +59,7 @@ def window_prime():
             else:
                 win1.FindElement('aperturatetto').Update('Tetto aperto')
                 canvas = win1.FindElement('canvas')
-                #canvas.TKCanvas.create_image(0,0, image=img, anchor=NW)
+                canvas.TKCanvas.create_image(0,0, image=img, anchor=NW)
                 #----------disegno struttura base----------#
                         
                 p1 = ( (int((l/2)-(delta_pt/2)))-(0.9*t),h)
