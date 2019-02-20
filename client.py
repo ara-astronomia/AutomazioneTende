@@ -16,6 +16,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         ev1, vals1 = g_ui.win.Read(timeout=0)
         if ev1 is None or ev1 == "exit":
             v = b"E"
+            
         elif ev1 == 'open-roof':
             status_roof=roof_control.verify_closed_roof()
             g_ui.update_status_roof(status_roof[1])
