@@ -29,7 +29,7 @@ class Gui:
                  [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
-                 [sg.InputText('Tetto chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
+                 [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
                  [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
@@ -58,31 +58,40 @@ class Gui:
         canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
         
-    def closed_roof_alert(self):
+    def roof_alert(self,mess_alert):
 
         """Avvisa che le tende non possono essere aperte"""
 
         canvas = self.win.FindElement('canvas')
-        self.win.FindElement('aperturatetto').Update('Attenzione aprire il tetto')
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Attenzione aprire il tetto")
+        alert = mess_alert
+        self.win.FindElement('aperturatetto').Update(alert)
+        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= alert)
     
-    def in_closed_roof_alert(self):
-
-        """Avvisa che il tetto è in fase chiusura"""
-
+   
+    def update_status_roof(self, status_roof):
+        """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
         canvas = self.win.FindElement('canvas')
-        self.win.FindElement('aperturatetto').Update('Tetto in fase di chiusura')
-            
-    def opening_roof(self):
-        """Avvisa che il tetto è in fase di apertura """
-        canvas = self.win.FindElement('canvas')
-        self.win.FindElement('aperturatetto').Update('Tetto in fase di apertura')
+        status = status_roof
+        print (str(status) + '  questo è lo status passato alla gui')
+        self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
         
     
-    def open_roof(self):
-        """Disegna l'apertura del tetto"""
+    def closed_roof(self, status_roof):
+        """avvisa sullo stato chiuso del tetto"""
+        self.win.FindElement('progbar_tetto').UpdateBar(0)
+        status = status_roof
+        print (str(status) + '  questo è lo status passato alla gui')
+        self.win.FindElement('aperturatetto').Update(status)
+           
+           
+    def open_roof(self, status_roof):
+        """avvisa sullo stato aperto del tetto"""
         self.win.FindElement('progbar_tetto').UpdateBar(100)
-        self.win.FindElement('aperturatetto').Update('Tetto aperto')
+        status = status_roof
+        print (str(status) + '  questo è lo status passato alla gui')
+        self.win.FindElement('aperturatetto').Update(status)
+
+        
         
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
@@ -102,6 +111,7 @@ class Gui:
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
         #canvas = self.win.FindElement('canvas')
         #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
+        return status_roof 
         
     def update_curtains_text(self, e_e, e_w):
 
