@@ -3,13 +3,8 @@ class BaseEncoder:
         self.current_step = 0
         self.__motion_step__ = 0
         self.__min_step__ = 0
-<<<<<<< HEAD
-        self.__max_step__ = 350
-=======
         self.__max_step__ = max_step
->>>>>>> f19c84bcc05c5b87a54970b954553cb414275d89
         self.orientation = orientation
-
 
     def listen_until(self, length):
 
