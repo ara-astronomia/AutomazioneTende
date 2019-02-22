@@ -1,5 +1,5 @@
 import socket,json
-from base_telescopio import BaseTelescopio
+from base.base_telescopio import BaseTelescopio
 
 class Telescopio(BaseTelescopio):
 

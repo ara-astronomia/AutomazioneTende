@@ -15,7 +15,8 @@ class BaseEncoder:
         elif length < self.current_step or length == self.__min_step__:
             direction = "B"
         else:
-            raise ValueError("Errore misurazione")
+            return
+            #raise ValueError("Errore misurazione")
 
         while(self.__condition__(length, direction)):
             self.__save_current_step__(direction)

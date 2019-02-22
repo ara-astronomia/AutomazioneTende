@@ -1,8 +1,7 @@
-import PySimpleGUI as sg
-import time, config
+import time, config, telescopio
 from threading import Thread
 if config.Config.getValue("test") is "1":
-    import mock.telescopio as telescopio
+#    import mock.telescopio as telescopio
     import mock.motor_control as motor_control
     import mock.encoder as encoder
 else:
@@ -148,7 +147,7 @@ class AutomazioneTende(Thread):
 
         """Verifica se la differenza tra coordinate giustifichi lo spostamento dell'altezza delle tendine"""
 
-        return abs(coord["alt"] - prevCoord["alt"]) > 5 or abs(coord["az"] - prevCoord["az"]) > 5
+        return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
     def exit_program(self,n=0):
         print("")
@@ -163,7 +162,7 @@ class AutomazioneTende(Thread):
         self.coord = self.park_curtains()
         self.prevCoord = self.coord
         while True:
-            if not self.exec(prevCoord):
+            if not self.exec():
                 break
 
     def exec(self):
@@ -172,12 +171,13 @@ class AutomazioneTende(Thread):
             self.prevCoord = self.coord
             return False
         self.coord = self.read_altaz_mount_coordinate()
+        print(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord):
+            self.prevCoord = self.coord
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
-#            prevCoord = coord
-        time.sleep(config.Config.getFloat("sleep"))
+#        time.sleep(config.Config.getFloat("sleep"))
         return True
 
     def console_ui(self):
