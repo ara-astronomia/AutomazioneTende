@@ -1,15 +1,21 @@
 import time, config, telescopio
-from threading import Thread
+#from threading import Thread
 if config.Config.getValue("test") is "1":
-#    import mock.telescopio as telescopio
     import mock.motor_control as motor_control
     import mock.encoder as encoder
+    import mock.roof_control as roof_control
 else:
-    import telescopio, motor_control, encoder
+    import motor_control, encoder, roof_control
 
-class AutomazioneTende(Thread):
+if config.Config.getValue("telescopio_test") is "1":
+    import mock.telescopio as telescopio
+else:
+    import telescopio
+
+class AutomazioneTende:
+#(Thread):
     def __init__(self):
-        Thread.__init__(self)
+#        Thread.__init__(self)
 
         self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
 
@@ -18,6 +24,7 @@ class AutomazioneTende(Thread):
         self.encoder_west = encoder.Encoder("W",self.n_step_corsa_tot)
 
         self.started = False
+        self.roof = False
         self.prevCoord = { 'alt': 0, 'az': 0 }
 
         self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
@@ -149,6 +156,20 @@ class AutomazioneTende(Thread):
 
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
+    def open_roof(self):
+        status_roof=roof_control.verify_closed_roof()
+        if status_roof == 1:
+            self.roof = True
+            return roof_control.open_roof()
+        return -1
+
+    def close_roof(self):
+        status_roof=roof_control.verify_open_roof()
+        if status_roof == 0 and not self.started:
+            self.roof = False
+            return roof_control.closed_roof()
+        return -1
+
     def exit_program(self,n=0):
         print("")
         print("Uscita dall'applicazione")
@@ -169,7 +190,9 @@ class AutomazioneTende(Thread):
         if not self.started:
             self.coord = self.park_curtains()
             self.prevCoord = self.coord
-            return False
+            return 0
+        if not self.roof:
+            return -1
         self.coord = self.read_altaz_mount_coordinate()
         print(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord):
@@ -178,7 +201,7 @@ class AutomazioneTende(Thread):
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
 #        time.sleep(config.Config.getFloat("sleep"))
-        return True
+        return 1
 
     def console_ui(self):
         try:

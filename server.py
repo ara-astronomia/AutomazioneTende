@@ -34,10 +34,31 @@ try:
                         # pertanto non è necessario fare il cleanup del GPIO
                         if automazioneTende.started:
                             automazioneTende.started = False
-                    automazioneTende.exec()
-                    steps = "{:0>3d}".format(automazioneTende.encoder_est.current_step)+"{:0>3d}".format(automazioneTende.encoder_west.current_step)
+
+                    elif data == b'R':
+                        r = automazioneTende.open_roof()
+                        if r == 0:
+                            steps = "R00001"
+                        else:
+                            steps = "E00001"
+
+                    elif data == b'T':
+                        r = automazioneTende.close_roof()
+                        if r == 1:
+                            steps = "R00000"
+                        else:
+                            steps = "E00000"
+
+                    if data != b"R" and data != b"T":
+                        r = automazioneTende.exec()
+                        if r == -1:
+                            steps = "E0000S"
+                        else:
+                            steps = "{:0>3d}".format(automazioneTende.encoder_est.current_step)+"{:0>3d}".format(automazioneTende.encoder_west.current_step)
+
                     print("steps: "+steps)
                     conn.sendall(steps.encode("UTF-8"))
+
                     if data == b'-':
                         try:
                             conn.close()
