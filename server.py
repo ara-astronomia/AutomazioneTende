@@ -1,15 +1,11 @@
-import socket, config#, gui
+import socket, config
 from automazione_tende import AutomazioneTende
 
-
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 3000        # Port to listen on (non-privileged ports are > 1023)
-
-
-
+HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
+PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
 
 automazioneTende = AutomazioneTende()
-#g_ui = gui.Gui()
+
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
@@ -27,7 +23,7 @@ try:
                             finally:
                                 break
 
-                    elif data == b"1"  and not automazioneTende.started:
+                    elif data == b"1" and not automazioneTende.started:
                         automazioneTende.started = True
 
                     elif data == b"0":
