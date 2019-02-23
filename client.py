@@ -5,15 +5,15 @@ if config.Config.getValue("test") is "1":
 else:
     import roof_control
 
-HOST = '127.0.0.1'  # The server's hostname or IP address
-PORT = 3000        # The port used by the server
+HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
+PORT = config.Config.getInt("port", "server")        # The port used by the server
 
 g_ui = gui.Gui()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     while True:
-        ev1, vals1 = g_ui.win.Read(timeout=10)
+        ev1, vals1 = g_ui.win.Read(timeout=10000)
         if ev1 is None or ev1 == "exit":
             v = b"E"
 
@@ -27,6 +27,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 status_roof=roof_control.open_roof()
                 if status_roof[0] == 0:
                     g_ui.open_roof(status_roof[1])
+            continue
 
         elif ev1 == 'close-roof':
             if alpha_e and alpha_w !=0:

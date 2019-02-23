@@ -25,3 +25,12 @@ class Config:
             return Config.config.configparser[section].getfloat(key)
         except KeyError:
             return None
+
+    @staticmethod
+    def getInt(key, section='automazione'):
+        if Config.config is None:
+            Config.config = Config()
+        try:
+            return Config.config.configparser[section].getint(key)
+        except KeyError:
+            return None
