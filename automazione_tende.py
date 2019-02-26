@@ -17,7 +17,7 @@ class AutomazioneTende:
     def __init__(self):
 #        Thread.__init__(self)
 
-        self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
+        self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
 
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
         self.encoder_est = encoder.Encoder("E",self.n_step_corsa_tot)
@@ -27,17 +27,17 @@ class AutomazioneTende:
         self.roof = False
         self.prevCoord = { 'alt': 0, 'az': 0 }
 
-        self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
-        self.alt_max_tend_w = int(config.Config.getValue("max_west", "tende"))
-        self.alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
-        self.alt_min_tend_w = int(config.Config.getValue("park_west", "tende"))
+        self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
+        self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
+        self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
+        self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.alt_min_tel_e = config.Config.getValue("alt_min_tel_e")
         self.alt_min_tel_w = config.Config.getValue("alt_min_tel_w")
 
-        self.azimut_ne = int(config.Config.getValue("azNE", "azimut"))
-        self.azimut_se = int(config.Config.getValue("azSE", "azimut"))
-        self.azimut_sw = int(config.Config.getValue("azSW", "azimut"))
-        self.azimut_nw = int(config.Config.getValue("azNW", "azimut"))
+        self.azimut_ne = config.Config.getInt("azNE", "azimut")
+        self.azimut_se = config.Config.getInt("azSE", "azimut")
+        self.azimut_sw = config.Config.getInt("azSW", "azimut")
+        self.azimut_nw = config.Config.getInt("azNW", "azimut")
 
         # stabilisco il valore di increm per ogni tenda, increm corrisponde al valore dell'angolo della tenda coperto da 1 step)
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot

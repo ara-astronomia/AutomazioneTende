@@ -6,11 +6,11 @@ from tkinter import *
 class Gui:
 
     def __init__(self):
-        self.n_step_corsa_tot = int(config.Config.getValue('n_step_corsa_tot', "encoder_step"))
-        self.alt_max_tend_e = int(config.Config.getValue("max_est", "tende"))
-        self.alt_max_tend_w = int(config.Config.getValue("max_west", "tende"))
-        self.alt_min_tend_e = int(config.Config.getValue("park_est", "tende"))
-        self.alt_min_tend_w = int(config.Config.getValue("park_west", "tende"))
+        self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
+        self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
+        self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
+        self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
+        self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
 
@@ -27,7 +27,7 @@ class Gui:
         layout = [[sg.Menu(menu_def, tearoff=True)],
 
                  [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Checkbox('telescope simulator', default=False, key ='tel_sim'),sg.Checkbox('roof_curtains simulator', default=False, key = 'roof_sim')],
+                 [sg.Checkbox('Simulatore', enable_events=True, key='roof_sim', default=config.Config.getValue("roof_sim", "server"))],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
@@ -40,9 +40,9 @@ class Gui:
         if config.Config.getValue("test") is "1":
             layout.append([sg.Button('Spegni Server', key="shutdown")])
 
-              
+
         self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
-   
+
 
     def base_draw(self):
         p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
@@ -59,7 +59,7 @@ class Gui:
         canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
         canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
-        
+
     def roof_alert(self,mess_alert):
 
         """Avvisa che le tende non possono essere aperte"""
@@ -68,24 +68,24 @@ class Gui:
         alert = mess_alert
         self.win.FindElement('aperturatetto').Update(alert)
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= alert)
-    
-   
+
+
     def update_status_roof(self, status_roof):
         """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
         canvas = self.win.FindElement('canvas')
         status = status_roof
         print (str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
-        
-    
+
+
     def closed_roof(self, status_roof):
         """avvisa sullo stato chiuso del tetto"""
         self.win.FindElement('progbar_tetto').UpdateBar(0)
         status = status_roof
         print (str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
-           
-           
+
+
     def open_roof(self, status_roof):
         """avvisa sullo stato aperto del tetto"""
         self.win.FindElement('progbar_tetto').UpdateBar(100)
@@ -93,8 +93,6 @@ class Gui:
         print (str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
 
-        
-        
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
         p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
@@ -113,8 +111,8 @@ class Gui:
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
         #canvas = self.win.FindElement('canvas')
         #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
-        return status_roof 
-        
+        return status_roof
+
     def update_curtains_text(self, e_e, e_w):
 
         """Update valori angolari tende"""
@@ -131,7 +129,7 @@ class Gui:
         """Disegna le tende con canvas"""
 
         #-------definizione settori angolari tende -----------#
-        
+
         conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
         alpha_e_min = -12
         alpha_w_min = -12
@@ -170,11 +168,11 @@ class Gui:
         p8 = self.l-1,(self.h/11)*8
         p9 = self.l/2, (self.h/11)*4.5
         p10 = 1, (self.h/11)*8
-        
+
         canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
         canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8') # pareti osservatorio
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484') # pareti osservatorio
-       
+
         pt_e = (x_e, y_e)
         pt_w = (x_w, y_w)
 
