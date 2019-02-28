@@ -1,22 +1,25 @@
-import time, config, telescopio
-#from threading import Thread
-if config.Config.getValue("test") is "1":
-    import mock.motor_control as motor_control
-    import mock.encoder as encoder
-    import mock.roof_control as roof_control
-else:
-    import motor_control, encoder, roof_control
-
-if config.Config.getValue("telescopio_test") is "1":
-    import mock.telescopio as telescopio
-else:
-    import telescopio
+import time, config
 
 class AutomazioneTende:
 #(Thread):
-    def __init__(self):
+    def __init__(self, mock=False, thesky=False):
 #        Thread.__init__(self)
+        self.mock = mock
+        self.thesky = thesky
+        if mock:
+            import mock.motor_control as motor_control
+            import mock.encoder as encoder
+            import mock.roof_control as roof_control
+        else:
+            import motor_control, encoder, roof_control
 
+        if thesky:
+            import telescopio
+        else:
+            import mock.telescopio as telescopio
+
+        self.roof_control = roof_control
+        self.motor_control = motor_control
         self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
 
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
@@ -50,7 +53,7 @@ class AutomazioneTende:
         try:
             coords = self.telescopio.coords()
         except ConnectionRefusedError:
-            print("Server non raggiungibile, se si è in test, portare la relativa chiave a 1")
+            print("Server non raggiungibile, per usare il mock delle coordinate telescopio usare il flag -s per avviare il server")
             coords = {"alt": 0, "az": 0}
 
         print("Altezza Telescopio: "+str(coords['alt']))
@@ -83,72 +86,72 @@ class AutomazioneTende:
             self.open_all_curtains()
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
-            motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
+            self.motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
             self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+            self.motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
             #   if inferiore a ovest_min_height
             if coord["alt"] <= self.alt_min_tend_w:
                 #     muovi la tendina ovest a 0
-                motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
+                self.motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
                 self.encoder_west.listen_until(0) # controllo condizione encoder
-                motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+                self.motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
             else:
                 #     muovi la tendina ovest a f(altezza telescopio - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
                 if self.encoder_west.current_step > step_w:
-                    motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
+                    self.motor_control.go_in_closed_motor_w() # chiamo il comando per attivazione motore verso chiusura
                     self.encoder_west.listen_until(step_w) # controllo condizione encoder
-                    motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+                    self.motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
                 else:
-                    motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
+                    self.motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
                     self.encoder_west.listen_until(step_w) # controllo condizione encoder
-                    motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+                    self.motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
             # else if superiore a ovest_min_height e azimut del tele a est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   alza completamente la tendina ovest
-            motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
+            self.motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
             self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+            self.motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
             #   if inferiore a est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 #     muovi la tendina est a 0
-                motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
+                self.motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
                 self.encoder_est.listen_until(0) # controllo condizione encoder
-                motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+                self.motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
             else:
                 #     muovi la tendina est a f(altezza telescopio - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 if self.encoder_est.current_step > step_e:
-                    motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
+                    self.motor_control.go_in_closed_motor_e() # chiamo il comando per attivazione motore verso chiusura
                     self.encoder_est.listen_until(step_e) # controllo condizione encoder
-                    motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+                    self.motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
                 else:
-                    motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
+                    self.motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
                     self.encoder_est.listen_until(step_e) # controllo condizione encoder
-                    motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+                    self.motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
 
     def park_curtains(self):
 
         """Metti a zero l'altezza delle tende"""
 
-        motor_control.go_in_closed_motor_e()
+        self.motor_control.go_in_closed_motor_e()
         self.encoder_est.listen_until(0)
-        motor_control.stop_motor_e()
+        self.motor_control.stop_motor_e()
 
-        motor_control.go_in_closed_motor_w()
+        self.motor_control.go_in_closed_motor_w()
         self.encoder_west.listen_until(0)
-        motor_control.stop_motor_w()
+        self.motor_control.stop_motor_w()
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
-        motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
+        self.motor_control.go_in_open_motor_w() # chiamo il comando per attivazione motore verso apertura
         self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-        motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
+        self.motor_control.stop_motor_w() # chiamo il comando per lo stop del motore
 
-        motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
+        self.motor_control.go_in_open_motor_e() # chiamo il comando per attivazione motore verso apertura
         self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-        motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
+        self.motor_control.stop_motor_e() # chiamo il comando per lo stop del motore
 
     def diff_coordinates(self, prevCoord, coord):
 
@@ -157,23 +160,23 @@ class AutomazioneTende:
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
     def open_roof(self):
-        status_roof=roof_control.verify_closed_roof()
+        status_roof=self.roof_control.verify_closed_roof()
         if status_roof == 1:
             self.roof = True
-            return roof_control.open_roof()
+            return self.roof_control.open_roof()
         return -1
 
     def close_roof(self):
-        status_roof=roof_control.verify_open_roof()
+        status_roof=self.roof_control.verify_open_roof()
         if status_roof == 0 and not self.started:
             self.roof = False
-            return roof_control.closed_roof()
+            return self.roof_control.closed_roof()
         return -1
 
     def exit_program(self,n=0):
         print("")
         print("Uscita dall'applicazione")
-        if config.Config.getValue("test") is not "1":
+        if not self.mock:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
         exit(n)

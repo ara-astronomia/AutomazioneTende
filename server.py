@@ -1,10 +1,27 @@
-import socket, config
+import socket, config, getopt, sys
 from automazione_tende import AutomazioneTende
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
+TEST=False
+THESKY=False
+MOCK=False
 
-automazioneTende = AutomazioneTende()
+try:
+    opts, args = getopt.getopt(sys.argv[1:],"tms", ["test", "mock", "sky"])
+except getopt.GetoptError:
+    print("parametri errati")
+    exit(2) #esce dall'applicazione con errore
+for opt, arg in opts:
+    if opt in ('-t', '--test'):
+        HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
+        PORT = config.Config.getInt("roof_sim_port", "server")        # Port to listen on (non-privileged ports are > 1023)
+    elif opt in ('-m', '--mock'):
+        MOCK=True
+    elif opt in ('-s', '--sky'):
+        THESKY=True
+
+automazioneTende = AutomazioneTende(MOCK, THESKY)
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
