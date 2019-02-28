@@ -1,3 +1,5 @@
+from logger import Logger
+
 class BaseEncoder:
     def __init__(self, orientation: "E or W", max_step):
         self.current_step = 0
@@ -22,7 +24,7 @@ class BaseEncoder:
             self.__save_current_step__(direction)
 
         self.current_step = self.__motion_step__
-        print("step corrente dell'encoder "+self.orientation+": "+str(self.current_step))
+        Logger.getLogger().debug("step corrente dell'encoder "+self.orientation+": "+str(self.current_step))
 
     def __condition__(self, length, direction):
 

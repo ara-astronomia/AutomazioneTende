@@ -1,6 +1,7 @@
 import config
 from time import sleep
 import time
+from logger import Logger
 
 timeout = 5
 
@@ -20,7 +21,7 @@ def open_roof():
             if (timeout_start + timeout) > time.time() > timeout_start :
                 status_roof = 'Tetto in fase di apertura'
                 #status_o = 2
-                print (status_roof)
+                Logger.getLogger().debug(status_roof)
             elif time.time() > (timeout_start + timeout):
                 status_o = 0
                 return status_o
@@ -35,7 +36,7 @@ def closed_roof():
             if (timeout_start + timeout) > time.time() > timeout_start:
                 status_roof = 'Tetto in fase di chiusura'
                 #status_o = 2
-                print (status_roof)
+                Logger.getLogger().debug(status_roof)
             elif time.time() > (timeout_start + timeout):
                 status_c = 1
                 return status_c

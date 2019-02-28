@@ -1,4 +1,5 @@
 import time, config
+from logger import Logger
 
 class AutomazioneTende:
 #(Thread):
@@ -53,11 +54,11 @@ class AutomazioneTende:
         try:
             coords = self.telescopio.coords()
         except ConnectionRefusedError:
-            print("Server non raggiungibile, per usare il mock delle coordinate telescopio usare il flag -s per avviare il server")
+            Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio usare il flag -s per avviare il server")
             coords = {"alt": 0, "az": 0}
 
-        print("Altezza Telescopio: "+str(coords['alt']))
-        print("Azimut Telescopio: "+str(coords['az']))
+        Logger.getLogger().debug("Altezza Telescopio: "+str(coords['alt']))
+        Logger.getLogger().debug("Azimut Telescopio: "+str(coords['az']))
         return coords
 
     def read_curtains_height(self):
@@ -174,8 +175,7 @@ class AutomazioneTende:
         return -1
 
     def exit_program(self,n=0):
-        print("")
-        print("Uscita dall'applicazione")
+        Logger.getLogger().info("Uscita dall'applicazione")
         if not self.mock:
             import RPi.GPIO as GPIO
             GPIO.cleanup()
@@ -197,7 +197,7 @@ class AutomazioneTende:
         if not self.roof:
             return -1
         self.coord = self.read_altaz_mount_coordinate()
-        print(self.coord)
+        Logger.getLogger().debug(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord):
             self.prevCoord = self.coord
             self.move_curtains_height(self.coord)
@@ -210,9 +210,9 @@ class AutomazioneTende:
         try:
             self.exec()
         except KeyboardInterrupt:
-          print("Intercettato CTRL+C")
+          Logger.getLogger().info("Intercettato CTRL+C")
         except Exception as e:
-          print("altro errore: "+str(e))
+          Logger.getLogger().error("altro errore: "+str(e))
         finally:
           self.exit_program()
 

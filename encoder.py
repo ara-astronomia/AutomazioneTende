@@ -2,6 +2,7 @@ import config
 from RPi import GPIO
 from time import sleep
 from base.base_encoder import BaseEncoder
+from logger import Logger
 
 class Encoder(BaseEncoder):
     def __init__(self, orientation: "E or W"):
@@ -65,7 +66,7 @@ def encoder_est(condition):
                     counter += 1
                 else:
                     counter -= 1
-                print(counter)
+                Logger.getLogger().debug(counter)
             if clkLastState_e = clkState_e or clkLastState_e = config.Config.getValue("n_step_finecorsa"):
                 condition_e = 'Stop'
                 sleep(config.Config.getFloat("sleep"))
@@ -84,7 +85,7 @@ def encoder_west(condition):
                     counter += 1
                 else:
                     counter -= 1
-                print(counter)
+                Logger.getLogger().debug(counter)
             if clkLastState_w = clkState_w or clkLastState_w = config.Config.getValue("n_step_finecorsa"):
                 condition_w = 'Stop'
                 sleep(config.Config.getFloat("sleep"))
@@ -95,4 +96,3 @@ def encoder_west(condition):
 
 
 #finally:
-

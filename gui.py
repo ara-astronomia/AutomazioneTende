@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import math, config
 from graphics import *
 from tkinter import *
+from logger import Logger
 
 class Gui:
 
@@ -74,7 +75,7 @@ class Gui:
         """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
         canvas = self.win.FindElement('canvas')
         status = status_roof
-        print (str(status) + '  questo è lo status passato alla gui')
+        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
 
 
@@ -82,7 +83,7 @@ class Gui:
         """avvisa sullo stato chiuso del tetto"""
         self.win.FindElement('progbar_tetto').UpdateBar(0)
         status = status_roof
-        print (str(status) + '  questo è lo status passato alla gui')
+        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
 
 
@@ -90,7 +91,7 @@ class Gui:
         """avvisa sullo stato aperto del tetto"""
         self.win.FindElement('progbar_tetto').UpdateBar(100)
         status = status_roof
-        print (str(status) + '  questo è lo status passato alla gui')
+        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
 
         canvas = self.win.FindElement('canvas')

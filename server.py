@@ -1,5 +1,6 @@
 import socket, config, getopt, sys
 from automazione_tende import AutomazioneTende
+from logger import Logger
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
@@ -10,7 +11,7 @@ MOCK=False
 try:
     opts, args = getopt.getopt(sys.argv[1:],"tms", ["test", "mock", "sky"])
 except getopt.GetoptError:
-    print("parametri errati")
+    Logger.getLogger().error("parametri errati")
     exit(2) #esce dall'applicazione con errore
 for opt, arg in opts:
     if opt in ('-t', '--test'):
@@ -27,7 +28,7 @@ try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
-        print("Server avviato")
+        Logger.getLogger().info("Server avviato")
         while True:
             conn, addr = s.accept()
             with conn:
@@ -39,7 +40,7 @@ try:
                     elif data == b"1" and not automazioneTende.started:
                         automazioneTende.started = True
 
-                    elif data == b'-' and config.Config.getValue("test") is "1":
+                    elif data == b'-' and TEST:
                         # solo su test dobbiamo prevedere la chiusura del server dal client
                         # pertanto non è necessario fare il cleanup del GPIO
                         if automazioneTende.started:
@@ -66,7 +67,7 @@ try:
                         else:
                             steps = "{:0>3d}".format(automazioneTende.encoder_est.current_step)+"{:0>3d}".format(automazioneTende.encoder_west.current_step)
 
-                    print("steps: "+steps)
+                    Logger.getLogger().debug("steps: "+steps)
 
                     if not data or data == b'E':
                         automazioneTende.close_roof()
@@ -86,6 +87,6 @@ try:
                     conn.sendall(steps.encode("UTF-8"))
 
 except Exception as e:
-    print("errore: "+str(e))
+    Logger.getLogger().error("errore: "+str(e))
 finally:
     automazioneTende.exit_program()

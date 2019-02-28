@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import time, config, socket, gui
+from logger import Logger
 
 def connection(error, roof, curtains):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -64,7 +65,7 @@ def connection(error, roof, curtains):
                 s.close()
                 return "ReConnect", [host, port]
             data = rcv.decode("UTF-8")
-            print("Data: "+data)
+            Logger.getLogger().debug("Data: "+data)
             if data[0] == "R":
                 if data[-1] == "1":
                     roof = True
@@ -95,7 +96,7 @@ curtains = False
 error = False
 
 while True:
-    print("connessione a: " + HOST + ":" + str(PORT))
+    Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
     key, value = connection(error, roof, curtains)
     if key == "E":
         exit(0)
