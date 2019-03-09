@@ -54,7 +54,7 @@ class AutomazioneTende:
         try:
             coords = self.telescopio.coords()
         except ConnectionRefusedError:
-            Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio usare il flag -s per avviare il server")
+            Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
             coords = {"alt": 0, "az": 0}
 
         Logger.getLogger().debug("Altezza Telescopio: "+str(coords['alt']))
