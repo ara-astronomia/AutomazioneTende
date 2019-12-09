@@ -61,6 +61,7 @@ class AutomazioneTende:
 
         Logger.getLogger().debug("Altezza Telescopio: "+str(coords['alt']))
         Logger.getLogger().debug("Azimut Telescopio: "+str(coords['az']))
+        print (str(coords['az']))
         return coords
 
     def read_curtains_height(self):

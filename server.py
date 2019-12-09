@@ -48,6 +48,7 @@ try:
 
                     elif data == b'R':
                         if automazioneTende.open_roof():
+                            Logger.getLogger().info("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                             steps = "R00001"
                         else:
                             steps = "E00001"

@@ -15,12 +15,14 @@ def connection(error, roof, curtains):
 
             elif ev1 == 'open-roof':
                 v = "R"
+                Logger.getLogger().info("e' stato premuto il tasto apri tetto (open_roof) ")
 
             elif ev1 == 'close-roof':
                 if curtains is True:
                     g_ui.roof_alert('Attenzione tendine aperte')
                     continue
                 v = "T"
+                Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
 
             elif ev1 == 'start-curtains':
                 if roof is False:
@@ -41,7 +43,9 @@ def connection(error, roof, curtains):
                 v = "c"
 
             s.sendall(v.encode("UTF-8"))
+            Logger.getLogger().info("invio paramentri con sendall")
             rcv = s.recv(6)
+
             if ev1 is None or ev1 == "exit" or ev1 == "shutdown":
                 g_ui.update_curtains_text(0,0)
                 g_ui.update_curtains_graphic(0,0)
