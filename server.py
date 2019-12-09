@@ -47,15 +47,13 @@ try:
                             automazioneTende.started = False
 
                     elif data == b'R':
-                        r = automazioneTende.open_roof()
-                        if r == 0:
+                        if automazioneTende.open_roof():
                             steps = "R00001"
                         else:
                             steps = "E00001"
 
                     elif data == b'T':
-                        r = automazioneTende.close_roof()
-                        if r == 1:
+                        if automazioneTende.close_roof():
                             steps = "R00000"
                         else:
                             steps = "E00000"
