@@ -11,6 +11,8 @@ patcher = patch.dict("sys.modules", modules)
 patcher.start()
 from roof_control import RoofControl
 from gpio_config import GPIOConfig
+from gpio_pin import GPIOPin
+from status import Status
 
 class RoofControlTest(unittest.TestCase):
     def setUp(self):
@@ -31,4 +33,19 @@ class RoofControlTest(unittest.TestCase):
         with self.assertRaises(TransitionError):
             self.roofControl.read()
 
-#    def test_is_roof_closed(self):
+    def test_is_roof_closed(self):
+        side_effect = lambda value: True if value == GPIOPin.VERIFY_CLOSED else False
+        status = MagicMock(side_effect=side_effect)
+        GPIOConfig.status = status
+        self.assertEqual(Status.CLOSED, self.roofControl.read())
+
+    def test_is_roof_open(self):
+        side_effect = lambda value: False if value == GPIOPin.VERIFY_CLOSED else True
+        status = MagicMock(side_effect=side_effect)
+        GPIOConfig.status = status
+        self.assertEqual(Status.OPEN, self.roofControl.read())
+
+    def test_is_roof_in_transition(self):
+        status = MagicMock(return_value=False)
+        GPIOConfig.status = status
+        self.assertEqual(Status.TRANSIT, self.roofControl.read())

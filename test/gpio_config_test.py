@@ -12,10 +12,18 @@ patcher.start()
 from gpio_config import GPIOConfig
 
 class GPIOConfigTest(unittest.TestCase):
+    def setUp(self):
+        self.gpioConfig = GPIOConfig()
 
-    def test(self):
-        gpioConfig = GPIOConfig()
-        self.assertTrue(isinstance(gpioConfig, GPIOConfig))
-        gpioConfig.turn_on(1)
-        self.assertTrue(gpioConfig.wait_for_raising(1))
-        self.assertFalse(gpioConfig.status(1))
+    def test_is_instance(self):
+        self.assertTrue(isinstance(self.gpioConfig, GPIOConfig))
+
+    def test_generic_exec(self):
+        self.gpioConfig.turn_on(1)
+        self.gpioConfig.turn_off(1)
+        self.assertTrue(self.gpioConfig.wait_for_raising(1))
+        self.assertTrue(self.gpioConfig.wait_for_falling(1))
+        self.assertFalse(self.gpioConfig.status(1))
+
+    def test_is_singleton(self):
+        self.assertEqual(GPIOConfig(), self.gpioConfig)
