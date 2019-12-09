@@ -117,7 +117,8 @@ class Gui:
     def update_curtains_text(self, e_e, e_w):
 
         """Update valori angolari tende"""
-
+        print(e_e)
+        print(e_w)
         alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
         alpha_w = int(e_w*float("{0:.3f}".format(self.increm_w))) # COME SOPRA
 

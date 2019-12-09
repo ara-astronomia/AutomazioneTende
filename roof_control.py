@@ -6,10 +6,10 @@ GPIO.setmode(GPIO.BOARD)
 roof_verify_closed = config.Config.getValue("roof_verify_open", 'roof_board') # 11
 roof_verify_open = config.Config.getValue("roof_verify_open", 'roof_board') # 7
 roof_open = config.Config.getValue("roof_open", 'roof_board') # 7
-roof_closed = config.Config.getValue("roof_closed", 'roof_board') # 15
+roof_closed = config.Config.getValue("roof_closed", 'roof_board') # 7
 
-GPIO.setup(roof_verify_closed, GPIO.IN, pull_up-down=GPIO.PUD_UP)
-GPIO.setup(roof_verify_open, GPIO.IN, pull_up-down=GPIO.PUD_UP)
+GPIO.setup(roof_verify_closed, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(roof_verify_open, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(roof_open,GPIO.OUT)
 GPIO.setup(roof_closed,GPIO.OUT)
 
@@ -28,7 +28,7 @@ def open_roof():
     status_c = 0
 
 def closed_roof():
-    GPIO.output(roof_closed,GPIO.HIGH)
+    GPIO.output(roof_closed,GPIO.LOW)
  """ da implementare le condizioni che generano gli status """
     status_o = 0
     status_c = 1

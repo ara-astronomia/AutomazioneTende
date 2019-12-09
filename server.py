@@ -47,6 +47,7 @@ try:
                             automazioneTende.started = False
 
                     elif data == b'R':
+                        Logger.getLogger().info("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                         r = automazioneTende.open_roof()
                         if r == 0:
                             steps = "R00001"
