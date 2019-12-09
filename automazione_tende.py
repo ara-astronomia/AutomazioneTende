@@ -1,5 +1,6 @@
 import time, config
 from logger import Logger
+from gpioconfig import GPIOConfig
 
 class AutomazioneTende:
 #(Thread):
@@ -12,14 +13,15 @@ class AutomazioneTende:
             import mock.encoder as encoder
             import mock.roof_control as roof_control
         else:
-            import motor_control, encoder, roof_control
+            import motor_control, encoder
+            from roof_control import RoofControl
 
         if thesky:
             import telescopio
         else:
             import mock.telescopio as telescopio
-
-        self.roof_control = roof_control
+        self.gpioconfig = GPIOConfig()
+        self.roof_control = RoofControl(self.gpioconfig)
         self.motor_control = motor_control
         self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
 
@@ -161,18 +163,28 @@ class AutomazioneTende:
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
     def open_roof(self):
-        status_roof=self.roof_control.verify_closed_roof()
-        if status_roof == 1:
+        status_roof = self.roof_control.read()
+        if isinstance(Status.CLOSED, status_roof):
             self.roof = True
-            return self.roof_control.open_roof()
-        return -1
+            return self.roof_control.open()
+        elif isinstance(Status.TRANSIT, status_roof):
+            # capire che succede
+            pass
+        else:
+            # già aperto
+            pass
 
     def close_roof(self):
-        status_roof=self.roof_control.verify_open_roof()
-        if status_roof == 0 and not self.started:
+        status_roof = self.roof_control.read()
+        if isinstance(Status.OPEN, status_roof):
             self.roof = False
-            return self.roof_control.closed_roof()
-        return -1
+            return self.roof_control.close()
+        elif isinstance(Status.TRANSIT, status_roof):
+            # capire che succede
+            pass
+        else:
+            # già aperto
+            pass
 
     def exit_program(self,n=0):
         Logger.getLogger().info("Uscita dall'applicazione")
