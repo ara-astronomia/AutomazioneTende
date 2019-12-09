@@ -1,12 +1,12 @@
 import RPi.GPIO as GPIO
 from logger import Logger
 from base.singleton import Singleton
+from gpio_pin import GPIOPin
 
 class GPIOConfig(metaclass=Singleton):
 
-    def __init__(self, mode=GPIO.BOARD):
-        GPIO.setmode(mode)
-        # TODO: setup for GPIO pin: iterate enums passed as arg
+    def __init__(self):
+        GPIOPin.setup()
 
     def turn_on(self, switch):
         GPIO.output(GPIO.input(switch), GPIO.HIGH)
