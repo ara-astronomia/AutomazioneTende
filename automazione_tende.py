@@ -1,6 +1,6 @@
 import time, config
 from logger import Logger
-from gpioconfig import GPIOConfig
+from status import Status
 
 class AutomazioneTende:
 #(Thread):
@@ -9,12 +9,22 @@ class AutomazioneTende:
         self.mock = mock
         self.thesky = thesky
         if mock:
+            from unittest.mock import patch, MagicMock
             import mock.motor_control as motor_control
             import mock.encoder as encoder
-            import mock.roof_control as roof_control
+            from mock.roof_control import RoofControl
+            MockRPi = MagicMock()
+            modules = {
+                "RPi": MockRPi,
+                "RPi.GPIO": MockRPi.GPIO,
+            }
+            patcher = patch.dict("sys.modules", modules)
+            patcher.start()
         else:
             import motor_control, encoder
             from roof_control import RoofControl
+        from gpio_config import GPIOConfig
+
 
         if thesky:
             import telescopio
@@ -165,22 +175,19 @@ class AutomazioneTende:
 
     def open_roof(self):
         status_roof = self.roof_control.read()
-        if isinstance(Status.CLOSED, status_roof):
-            self.roof = True
+        Logger.getLogger().info("Lo status è " + str(status_roof))
+        self.roof = True
+        if status_roof != Status.OPEN:
             return self.roof_control.open()
-        elif isinstance(Status.TRANSIT, status_roof):
-            # capire che succede
-            pass
         else:
-            # già aperto
-            pass
+            return Status.OPEN
 
     def close_roof(self):
         status_roof = self.roof_control.read()
-        if isinstance(Status.OPEN, status_roof):
+        if status_roof == Status.OPEN:
             self.roof = False
             return self.roof_control.close()
-        elif isinstance(Status.TRANSIT, status_roof):
+        elif status_roof == Status.TRANSIT:
             # capire che succede
             pass
         else:
