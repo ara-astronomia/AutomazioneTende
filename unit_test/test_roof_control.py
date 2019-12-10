@@ -2,13 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from transition_error import TransitionError
 
-MockRPi = MagicMock()
-modules = {
-    "RPi": MockRPi,
-    "RPi.GPIO": MockRPi.GPIO,
-}
-patcher = patch.dict("sys.modules", modules)
-patcher.start()
+
 from roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
