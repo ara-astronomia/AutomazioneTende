@@ -44,7 +44,7 @@ class Encoder(BaseEncoder):
 
     def listen_until(self, length):
         try:
-            GPIO.setmode(GPIO.BCM)
+            GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.clk, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
             GPIO.setup(self.dt, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
             self.clk_state = GPIO.input(self.clk)
