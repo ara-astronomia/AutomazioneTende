@@ -3,8 +3,9 @@ from time import sleep
 from status import Status
 from transition_error import TransitionError
 from gpio_pin import GPIOPin
+from base.singleton import Singleton
 
-class RoofControl:
+class RoofControl(metaclass=Singleton):
 
     def __init__(self, gpioconfig):
         self.gpioconfig = gpioconfig
