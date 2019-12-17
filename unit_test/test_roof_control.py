@@ -1,8 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from transition_error import TransitionError
-
-
 from roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
