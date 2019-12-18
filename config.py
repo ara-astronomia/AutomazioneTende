@@ -12,25 +12,16 @@ class Config:
     def getValue(key, section='automazione'):
         if Config.config is None:
             Config.config = Config()
-        try:
-            return Config.config.configparser[section][key]
-        except KeyError:
-            return None
+        return Config.config.configparser[section][key]
 
     @staticmethod
     def getFloat(key, section='automazione'):
         if Config.config is None:
             Config.config = Config()
-        try:
-            return Config.config.configparser[section].getfloat(key)
-        except KeyError:
-            return None
+        return Config.config.configparser[section].getfloat(key)
 
     @staticmethod
     def getInt(key, section='automazione'):
         if Config.config is None:
             Config.config = Config()
-        try:
-            return Config.config.configparser[section].getint(key)
-        except KeyError:
-            return None
+        return Config.config.configparser[section].getint(key)
