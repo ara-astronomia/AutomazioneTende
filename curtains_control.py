@@ -24,6 +24,8 @@ class CurtainControl:
         return self.read()
 
     def stop(self):
+        self.gpioconfig.turn_off(self.pinA)
+        self.gpioconfig.turn_off(self.pinB)
         self.gpioconfig.turn_off(self.pinE)
         return self.read()
 
