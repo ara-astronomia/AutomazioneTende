@@ -4,20 +4,15 @@ from logger import Logger
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
-#TEST=False
 THESKY=False
 MOCK=False
 
 try:
-    #opts, args = getopt.getopt(sys.argv[1:],"tms", ["test", "mock", "sky"])
     opts, args = getopt.getopt(sys.argv[1:],"ms", ["mock", "sky"])
 except getopt.GetoptError:
     Logger.getLogger().error("parametri errati")
     exit(2) #esce dall'applicazione con errore
 for opt, arg in opts:
-    #if opt in ('-t', '--test'):
-        #HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
-        #PORT = config.Config.getInt("roof_sim_port", "server")        # Port to listen on (non-privileged ports are > 1023)
     if opt in ('-m', '--mock'):
         MOCK=True
     elif opt in ('-s', '--sky'):
@@ -41,9 +36,7 @@ try:
                     elif data == b"1" and not automazioneTende.started:
                         automazioneTende.started = True
 
-                    elif data == b'-':# and TEST:
-                        # solo su test dobbiamo prevedere la chiusura del server dal client
-                        # pertanto non è necessario fare il cleanup del GPIO
+                    elif data == b'-':
                         if automazioneTende.started:
                             automazioneTende.started = False
 
