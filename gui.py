@@ -37,9 +37,6 @@ class Gui:
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
                  [sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
-        #pulsante "spegni server" attualmente disabilitato, in attesa di sviluppo lato Mock         
-        #layout.append([sg.Button('Spegni Server', key="shutdown")])
-
 
         self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
 
