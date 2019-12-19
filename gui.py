@@ -23,12 +23,10 @@ class Gui:
         sg.ChangeLookAndFeel('GreenTan')
         # Design pattern 1 - First window does not remain active
 
-        menu_def = [['File', ['Exit']],['Test', 'Impostazioni'],
-                    ['Help', 'About...']]
+        menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
 
                  [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Checkbox('Simulatore', enable_events=True, key='roof_sim', default=config.Config.getValue("roof_sim", "server"))],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
@@ -38,8 +36,6 @@ class Gui:
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
                  [sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
-        if config.Config.getValue("test") is "1":
-            layout.append([sg.Button('Spegni Server', key="shutdown")])
 
 
         self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
