@@ -3,7 +3,7 @@ from base.base_telescopio import BaseTelescopio
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self,hostname, port, script):
+    def __init__(self,hostname, port, script,script_park):
         pass
 
     def coords(self):
@@ -35,4 +35,4 @@ class Telescopio(BaseTelescopio):
 
 
 if __name__ == '__main__':
-    netcat("192.168.0.9", 3040, 'MountGetAltAzi.js')
+    netcat("192.168.0.9", 3040, 'MountGetAltAzi.js', 'SetParkTel.js')
