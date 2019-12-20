@@ -48,14 +48,14 @@ try:
                             steps = "E00001"
 
                     elif data == b'T':
-                        if automazioneTende.close_roof()
+                        if automazioneTende.close_roof():
                             steps = "R00000"
                         else:
                             steps = "E00000"
 
                     elif data == b'P':
                         if automazioneTende.park_curtains():
-                            if automazioneTende.park_curtains() == 0,0:
+                            if automazioneTende.park_curtains() == '0,0':
                                 if automazioneTende.park_tele():
                                     steps = "R0000P"
                         else:
