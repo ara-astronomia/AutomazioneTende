@@ -41,23 +41,23 @@ try:
                             automazioneTende.started = False
 
                     elif data == b'R':
-                        if automazioneTende.open_roof():
-                            Logger.getLogger().info("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        Logger.getLogger().info("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        r = automazioneTende.open_roof()
+                        if r == 0:
                             steps = "R00001"
                         else:
                             steps = "E00001"
 
                     elif data == b'T':
-                        if automazioneTende.close_roof():
+                        r = automazioneTende.close_roof()
+                        if r == 1:
                             steps = "R00000"
                         else:
                             steps = "E00000"
 
                     elif data == b'P':
-                        if automazioneTende.park_curtains():
-                            if automazioneTende.park_curtains() == '0,0':
-                                if automazioneTende.park_tele():
-                                    steps = "R0000P"
+                        if automazioneTende.park_tele():
+                            steps = "R0000P"
                         else:
                             steps = "E0000P"
 
