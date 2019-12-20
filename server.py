@@ -56,8 +56,7 @@ try:
                             steps = "E00000"
 
                     elif data == b'P':
-                        r = automazioneTende.park_tele()
-                        if r == 0:
+                        if automazioneTende.park_tele():
                             steps = "R0000P"
                         else:
                             steps = "E0000P"

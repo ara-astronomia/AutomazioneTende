@@ -49,6 +49,7 @@ class AutomazioneTende:
 
     def park_tele(self):
         """ manda il tele alle coordinate AltAz di parking"""
+        Logger.getLogger().info("metodo park_tele in Automazione")
         try:
             park_tele = self.telescopio.park_tele()
         except ConnectionRefusedError:
