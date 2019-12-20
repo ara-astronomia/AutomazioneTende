@@ -14,17 +14,6 @@ else
 {
 	sky6RASCOMTele.SlewToAzAlt(TargetAz, TargetAlt, "");
         /*console.log("Slew complete");*/
-
-
-/*questo comando va verrificato dopo aver provato l'installazione del driver Advanced LX200*/
         /*sky6RASCOMTele.SetTracking(0, 1, 0, 0);*/
-	/*console.log("Tracking off");
-	obj = {
-		t_park,
-		trak_off
-	};
-
-	Out = JSON.stringify(oby);*/
-
 }
 /* Socket End Packet */

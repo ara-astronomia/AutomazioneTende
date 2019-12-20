@@ -44,4 +44,4 @@ class Telescopio(BaseTelescopio):
         return coords
 
 if __name__ == '__main__':
-    netcat("192.168.1.22", 3030, 'MountGetAltAzi.js', 'SetparkTel.js')
+    netcat("192.168.1.3", 3030, 'MountGetAltAzi.js', 'SetParkTel.js')p
