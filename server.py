@@ -56,7 +56,11 @@ try:
                             steps = "E00000"
 
                     elif data == b'P':
+                        r = automazioneTende.park_curtains()
+                        print (r)
+                        #if r == 1
                         if automazioneTende.park_tele():
+                            Logger.getLogger().info("passata al server")
                             steps = "R0000P"
                         else:
                             steps = "E0000P"
