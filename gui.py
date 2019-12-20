@@ -26,7 +26,7 @@ class Gui:
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
 
-                 [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
+                 [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
@@ -38,7 +38,7 @@ class Gui:
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
 
-        self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
+        self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', grab_anywhere=False).Layout(layout)
 
 
     def base_draw(self):

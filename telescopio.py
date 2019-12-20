@@ -3,10 +3,11 @@ from base.base_telescopio import BaseTelescopio
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self,hostname, port, script):
+    def __init__(self,hostname, port, script, script_park):
         self.hostname = hostname
         self.port = port
         self.script = script
+        self.script_park = script_park
 
     def coords(self):
         with open(self.script, 'r') as f:
@@ -16,6 +17,16 @@ class Telescopio(BaseTelescopio):
             data = s.recv(1024)
             s.close()
             return self.__parse_result__(data.decode("utf-8"))
+
+    def park_tele(self):
+        with open(self.script_park, 'r') as p:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.hostname, self.port))
+            s.sendall(p.read().encode('utf-8'))
+            #data = s.recv(1024)
+            s.close()
+            #return self.__parse_result__(data.decode("utf-8"))
+
 
     def __parse_result__(self,data):
         error = data.find("No error")
@@ -30,4 +41,4 @@ class Telescopio(BaseTelescopio):
         return coords
 
 if __name__ == '__main__':
-    netcat("192.168.1.22", 3040, 'MountGetAltAzi.js')
+    netcat("192.168.1.22", 3030, 'MountGetAltAzi.js', 'SetparkTel.js')

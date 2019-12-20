@@ -47,6 +47,15 @@ class AutomazioneTende:
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
 
+    def park_tele(self):
+        """ manda il tele alle coordinate AltAz di parking"""
+        try:
+            park_tele = self.telescopio.park_tele()
+        except ConnectionRefusedError:
+            Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
+        if (coord['az']) = 0 and (coord['alt']) = 0:
+            Logger.getLogger().error("posizione di park raggiunta")
+        return 0
 
     def read_altaz_mount_coordinate(self):
 

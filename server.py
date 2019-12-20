@@ -55,6 +55,13 @@ try:
                         else:
                             steps = "E00000"
 
+                    elif data == b'P':
+                        r = automazioneTende.park_tele()
+                        if r == 0:
+                            steps = "R0000P"
+                        else:
+                            steps = "E0000P"
+
                     if data != b"R" and data != b"T":
                         r = automazioneTende.exec()
                         if r == -1:

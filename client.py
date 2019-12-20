@@ -17,6 +17,10 @@ def connection(error, roof, curtains):
                 v = "R"
                 Logger.getLogger().info("e' stato premuto il tasto apri tetto (open_roof) ")
 
+            elif ev1 == 'park-tele':
+                v = "P"
+                Logger.getLogger().info("telescopio inviato alla posizione di park (park_tele) ")
+   
             elif ev1 == 'close-roof':
                 if curtains is True:
                     g_ui.roof_alert('Attenzione tendine aperte')
