@@ -12,6 +12,7 @@ class GPIOConfigTest(unittest.TestCase):
         self.assertTrue(isinstance(self.gpioConfig, GPIOConfig))
 
     def test_generic_exec(self):
+        GPIOConfig.status = MagicMock(side_effect=lambda value: value != GPIOPin.SWITCH_ROOF)
         self.gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
         self.gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
         self.assertTrue(self.gpioConfig.wait_for_raising(GPIOPin.SWITCH_ROOF))

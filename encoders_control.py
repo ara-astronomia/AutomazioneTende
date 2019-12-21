@@ -2,6 +2,7 @@ import config
 from base.singleton import Singleton
 from gpio_pin import GPIOPin
 from curtains_control import EastCurtain, WestCurtain
+from gpio_config import GPIOConfig
 
 class EncoderControl:
     def __init__(self):
@@ -17,17 +18,17 @@ class EncoderControl:
             self.steps += 1
         if self.steps == self.target:
             self.target = None
-            motor.stop()
+            self.motor.stop()
             self.gpioconfig.remove_event_detect(self.clk)
             self.moving = False
 
     def move(self, step):
         self.target = int(step)
         if self.steps < self.target:
-            motor.open()
-        if self.step > self.target:
-            motor.close()
-        if self.step != self.target:
+            self.motor.open()
+        if self.steps > self.target:
+            self.motor.close()
+        if self.steps != self.target:
             self.gpioconfig.add_event_detect(self.clk, callback=self.__count_steps__)
             self.moving = True
 
