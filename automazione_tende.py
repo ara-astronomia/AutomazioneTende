@@ -10,9 +10,8 @@ class AutomazioneTende:
         self.thesky = thesky
         if mock:
             from unittest.mock import patch, MagicMock
-            import mock.encoder as encoder
+            from mock.encoders_control import WestEncoder, EastEncoder
             from mock.roof_control import RoofControl
-            from mock.curtains_control import WestCurtain, EastCurtain
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -21,24 +20,19 @@ class AutomazioneTende:
             patcher = patch.dict("sys.modules", modules)
             patcher.start()
         else:
-            import encoder
+            from encoders_control import WestEncoder, EastEncoder
             from roof_control import RoofControl
-            from curtains_control import WestCurtain, EastCurtain
-        from gpio_config import GPIOConfig
 
         if thesky:
             import telescopio
         else:
             import mock.telescopio as telescopio
-        self.gpioconfig = GPIOConfig()
-        self.roof_control = RoofControl(self.gpioconfig)
-        self.west_curtain = WestCurtain(self.gpioconfig)
-        self.east_curtain = EastCurtain(self.gpioconfig)
 
+        self.roof_control = RoofControl()
         self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
-        self.encoder_est = encoder.Encoder("E",self.n_step_corsa_tot)
-        self.encoder_west = encoder.Encoder("W",self.n_step_corsa_tot)
+        self.encoder_est = EastEncoder()
+        self.encoder_west = WestEncoder()
 
         self.started = False
         self.roof = False
@@ -83,8 +77,6 @@ class AutomazioneTende:
 
     def move_curtains_height(self, coord):
 
-        #e= prog_e()
-
         """Muovi l'altezza delle tende"""
 
         # TODO verifica altezza del tele:
@@ -101,91 +93,40 @@ class AutomazioneTende:
             self.open_all_curtains()
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
-            self.east_curtain.open()
-            self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            # chiamo il comando per lo stop del motore
-            self.east_curtain.stop()
+            self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
             #   if inferiore a ovest_min_height
             if coord["alt"] <= self.alt_min_tend_w:
                 #     muovi la tendina ovest a 0
-                # chiamo il comando per attivazione motore verso chiusura
-                self.west_curtain.close()
-                self.encoder_west.listen_until(0) # controllo condizione encoder
-                # chiamo il comando per lo stop del motore
-                self.west_curtain.stop()
+                self.encoder_west.move(0) # controllo condizione encoder
             else:
                 #     muovi la tendina ovest a f(altezza telescopio - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
-                if self.encoder_west.current_step > step_w:
-                    # chiamo il comando per attivazione motore verso chiusura
-                    self.west_curtain.close()
-                    self.encoder_west.listen_until(step_w) # controllo condizione encoder
-                    # chiamo il comando per lo stop del motore
-                    self.west_curtain.stop()
-                else:
-                    # chiamo il comando per attivazione motore verso apertura
-                    self.west_curtain.open()
-                    self.encoder_west.listen_until(step_w) # controllo condizione encoder
-                    # chiamo il comando per lo stop del motore
-                    self.west_curtain.stop()
+                self.encoder_west.move(step_w) # controllo condizione encoder
             # else if superiore a ovest_min_height e azimut del tele a est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   alza completamente la tendina ovest
-            # chiamo il comando per attivazione motore verso apertura
-            self.west_curtain.open()
-            self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-            # chiamo il comando per lo stop del motore
-            self.west_curtain.stop()
+            self.encoder_west.move(self.n_step_corsa_tot) # controllo condizione encoder
             #   if inferiore a est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
-                #     muovi la tendina est a 0
-                # chiamo il comando per attivazione motore verso chiusura
-                self.east_curtain.close()
-                self.encoder_est.listen_until(0) # controllo condizione encoder
-                # chiamo il comando per lo stop del motore
-                self.east_curtain.stop()
+                # muovi la tendina est a 0
+                self.encoder_est.move(0) # controllo condizione encoder
             else:
                 #     muovi la tendina est a f(altezza telescopio - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
-                if self.encoder_est.current_step > step_e:
-                    # chiamo il comando per attivazione motore verso chiusura
-                    self.east_curtain.close()
-                    self.encoder_est.listen_until(step_e) # controllo condizione encoder
-                    # chiamo il comando per lo stop del motore
-                    self.east_curtain.stop()
-                else:
-                    # chiamo il comando per attivazione motore verso apertura
-                    self.east_curtain.open()
-                    self.encoder_est.listen_until(step_e) # controllo condizione encoder
-                    # chiamo il comando per lo stop del motore
-                    self.east_curtain.stop()
+                self.encoder_est.move(step_e) # controllo condizione encoder
 
     def park_curtains(self):
 
         """Metti a zero l'altezza delle tende"""
 
-        self.east_curtain.close()
-        self.encoder_est.listen_until(0)
-        self.east_curtain.stop()
-
-        self.west_curtain.stop()
-        self.encoder_west.listen_until(0)
-        self.west_curtain.stop()
+        self.encoder_est.move(0)
+        self.encoder_west.move(0)
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
-        # chiamo il comando per attivazione motore verso apertura
-        self.west_curtain.open()
-        self.encoder_west.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-        # chiamo il comando per lo stop del motore
-        self.west_curtain.stop()
-
-        # chiamo il comando per attivazione motore verso apertura
-        self.east_curtain.open()
-        self.encoder_est.listen_until(self.n_step_corsa_tot) # controllo condizione encoder
-        # chiamo il comando per lo stop del motore
-        self.east_curtain.stop()
+        self.encoder_west.move(self.n_step_corsa_tot) # controllo condizione encoder
+        self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
 
     def diff_coordinates(self, prevCoord, coord):
 
@@ -240,6 +181,7 @@ class AutomazioneTende:
         Logger.getLogger().debug(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord):
             self.prevCoord = self.coord
+            Logger.getLogger().debug(self.prevCoord)
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
