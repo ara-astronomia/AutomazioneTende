@@ -1,8 +1,8 @@
 import configparser
 import os
+from base.singleton import Singleton
 
-class Config:
-    config = None
+class Config(metaclass=Singleton):
 
     def __init__(self, dir_path=os.path.dirname(os.path.realpath(__file__))+os.path.sep):
         self.configparser = configparser.ConfigParser()
@@ -10,18 +10,15 @@ class Config:
 
     @staticmethod
     def getValue(key, section='automazione'):
-        if Config.config is None:
-            Config.config = Config()
-        return Config.config.configparser[section][key]
+        config = Config()
+        return config.configparser[section][key]
 
     @staticmethod
     def getFloat(key, section='automazione'):
-        if Config.config is None:
-            Config.config = Config()
-        return Config.config.configparser[section].getfloat(key)
+        config = Config()
+        return config.configparser[section].getfloat(key)
 
     @staticmethod
     def getInt(key, section='automazione'):
-        if Config.config is None:
-            Config.config = Config()
-        return Config.config.configparser[section].getint(key)
+        config = Config()
+        return config.configparser[section].getint(key)
