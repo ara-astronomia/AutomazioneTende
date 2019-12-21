@@ -9,7 +9,7 @@ from logger import Logger
 class EastCurtainsTest(unittest.TestCase):
 
     def setUp(self):
-        self.eastCurtain = EastCurtain(GPIOConfig())
+        self.eastCurtain = EastCurtain()
 
     def test_open_curtain(self):
         GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORE_A or value == GPIOPin.MOTORE_E else False)
@@ -26,7 +26,7 @@ class EastCurtainsTest(unittest.TestCase):
 class WestCurtainsTest(unittest.TestCase):
 
     def setUp(self):
-        self.westCurtain = WestCurtain(GPIOConfig())
+        self.westCurtain = WestCurtain()
 
     def test_open_curtain(self):
         GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORW_A or value == GPIOPin.MOTORW_E else False)
