@@ -24,3 +24,9 @@ class GPIOConfig(metaclass=Singleton):
 
     def status(self, switch):
         return GPIO.input(switch.id_pin) == GPIO.HIGH
+
+    def add_event_detect(self, switch, callback):
+        GPIO.add_event_detect(switch.id_pin, GPIO.RISING, callback=callback)
+
+    def remove_event_detect(self, switch):
+        GPIO.remove_event_detect(switch.id_pin)
