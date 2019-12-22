@@ -8,7 +8,7 @@ from status import Status
 
 class RoofControlTest(unittest.TestCase):
     def setUp(self):
-        self.roofControl = RoofControl(GPIOConfig())
+        self.roofControl = RoofControl()
 
     def test_is_instance(self):
         self.assertTrue(isinstance(self.roofControl, RoofControl))

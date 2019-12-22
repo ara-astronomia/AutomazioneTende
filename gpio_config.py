@@ -23,7 +23,13 @@ class GPIOConfig(metaclass=Singleton):
         return is_finished != None
 
     def status(self, switch):
-        return GPIO.input(switch.id_pin) == GPIO.HIGH
+        return GPIO.input(switch.id_pin)
+
+    def add_event_detect(self, switch, callback):
+        GPIO.add_event_detect(switch.id_pin, GPIO.RISING, callback=callback)
+
+    def remove_event_detect(self, switch):
+        GPIO.remove_event_detect(switch.id_pin)
 
     def cleanup(self, n):
         GPIO.cleanup()

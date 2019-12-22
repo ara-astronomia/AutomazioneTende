@@ -4,11 +4,12 @@ from status import Status
 from transition_error import TransitionError
 from gpio_pin import GPIOPin
 from base.singleton import Singleton
+from gpio_config import GPIOConfig
 
 class RoofControl(metaclass=Singleton):
 
-    def __init__(self, gpioconfig):
-        self.gpioconfig = gpioconfig
+    def __init__(self):
+        self.gpioconfig = GPIOConfig()
 
     def open(self):
         self.gpioconfig.turn_on(GPIOPin.SWITCH_ROOF)
