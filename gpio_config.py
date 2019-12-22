@@ -9,18 +9,22 @@ class GPIOConfig(metaclass=Singleton):
         GPIOPin.setup()
 
     def turn_on(self, switch):
-        GPIO.output(GPIO.input(switch.id_pin), GPIO.HIGH)
+        GPIO.output(switch.id_pin, GPIO.HIGH)
 
     def turn_off(self, switch):
-        GPIO.output(GPIO.input(switch.id_pin), GPIO.LOW)
+        GPIO.output(switch.id_pin, GPIO.LOW)
 
     def wait_for_raising(self, switch, timeout=60000):
-        is_finished = GPIO.wait_for_edge(GPIO.input(switch.id_pin), GPIO.RAISING, timeout=timeout)
+        is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.RAISING, timeout=timeout)
         return is_finished != None
 
     def wait_for_falling(self, switch, timeout=60000):
-        is_finished = GPIO.wait_for_edge(GPIO.input(switch.id_pin), GPIO.FALLING, timeout=timeout)
+        is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.FALLING, timeout=timeout)
         return is_finished != None
 
     def status(self, switch):
         return GPIO.input(switch.id_pin) == GPIO.HIGH
+
+    def cleanup(self, n):
+        GPIO.cleanup()
+        exit(n)

@@ -215,11 +215,9 @@ class AutomazioneTende:
             pass
 
     def exit_program(self,n=0):
+        from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
-        if not self.mock:
-            import RPi.GPIO as GPIO
-            GPIO.cleanup()
-        exit(n)
+        GPIOConfig().cleanup(n)
 
     def run(self):
         self.started = True
