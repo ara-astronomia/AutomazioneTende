@@ -3,7 +3,6 @@ from encoders_control import WestEncoder, EastEncoder
 from unittest.mock import MagicMock
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from logger import Logger
 
 class EncoderTest(unittest.TestCase):
     def test_est_open(self):
@@ -40,7 +39,6 @@ class EncoderTest(unittest.TestCase):
         encoder.steps = 5
         encoder.target = 1
         encoder.__count_steps__()
-        Logger.getLogger().debug(encoder.steps)
         self.assertEqual(4, encoder.steps)
 
 if __name__ == '__main__':
