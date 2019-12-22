@@ -245,18 +245,3 @@ class AutomazioneTende:
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
 #        time.sleep(config.Config.getFloat("sleep"))
         return 1
-
-    def console_ui(self):
-        try:
-            self.exec()
-        except KeyboardInterrupt:
-          Logger.getLogger().info("Intercettato CTRL+C")
-        except Exception as e:
-          Logger.getLogger().error("altro errore: "+str(e))
-        finally:
-          self.exit_program()
-
-
-if __name__ == '__main__':
-    automazioneTende = AutomazioneTende()
-    automazioneTende.console_ui()
