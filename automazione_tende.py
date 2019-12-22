@@ -215,11 +215,9 @@ class AutomazioneTende:
             pass
 
     def exit_program(self,n=0):
+        from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
-        if not self.mock:
-            import RPi.GPIO as GPIO
-            GPIO.cleanup()
-        exit(n)
+        GPIOConfig().cleanup(n)
 
     def run(self):
         self.started = True
@@ -245,18 +243,3 @@ class AutomazioneTende:
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
 #        time.sleep(config.Config.getFloat("sleep"))
         return 1
-
-    def console_ui(self):
-        try:
-            self.exec()
-        except KeyboardInterrupt:
-          Logger.getLogger().info("Intercettato CTRL+C")
-        except Exception as e:
-          Logger.getLogger().error("altro errore: "+str(e))
-        finally:
-          self.exit_program()
-
-
-if __name__ == '__main__':
-    automazioneTende = AutomazioneTende()
-    automazioneTende.console_ui()
