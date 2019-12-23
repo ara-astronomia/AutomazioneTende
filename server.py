@@ -53,17 +53,18 @@ try:
                         else:
                             steps = "E00000"
 
-                    elif data == b'P':
+                    elif data == b'0':
                         r = automazioneTende.park_curtains()
                         Logger.getLogger().info("tende in fase di chiusura")
 
+                    elif data == b'P':
                         if automazioneTende.park_tele():
                             Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
                             steps = "R0000P"
                         else:
                             steps = "E0000P"
 
-                    if data != b"R" and data != b"T":
+                    if data != b"R" and data != b"T" and data != b'P':
                         r = automazioneTende.exec()
                         if r == -1:
                             steps = "E0000S"

@@ -63,7 +63,7 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
         #if (coord['az']) == 0 and (coord['alt']) == 0:
         #    Logger.getLogger().error("posizione di park raggiunta")
-        #return 0
+        return True
 
     def read_altaz_mount_coordinate(self):
 
