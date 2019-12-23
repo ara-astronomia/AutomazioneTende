@@ -57,10 +57,10 @@ try:
 
                     elif data == b'P':
                         r = automazioneTende.park_curtains()
-                        print (r)
-                        #if r == 1
+                        Logger.getLogger().info("tende in fase di chiusura")
+
                         if automazioneTende.park_tele():
-                            Logger.getLogger().info("passata al server")
+                            Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
                             steps = "R0000P"
                         else:
                             steps = "E0000P"

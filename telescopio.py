@@ -25,7 +25,7 @@ class Telescopio(BaseTelescopio):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.hostname, self.port))
             s.sendall(p.read().encode('utf-8'))
-            Logger.getLogger().info("inviato con sendall")
+            Logger.getLogger().info("Telescopio inviato alla posizione di park")
             #data = s.recv(1024)
             s.close()
             #return self.__parse_result__(data.decode("utf-8"))
@@ -44,4 +44,4 @@ class Telescopio(BaseTelescopio):
         return coords
 
 if __name__ == '__main__':
-    netcat("192.168.1.3", 3030, 'MountGetAltAzi.js', 'SetParkTel.js')
+    netcat("192.168.1.3", 3030, 'MountGetAltAzi.js', 'SetTelPark.js')

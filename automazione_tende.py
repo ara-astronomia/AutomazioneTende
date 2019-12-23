@@ -153,7 +153,7 @@ class AutomazioneTende:
         self.motor_control.go_in_closed_motor_w()
         self.encoder_west.listen_until(0)
         self.motor_control.stop_motor_w()
-
+        
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
