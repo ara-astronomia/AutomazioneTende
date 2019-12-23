@@ -3,14 +3,14 @@ from mock.encoder import Encoder
 
 class EncoderTest(unittest.TestCase):
     def test(self):
-            encoder = Encoder("E")
+            encoder = Encoder("E", 120)
             encoder.listen_until(5)
             self.assertEqual(encoder.current_step,5)
 
             encoder.listen_until(3)
             self.assertEqual(encoder.current_step,3)
 
-            encoder = Encoder("W")
+            encoder = Encoder("W", 120)
             encoder.listen_until(15)
             self.assertEqual(encoder.current_step,15)
 

@@ -1,46 +1,19 @@
 import config
-from time import sleep
-import time
-from logger import Logger
+from status import Status
 
-timeout = 5
+class RoofControl:
 
-def verify_closed_roof(): #simula la condizione del fine corsa di chiusura
-    status_c = 1
-    return status_c
+    def __init__(self, gpioconfig):
+        self.gpioconfig = gpioconfig
+        self.is_open = Status.CLOSED
 
-def verify_open_roof(): # simula la condizione del fine corsa di apertura
-    status_o = 0
-    return status_o
+    def open(self):
+        self.is_open = Status.OPEN
+        return self.is_open
 
-def open_roof():
-    try:
-        timeout_start = time.time()
-        while True:
-            time.sleep(1)
-            if (timeout_start + timeout) > time.time() > timeout_start :
-                status_roof = 'Tetto in fase di apertura'
-                #status_o = 2
-                Logger.getLogger().debug(status_roof)
-            elif time.time() > (timeout_start + timeout):
-                status_o = 0
-                return status_o
-    except:
-        return -1
+    def close(self):
+        self.is_open = Status.CLOSED
+        return self.is_open
 
-def closed_roof():
-    try:
-        timeout_start = time.time()
-        while True:
-            time.sleep(1)
-            if (timeout_start + timeout) > time.time() > timeout_start:
-                status_roof = 'Tetto in fase di chiusura'
-                #status_o = 2
-                Logger.getLogger().debug(status_roof)
-            elif time.time() > (timeout_start + timeout):
-                status_c = 1
-                return status_c
-    except:
-        return -1
-
-#open_roof()
+    def read(self):
+        return self.is_open

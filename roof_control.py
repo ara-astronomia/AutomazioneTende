@@ -1,34 +1,32 @@
 import config
-import RPi.GPIO as GPIO
 from time import sleep
+from status import Status
+from transition_error import TransitionError
+from gpio_pin import GPIOPin
+from base.singleton import Singleton
 
-GPIO.setmode(GPIO.BOARD)
-roof_verify_closed = config.Config.getValue("roof_verify_open", 'roof_board') # 11
-roof_verify_open = config.Config.getValue("roof_verify_open", 'roof_board') # 7
-roof_open = config.Config.getValue("roof_open", 'roof_board') # 7
-roof_closed = config.Config.getValue("roof_closed", 'roof_board') # 7
+class RoofControl(metaclass=Singleton):
 
-GPIO.setup(roof_verify_closed, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(roof_verify_open, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(roof_open,GPIO.OUT)
-GPIO.setup(roof_closed,GPIO.OUT)
+    def __init__(self, gpioconfig):
+        self.gpioconfig = gpioconfig
 
-def verify_closed_roof():
-    GPIO.wait_for_edge(roof_verify_closed, GPIO.FALLING) # verifica che lo stato del pin sia alto, e restituisce O quando questo cambia alla pressione dell'interruttore
-    status_c = 1
+    def open(self):
+        self.gpioconfig.turn_on(GPIOPin.SWITCH_ROOF)
+        return self.gpioconfig.wait_for_falling(GPIOPin.VERIFY_OPEN)
 
-def verify_open_roof():
-    GPIO.wait_for_edge(roof_verify_open, GPIO.FALLING) # verifica che lo stato del pin sia alto, e restituisce O quando questo cambia alla pressione dell'interruttore
-    status_o = 0
+    def close(self):
+        self.gpioconfig.turn_off(GPIOPin.SWITCH_ROOF)
+        return self.gpioconfig.wait_for_falling(GPIOPin.VERIFY_CLOSED)
 
-def open_roof():
-    GPIO.output(roof_open,GPIO.HIGH)
- """ da implementare le condizioni che generano gli status """
-    status_o = 1
-    status_c = 0
-
-def closed_roof():
-    GPIO.output(roof_closed,GPIO.LOW)
- """ da implementare le condizioni che generano gli status """
-    status_o = 0
-    status_c = 1
+    def read(self):
+        is_roof_closed = self.gpioconfig.status(GPIOPin.VERIFY_CLOSED)
+        is_roof_open = self.gpioconfig.status(GPIOPin.VERIFY_OPEN)
+        if is_roof_closed and is_roof_open:
+            raise TransitionError("""Roof state invalid - La chiusura del tetto è
+            in uno stato invalido""")
+        elif is_roof_closed:
+            return Status.CLOSED
+        elif is_roof_open:
+            return Status.OPEN
+        else:
+            return Status.TRANSIT
