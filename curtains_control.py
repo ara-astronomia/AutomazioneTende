@@ -1,15 +1,14 @@
-import config
-from time import sleep
 from status import CurtainStatus
 from transition_error import TransitionError
 from base.singleton import Singleton
 from gpio_pin import GPIOPin
 from logger import Logger
+from gpio_config import GPIOConfig
 
 class CurtainControl:
 
-    def __init__(self, gpioconfig):
-        self.gpioconfig = gpioconfig
+    def __init__(self):
+        self.gpioconfig = GPIOConfig()
 
     def open(self):
         self.gpioconfig.turn_on(self.pinA)
@@ -45,16 +44,16 @@ class CurtainControl:
 
 class EastCurtain(CurtainControl, metaclass=Singleton):
 
-    def __init__(self, gpioconfig):
-        super().__init__(gpioconfig)
+    def __init__(self):
+        super().__init__()
         self.pinA = GPIOPin.MOTORE_A
         self.pinB = GPIOPin.MOTORE_B
         self.pinE = GPIOPin.MOTORE_E
 
 class WestCurtain(CurtainControl, metaclass=Singleton):
 
-    def __init__(self, gpioconfig):
-        super().__init__(gpioconfig)
+    def __init__(self):
+        super().__init__()
         self.pinA = GPIOPin.MOTORW_A
         self.pinB = GPIOPin.MOTORW_B
         self.pinE = GPIOPin.MOTORW_E

@@ -3,8 +3,7 @@ from status import Status
 
 class RoofControl:
 
-    def __init__(self, gpioconfig):
-        self.gpioconfig = gpioconfig
+    def __init__(self):
         self.is_open = Status.CLOSED
 
     def open(self):

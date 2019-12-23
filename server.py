@@ -19,7 +19,7 @@ for opt, arg in opts:
         THESKY=True
 
 automazioneTende = AutomazioneTende(MOCK, THESKY)
-
+error_level = 0
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
@@ -68,7 +68,7 @@ try:
                         if r == -1:
                             steps = "E0000S"
                         else:
-                            steps = "{:0>3d}".format(automazioneTende.encoder_est.current_step)+"{:0>3d}".format(automazioneTende.encoder_west.current_step)
+                            steps = "{:0>3d}".format(automazioneTende.encoder_est.steps)+"{:0>3d}".format(automazioneTende.encoder_west.steps)
 
                     Logger.getLogger().debug("steps: "+steps)
 
@@ -89,7 +89,11 @@ try:
 
                     conn.sendall(steps.encode("UTF-8"))
 
+except (KeyboardInterrupt, SystemExit):
+    Logger.getLogger().info("Intercettato CTRL+C")
 except Exception as e:
-    Logger.getLogger().error("errore: "+str(e))
+    Logger.getLogger().error("altro errore: "+str(e))
+    error_level = -1
+    raise
 finally:
-    automazioneTende.exit_program()
+    automazioneTende.exit_program(error_level)

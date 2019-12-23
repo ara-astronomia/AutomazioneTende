@@ -4,8 +4,7 @@ from logger import Logger
 
 class CurtainControl:
 
-    def __init__(self, gpioconfig):
-        self.gpioconfig = gpioconfig
+    def __init__(self):
         self.is_open = CurtainStatus.STOPPED
 
     def open(self):
@@ -25,10 +24,10 @@ class CurtainControl:
 
 class EastCurtain(CurtainControl, metaclass=Singleton):
 
-    def __init__(self, gpioconfig):
-        super().__init__(gpioconfig)
+    def __init__(self):
+        super().__init__()
 
 class WestCurtain(CurtainControl, metaclass=Singleton):
 
-    def __init__(self, gpioconfig):
-        super().__init__(gpioconfig)
+    def __init__(self):
+        super().__init__()
