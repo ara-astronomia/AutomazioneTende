@@ -36,12 +36,8 @@ class AutomazioneTende:
         self.east_curtain = EastCurtain(self.gpioconfig)
 
         self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
-<<<<<<< HEAD
 
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
-=======
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'))
->>>>>>> master
         self.encoder_est = encoder.Encoder("E",self.n_step_corsa_tot)
         self.encoder_west = encoder.Encoder("W",self.n_step_corsa_tot)
 
@@ -185,13 +181,8 @@ class AutomazioneTende:
 
         self.west_curtain.stop()
         self.encoder_west.listen_until(0)
-<<<<<<< HEAD
-        self.motor_control.stop_motor_w()
-        
-=======
         self.west_curtain.stop()
 
->>>>>>> master
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
