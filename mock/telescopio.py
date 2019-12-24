@@ -19,7 +19,7 @@ class Telescopio(BaseTelescopio):
 
     def park_tele(self):
         pass
-
+        
     def __is_number__(self, s):
         try:
             float(s)

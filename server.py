@@ -1,6 +1,7 @@
 import socket, config, getopt, sys
 from automazione_tende import AutomazioneTende
 from logger import Logger
+import time
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
@@ -53,18 +54,19 @@ try:
                         else:
                             steps = "E00000"
 
-                    elif data == b'0':
-                        r = automazioneTende.park_curtains()
-                        Logger.getLogger().info("tende in fase di chiusura")
-
                     elif data == b'P':
+                        automazioneTende.started = False
+                        #r = automazioneTende.park_curtains()
+                        Logger.getLogger().info("tende in fase di chiusura")
+                        time.sleep(2)
+
                         if automazioneTende.park_tele():
                             Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
                             steps = "R0000P"
                         else:
                             steps = "E0000P"
 
-                    if data != b"R" and data != b"T" and data != b'P':
+                    if data != b"R" and data != b"T":
                         r = automazioneTende.exec()
                         if r == -1:
                             steps = "E0000S"

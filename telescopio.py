@@ -11,6 +11,7 @@ class Telescopio(BaseTelescopio):
         self.script_park = script_park
 
     def coords(self):
+        Logger.getLogger().info("leggo le coord")
         with open(self.script, 'r') as f:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.hostname, self.port))
@@ -26,9 +27,9 @@ class Telescopio(BaseTelescopio):
             s.connect((self.hostname, self.port))
             s.sendall(p.read().encode('utf-8'))
             Logger.getLogger().info("Telescopio inviato alla posizione di park")
-            #data = s.recv(1024)
             s.close()
-            #return self.__parse_result__(data.decode("utf-8"))
+            #self.coords()
+
 
 
     def __parse_result__(self,data):
