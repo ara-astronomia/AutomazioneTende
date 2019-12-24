@@ -56,14 +56,12 @@ class AutomazioneTende:
 
     def park_tele(self):
         """ manda il tele alle coordinate AltAz di parking"""
-        Logger.getLogger().info("metodo park_tele in Automazione")
         try:
             park_tele = self.telescopio.park_tele()
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
         #if (coord['az']) == 0 and (coord['alt']) == 0:
         #    Logger.getLogger().error("posizione di park raggiunta")
-        return True
 
     def read_altaz_mount_coordinate(self):
 

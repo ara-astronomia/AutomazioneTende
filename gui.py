@@ -14,6 +14,7 @@ class Gui:
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
+        self.status_tele = ""
 
         self.l=400
         self.t=self.l/4.25
@@ -35,6 +36,8 @@ class Gui:
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
+                 [sg.Text('stato del telescopio', size=(28, 1), justification='center', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
+                 sg.InputText('in attesa' , size=(10, 1), justification='center', font=("Arial", 8),  key ='status-tele')],
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
 
@@ -109,6 +112,13 @@ class Gui:
         #canvas = self.win.FindElement('canvas')
         #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
         return status_roof
+
+    def update_status_tele(self,status_tele):
+        """Update stato del telescopio"""
+        Logger.getLogger().info('update_status_tele in gui')
+        new_status_tele = (status_tele) #legge lo status tele in automazioneTende
+        self.win.FindElement('status-tele').Update(new_status_tele)
+        return
 
     def update_curtains_text(self, e_e, e_w):
 
