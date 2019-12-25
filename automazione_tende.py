@@ -62,6 +62,7 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
         #if (coord['az']) == 0 and (coord['alt']) == 0:
         #    Logger.getLogger().error("posizione di park raggiunta")
+        return True
 
     def read_altaz_mount_coordinate(self):
 
@@ -191,5 +192,5 @@ class AutomazioneTende:
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
-#        time.sleep(config.Config.getFloat("sleep"))
+        time.sleep(config.Config.getFloat("sleep"))
         return 1
