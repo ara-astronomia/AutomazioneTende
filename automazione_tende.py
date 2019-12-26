@@ -69,14 +69,17 @@ class AutomazioneTende:
         """Leggi le coordinate della montatura"""
         try:
             coords = self.telescopio.coords()
+            Logger.getLogger().debug("Telescopio")
+            Logger.getLogger().debug("Telescopio: "+str(coords))
+            if "error" in coords:
+                Logger.getLogger().debug("Errore Telescopio: "+str(coords['error']))
+            else:
+                Logger.getLogger().debug("Altezza Telescopio: "+str(coords['alt']))
+                Logger.getLogger().debug("Azimut Telescopio: "+str(coords['az']))
+            return coords
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
-            coords = {"alt": 0, "az": 0}
-
-        Logger.getLogger().debug("Altezza Telescopio: "+str(coords['alt']))
-        Logger.getLogger().debug("Azimut Telescopio: "+str(coords['az']))
-        print (str(coords['az']))
-        return coords
+            raise
 
     def read_curtains_height(self):
 
@@ -144,6 +147,7 @@ class AutomazioneTende:
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
     def open_roof(self):
+        self.telescopio.open_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().info("Lo status è " + str(status_roof))
         self.roof = True
@@ -153,6 +157,7 @@ class AutomazioneTende:
             return Status.OPEN
 
     def close_roof(self):
+        self.telescopio.close_connection()
         status_roof = self.roof_control.read()
         if status_roof == Status.OPEN:
             self.roof = False
@@ -167,6 +172,7 @@ class AutomazioneTende:
     def exit_program(self,n=0):
         from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
+        self.telescopio.close_connection()
         GPIOConfig().cleanup(n)
 
     def run(self):
@@ -184,7 +190,9 @@ class AutomazioneTende:
             return 0
         if not self.roof:
             return -1
-        self.coord = self.read_altaz_mount_coordinate()
+        current_coord = self.read_altaz_mount_coordinate()
+        if "error" not in current_coord:
+            self.coord = current_coord
         Logger.getLogger().debug(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord):
             self.prevCoord = self.coord
@@ -192,5 +200,5 @@ class AutomazioneTende:
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
-        time.sleep(config.Config.getFloat("sleep"))
+        time.sleep(config.Config.getFloat("sleep", "automazione"))
         return 1

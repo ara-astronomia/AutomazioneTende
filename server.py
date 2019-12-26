@@ -56,8 +56,8 @@ try:
 
                     elif data == b'P':
                         automazioneTende.started = False
+                        Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
                         if automazioneTende.park_tele():
-                            Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
                             steps = "R0000P"
                         else:
                             steps = "E0000P"

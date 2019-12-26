@@ -6,6 +6,9 @@ class Telescopio(BaseTelescopio):
     def __init__(self,hostname, port, script,script_park):
         pass
 
+    def open_connection(self):
+        pass
+
     def coords(self):
         alt = input("Inserisci l'altezza del telescopio: ")
         az = input("Inserisci l'azimut del telescopio: ")
@@ -19,7 +22,7 @@ class Telescopio(BaseTelescopio):
 
     def park_tele(self):
         pass
-        
+
     def __is_number__(self, s):
         try:
             float(s)
@@ -36,6 +39,8 @@ class Telescopio(BaseTelescopio):
 
         return False
 
+        def close_connection(self):
+            pass
 
 if __name__ == '__main__':
     netcat("192.168.0.9", 3040, 'MountGetAltAzi.js', 'SetTelPark.js')
