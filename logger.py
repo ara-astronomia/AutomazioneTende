@@ -1,9 +1,9 @@
 import logging.handlers
 from config import Config
 import os
+from base.singleton import Singleton
 
-class Logger:
-    logger = None
+class Logger(metaclass=Singleton):
 
     def __init__(self, dir_path=os.path.dirname(os.path.realpath(__file__))+os.path.sep):
         formatter = logging.Formatter('%(levelname)s %(asctime)s file %(filename)s linea %(lineno)d %(message)s')
@@ -23,10 +23,8 @@ class Logger:
         self.file_logger.setLevel(int(Config.getValue("loggingLevel")))
         self.file_logger.addHandler(ch)
         self.file_logger.addHandler(fh)
-        Logger.logger = self
 
     @staticmethod
     def getLogger():
-        if Logger.logger is None:
-            Logger.logger = Logger()
-        return Logger.logger.file_logger
+        logger = Logger()
+        return logger.file_logger
