@@ -175,14 +175,6 @@ class AutomazioneTende:
         self.telescopio.close_connection()
         GPIOConfig().cleanup(n)
 
-    def run(self):
-        self.started = True
-        self.coord = self.park_curtains()
-        self.prevCoord = self.coord
-        while True:
-            if not self.exec():
-                break
-
     def exec(self):
         if not self.started:
             self.coord = self.park_curtains()
