@@ -39,8 +39,8 @@ class Telescopio(BaseTelescopio):
 
         return False
 
-        def close_connection(self):
-            pass
+    def close_connection(self):
+        pass
 
 if __name__ == '__main__':
     netcat("192.168.0.9", 3040, 'MountGetAltAzi.js', 'SetTelPark.js')
