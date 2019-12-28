@@ -43,20 +43,21 @@ try:
 
                     elif data == b'R':
                         if automazioneTende.open_roof():
-                            Logger.getLogger().info("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                            Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                             steps = "R00001"
                         else:
                             steps = "E00001"
 
                     elif data == b'T':
                         if automazioneTende.close_roof():
+                            Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
                             steps = "R00000"
                         else:
                             steps = "E00000"
 
                     elif data == b'P':
                         automazioneTende.started = False
-                        Logger.getLogger().info("chiamata al metodo telescopio.park_tele")
+                        Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
                         if automazioneTende.park_tele():
                             steps = "R0000P"
                         else:

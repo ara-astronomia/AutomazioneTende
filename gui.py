@@ -27,11 +27,10 @@ class Gui:
 
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
-
                  [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
-                 [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
+                 [sg.InputText('Tetto Chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
                  [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],

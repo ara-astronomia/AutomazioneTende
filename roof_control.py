@@ -22,12 +22,16 @@ class RoofControl(metaclass=Singleton):
     def read(self):
         is_roof_closed = self.gpioconfig.status(GPIOPin.VERIFY_CLOSED)
         is_roof_open = self.gpioconfig.status(GPIOPin.VERIFY_OPEN)
+        is_switched_on = self.gpioconfig.status(GPIOPin.SWITCH_ROOF)
+
         if is_roof_closed and is_roof_open:
             raise TransitionError("""Roof state invalid - La chiusura del tetto è
             in uno stato invalido""")
-        elif is_roof_closed:
+        elif is_roof_closed and not is_switched_on:
             return Status.CLOSED
-        elif is_roof_open:
+        elif is_roof_open and is_switched_on:
             return Status.OPEN
+        elif is_switched_on:
+            return Status.OPENING
         else:
-            return Status.TRANSIT
+            return Status.CLOSING
