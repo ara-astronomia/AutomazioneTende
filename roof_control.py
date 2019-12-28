@@ -27,9 +27,9 @@ class RoofControl(metaclass=Singleton):
         if is_roof_closed and is_roof_open:
             raise TransitionError("""Roof state invalid - La chiusura del tetto è
             in uno stato invalido""")
-        elif is_roof_closed:
+        elif is_roof_closed and not is_switched_on:
             return Status.CLOSED
-        elif is_roof_open:
+        elif is_roof_open and is_switched_on:
             return Status.OPEN
         elif is_switched_on:
             return Status.OPENING
