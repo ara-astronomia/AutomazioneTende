@@ -57,7 +57,6 @@ def connection(error, roof, curtains):
                 curtains = False
                 g_ui.closed_roof("Tetto Chiuso")
                 roof = False
-#                s.shutdown(socket.SHUT_RDWR)
                 s.close()
                 return "E", None
             elif ev1 == "roof_sim":

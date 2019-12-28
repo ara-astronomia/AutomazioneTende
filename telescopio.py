@@ -53,7 +53,6 @@ class Telescopio(BaseTelescopio):
 
     def close_connection(self):
         if self.connected:
-#            self.s.shutdown(socket.SHUT_RDWR)
             self.s.close()
             self.connected = False
 
