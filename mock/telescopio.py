@@ -3,7 +3,10 @@ from base.base_telescopio import BaseTelescopio
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self,hostname, port, script):
+    def __init__(self,hostname, port, script,script_park):
+        pass
+
+    def open_connection(self):
         pass
 
     def coords(self):
@@ -16,6 +19,9 @@ class Telescopio(BaseTelescopio):
             print("Inserire un numero compreso tra 0 e 360 per l'azimut")
             return self.coords()
         return {'alt': int(alt), 'az': int(az)}
+
+    def park_tele(self):
+        pass
 
     def __is_number__(self, s):
         try:
@@ -33,6 +39,5 @@ class Telescopio(BaseTelescopio):
 
         return False
 
-
-if __name__ == '__main__':
-    netcat("192.168.0.9", 3040, 'MountGetAltAzi.js')
+    def close_connection(self):
+        pass

@@ -14,6 +14,7 @@ class Gui:
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
+        self.status_tele = ""
 
         self.l=400
         self.t=self.l/4.25
@@ -21,12 +22,13 @@ class Gui:
         self.h=int(self.l/1.8) # int((l/3)*2)
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         sg.ChangeLookAndFeel('GreenTan')
+
         # Design pattern 1 - First window does not remain active
 
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
 
-                 [sg.Text('Controllo movimento tende ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
+                 [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
                  [sg.InputText('Stato del tetto',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
@@ -35,10 +37,12 @@ class Gui:
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
-                 [sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
+                 [sg.Text('stato del CRaC', size=(28, 1), justification='center', font=("Arial",8, "bold"), relief=sg.RELIEF_RIDGE),
+                 sg.InputText('in attesa' , size=(10, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
+                 [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
 
-        self.win = sg.Window('Controllo tende Osservatorio', grab_anywhere=False).Layout(layout)
+        self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', grab_anywhere=False).Layout(layout)
 
 
     def base_draw(self):
@@ -109,6 +113,19 @@ class Gui:
         #canvas = self.win.FindElement('canvas')
         #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
         return status_roof
+
+    def update_status_tele(self,status_tele):
+        """Update stato del telescopio"""
+        Logger.getLogger().info('update_status_tele in gui')
+        new_status_tele = (status_tele) #legge lo status tele in automazioneTende
+
+        if new_status_tele == "park":
+            font ="Arial, 10 ,bold, red"
+            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "red")
+        if new_status_tele == "tracking":
+            Logger.getLogger().info("cambio il format del font")
+            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "green")
+        return
 
     def update_curtains_text(self, e_e, e_w):
 
