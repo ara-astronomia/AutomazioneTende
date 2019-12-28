@@ -27,3 +27,15 @@ class TelescopeTest(unittest.TestCase):
     def test_park_tele(self):
         self.telescopio.open_connection()
         self.telescopio.park_tele()
+
+    def test_parse_result_success(self):
+        data = b'{"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")
+        self.assertEqual({"az":95,"alt":62}, self.telescopio.__parse_result__(data))
+
+    def test_parse_result_undefined(self):
+        data = b'{undefined|No error. Error = 0.'.decode("utf-8")
+        self.assertEqual({"error": True}, self.telescopio.__parse_result__(data))
+
+    def test_parse_result_error(self):
+        data = b'{undefined|Error = 1.'.decode("utf-8")
+        self.assertEqual({"error": True}, self.telescopio.__parse_result__(data))

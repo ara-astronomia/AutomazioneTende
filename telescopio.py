@@ -46,8 +46,8 @@ class Telescopio(BaseTelescopio):
             jsonStringEnd = data.find("|")
             jsonString = data[:jsonStringEnd]
             coords = json.loads(jsonString)
-            coords["alt"] = int(coords["alt"])
-            coords["az"] = int(coords["az"])
+            coords["alt"] = int(round(coords["alt"]))
+            coords["az"] = int(round(coords["az"]))
         Logger.getLogger().debug("Coords Telescopio: "+str(coords))
         return coords
 
