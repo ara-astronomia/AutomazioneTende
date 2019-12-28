@@ -1,7 +1,8 @@
 import config
 from status import Status
+from base.singleton import Singleton
 
-class RoofControl:
+class RoofControl(metaclass=Singleton):
 
     def __init__(self):
         self.is_open = Status.CLOSED

@@ -35,7 +35,6 @@ class AutomazioneTende:
         self.encoder_west = WestEncoder()
 
         self.started = False
-        self.roof = False
         self.prevCoord = { 'alt': 0, 'az': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
@@ -149,25 +148,22 @@ class AutomazioneTende:
     def open_roof(self):
         self.telescopio.open_connection()
         status_roof = self.roof_control.read()
-        Logger.getLogger().info("Lo status è " + str(status_roof))
-        self.roof = True
+        Logger.getLogger().info("Lo status tetto iniziale: %s ", str(status_roof))
         if status_roof != Status.OPEN:
-            return self.roof_control.open()
-        else:
-            return Status.OPEN
+            self.roof_control.open()
+            status_roof = self.roof_control.read()
+        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
+        return status_roof == Status.OPEN
 
     def close_roof(self):
         self.telescopio.close_connection()
         status_roof = self.roof_control.read()
-        if status_roof == Status.OPEN:
-            self.roof = False
-            return self.roof_control.close()
-        elif status_roof == Status.TRANSIT:
-            # capire che succede
-            pass
-        else:
-            # già aperto
-            pass
+        Logger.getLogger().debug("Stato tetto iniziale: %s", str(status_roof))
+        if status_roof != Status.CLOSED:
+            self.roof_control.close()
+            status_roof = self.roof_control.read()
+        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
+        return status_roof == Status.CLOSED
 
     def exit_program(self,n=0):
         from gpio_config import GPIOConfig
@@ -180,7 +176,8 @@ class AutomazioneTende:
             self.coord = self.park_curtains()
             self.prevCoord = self.coord
             return 0
-        if not self.roof:
+        if self.roof_control.read() != Status.OPEN:
+            Logger.getLogger().error("TETTO CHIUSO")
             return -1
         current_coord = self.read_altaz_mount_coordinate()
         if "error" not in current_coord:

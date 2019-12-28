@@ -4,7 +4,8 @@ class Status(IntEnum):
 
     OPEN = 1
     CLOSED = 2
-    TRANSIT = 3
+    OPENING = 3
+    CLOSING = 4
 
 class CurtainStatus(IntEnum):
 
