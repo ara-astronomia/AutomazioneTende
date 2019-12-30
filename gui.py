@@ -23,8 +23,6 @@ class Gui:
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         sg.ChangeLookAndFeel('GreenTan')
 
-        # Design pattern 1 - First window does not remain active
-
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
                  [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
@@ -40,9 +38,23 @@ class Gui:
                  sg.InputText('in attesa' , size=(10, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
+        self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
 
-        self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', grab_anywhere=False).Layout(layout)
-
+        canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
+        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
+        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
+        p3 = self.l/2, 1.2*(self.h/2)
+        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
+        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
+        p6 = 1,self.h
+        p7 = self.l-1,self.h
+        p8 = self.l-1,(self.h/11)*8
+        p9 = self.l/2, (self.h/11)*4.5
+        p10 = 1, (self.h/11)*8
+        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
+        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
+        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
 
     def base_draw(self):
         p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
@@ -92,26 +104,6 @@ class Gui:
         status = status_roof
         Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
-
-        canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
-        #canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
-        #canvas = self.win.FindElement('canvas')
-        #canvas.TKCanvas.create_rectangle(0,0,self.l,self.h, fill='#045FB4')
-        return status_roof
 
     def update_status_tele(self,status_tele):
         """Update stato del telescopio"""
