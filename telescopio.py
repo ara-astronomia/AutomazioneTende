@@ -4,7 +4,7 @@ from logger import Logger
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self,hostname, port, script, script_park):
+    def __init__(self, hostname, port, script, script_park):
         self.hostname = hostname
         self.port = port
         self.script = script
@@ -12,9 +12,10 @@ class Telescopio(BaseTelescopio):
         self.connected = False
 
     def open_connection(self):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((self.hostname, self.port))
-        self.connected = True
+        if not self.connected:
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s.connect((self.hostname, self.port))
+            self.connected = True
 
     def coords(self):
         Logger.getLogger().info("Leggo le coordinate")
@@ -36,7 +37,7 @@ class Telescopio(BaseTelescopio):
             Logger.getLogger().info(data)
             return data
 
-    def __parse_result__(self,data):
+    def __parse_result__(self, data):
         error = data.find("No error") == -1 or data.find('undefined') > -1
         Logger.getLogger().debug("Errore Telescopio: "+str(error))
         if error:

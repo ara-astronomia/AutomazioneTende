@@ -3,11 +3,11 @@ from base.base_telescopio import BaseTelescopio
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self,hostname, port, script,script_park):
-        pass
+    def __init__(self, hostname, port, script,script_park):
+        self.connected = False
 
     def open_connection(self):
-        pass
+        self.connected = True
 
     def coords(self):
         alt = input("Inserisci l'altezza del telescopio: ")
@@ -40,4 +40,4 @@ class Telescopio(BaseTelescopio):
         return False
 
     def close_connection(self):
-        pass
+        self.connected = False
