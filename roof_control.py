@@ -1,6 +1,6 @@
 import config
 from time import sleep
-from status import Status
+from status import RoofStatus
 from transition_error import TransitionError
 from gpio_pin import GPIOPin
 from base.singleton import Singleton
@@ -28,10 +28,10 @@ class RoofControl(metaclass=Singleton):
             raise TransitionError("""Roof state invalid - La chiusura del tetto è
             in uno stato invalido""")
         elif is_roof_closed and not is_switched_on:
-            return Status.CLOSED
+            return RoofStatus.CLOSED
         elif is_roof_open and is_switched_on:
-            return Status.OPEN
+            return RoofStatus.OPEN
         elif is_switched_on:
-            return Status.OPENING
+            return RoofStatus.OPENING
         else:
-            return Status.CLOSING
+            return RoofStatus.CLOSING

@@ -1,6 +1,6 @@
 import time, config
 from logger import Logger
-from status import Status
+from status import RoofStatus, Status
 
 class AutomazioneTende:
 #(Thread):
@@ -34,7 +34,7 @@ class AutomazioneTende:
         self.encoder_est = EastEncoder()
         self.encoder_west = WestEncoder()
 
-        self.started = False
+        self.status = Status.ROOF_CLOSED
         self.prevCoord = { 'alt': 0, 'az': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
@@ -54,14 +54,19 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
 
     def park_tele(self):
+
         """ manda il tele alle coordinate AltAz di parking"""
-        try:
-            park_tele = self.telescopio.park_tele()
-        except ConnectionRefusedError:
-            Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
-        #if (coord['az']) == 0 and (coord['alt']) == 0:
-        #    Logger.getLogger().error("posizione di park raggiunta")
-        return True
+
+        if self.check_status(Status.TELESCOPE_PARKED) and status_roof != RoofStatus.CLOSED:
+            try:
+                park_tele = self.telescopio.park_tele()
+            except ConnectionRefusedError:
+                Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
+            #if (coord['az']) == 0 and (coord['alt']) == 0:
+            #    Logger.getLogger().error("posizione di park raggiunta")
+            self.status = Status.TELESCOPE_PARKED
+            return True
+        return False
 
     def read_altaz_mount_coordinate(self):
 
@@ -130,8 +135,10 @@ class AutomazioneTende:
 
         """Metti a zero l'altezza delle tende"""
 
-        self.encoder_est.move(0)
-        self.encoder_west.move(0)
+        if self.check_status(Status.CURTAINS_OPEN):
+            self.encoder_est.move(0)
+            self.encoder_west.move(0)
+            self.status = Status.CURTAINS_CLOSED
 
         return { 'alt': 0, 'az': 0 }
 
@@ -149,21 +156,27 @@ class AutomazioneTende:
         self.telescopio.open_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().info("Lo status tetto iniziale: %s ", str(status_roof))
-        if status_roof != Status.OPEN:
+        if self.check_status(Status.TELESCOPE_PARKED) and status_roof != RoofStatus.OPEN:
             self.roof_control.open()
             status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
-        return status_roof == Status.OPEN
+        is_open = (status_roof == RoofStatus.OPEN)
+        if is_open:
+            self.status = Status.TELESCOPE_PARKED
+        return is_open
 
     def close_roof(self):
         self.telescopio.close_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto iniziale: %s", str(status_roof))
-        if status_roof != Status.CLOSED:
+        if self.check_status(Status.ROOF_CLOSED) and status_roof != RoofStatus.CLOSED:
             self.roof_control.close()
             status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
-        return status_roof == Status.CLOSED
+        is_closed = (status_roof == RoofStatus.CLOSED)
+        if is_closed:
+            self.status = Status.ROOF_CLOSED
+        return is_closed
 
     def exit_program(self,n=0):
         from gpio_config import GPIOConfig
@@ -171,14 +184,17 @@ class AutomazioneTende:
         self.telescopio.close_connection()
         GPIOConfig().cleanup(n)
 
+    def check_status(self, new_status, bypass=False):
+        return new_status == self.status - 1 or new_status == self.status + 1 or bypass
+
     def exec(self):
-        if not self.started:
-            self.coord = self.park_curtains()
-            self.prevCoord = self.coord
-            return 0
-        if self.roof_control.read() != Status.OPEN:
-            Logger.getLogger().error("TETTO CHIUSO")
-            return -1
+        # if self.status < Status.CURTAINS_OPEN:
+        #     self.coord = self.park_curtains()
+        #     self.prevCoord = self.coord
+        #     return 0
+        # if self.roof_control.read() != RoofStatus.OPEN:
+        #     Logger.getLogger().error("TETTO CHIUSO")
+        #     return -1
         current_coord = self.read_altaz_mount_coordinate()
         if "error" not in current_coord:
             self.coord = current_coord
@@ -189,5 +205,9 @@ class AutomazioneTende:
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
+        if self.encoder_est.steps == 0 and self.encoder_west.steps == 0:
+            self.status = Status.CURTAINS_CLOSED
+        else:
+            self.status = Status.CURTAINS_OPEN
         time.sleep(config.Config.getFloat("sleep", "automazione"))
         return 1

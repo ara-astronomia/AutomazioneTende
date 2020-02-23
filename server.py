@@ -2,6 +2,7 @@ import socket, config, getopt, sys
 from automazione_tende import AutomazioneTende
 from logger import Logger
 import time
+from status import Status
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
@@ -31,39 +32,45 @@ try:
             with conn:
                 while True:
                     data = conn.recv(1)
-                    if not data or (data == b"0" or data == b'E') and automazioneTende.started:
-                        automazioneTende.started = False
+                    # if not data or (data == b"0" or data == b'E') and automazioneTende.started:
+                    #     automazioneTende.started = False
+                    #
+                    # elif data == b"1" and not automazioneTende.started:
+                    #     automazioneTende.started = True
+                    #
+                    # elif data == b'-':
+                    #     if automazioneTende.started:
+                    #         automazioneTende.started = False
 
-                    elif data == b"1" and not automazioneTende.started:
-                        automazioneTende.started = True
-
-                    elif data == b'-':
-                        if automazioneTende.started:
-                            automazioneTende.started = False
-
-                    elif data == b'R':
-                        if automazioneTende.open_roof():
+                    if data == b'R':
+                        if automazioneTende.status is Status.ROOF_CLOSED and automazioneTende.open_roof():
                             Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                             steps = "R00001"
                         else:
                             steps = "E00001"
 
                     elif data == b'T':
-                        if automazioneTende.close_roof():
-                            Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
+                        if automazioneTende.status is Status.TELESCOPE_PARKED and automazioneTende.close_roof():
+                            Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.close_roof) ")
                             steps = "R00000"
                         else:
                             steps = "E00000"
 
                     elif data == b'P':
-                        automazioneTende.started = False
-                        Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
-                        if automazioneTende.park_tele():
-                            steps = "R0000P"
+                        if automazioneTende.status is Status.CURTAINS_CLOSED and automazioneTende.park_tele():
+                            Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
+                            steps = "R000PT"
                         else:
-                            steps = "E0000P"
+                            steps = "E000PT"
 
-                    if data != b"R" and data != b"T" and data != b'P':
+                    elif data == b'0':
+                        if automazioneTende.status is Status.CURTAINS_OPEN and automazioneTende.park_curtains():
+                            Logger.getLogger().debug("chiamata al metodo telescopio.park_curtains")
+                            steps = "R000PC"
+                        else:
+                            steps = "E000PC"
+
+                    if data != b"R" and data != b"T" and data != b'P' and data != b'0' and automazioneTende.status is Status.CURTAINS_OPEN:
                         r = automazioneTende.exec()
                         if r == -1:
                             steps = "E0000S"

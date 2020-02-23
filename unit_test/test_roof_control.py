@@ -4,7 +4,7 @@ from transition_error import TransitionError
 from roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from status import Status
+from status import RoofStatus
 
 class RoofControlTest(unittest.TestCase):
     def setUp(self):
@@ -29,21 +29,21 @@ class RoofControlTest(unittest.TestCase):
         side_effect = lambda value: True if value == GPIOPin.VERIFY_CLOSED else False
         status = MagicMock(side_effect=side_effect)
         GPIOConfig.status = status
-        self.assertEqual(Status.CLOSED, self.roofControl.read())
+        self.assertEqual(RoofStatus.CLOSED, self.roofControl.read())
 
     def test_is_roof_open(self):
         side_effect = lambda value: False if value == GPIOPin.VERIFY_CLOSED else True
         status = MagicMock(side_effect=side_effect)
         GPIOConfig.status = status
-        self.assertEqual(Status.OPEN, self.roofControl.read())
+        self.assertEqual(RoofStatus.OPEN, self.roofControl.read())
 
     def test_is_roof_in_opening(self):
         side_effect = lambda value: True if value == GPIOPin.SWITCH_ROOF else False
         status = MagicMock(side_effect=side_effect)
         GPIOConfig.status = status
-        self.assertEqual(Status.OPENING, self.roofControl.read())
+        self.assertEqual(RoofStatus.OPENING, self.roofControl.read())
 
     def test_is_roof_in_closing(self):
         status = MagicMock(return_value=False)
         GPIOConfig.status = status
-        self.assertEqual(Status.CLOSING, self.roofControl.read())
+        self.assertEqual(RoofStatus.CLOSING, self.roofControl.read())

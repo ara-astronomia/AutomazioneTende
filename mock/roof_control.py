@@ -1,18 +1,18 @@
 import config
-from status import Status
+from status import RoofStatus
 from base.singleton import Singleton
 
 class RoofControl(metaclass=Singleton):
 
     def __init__(self):
-        self.is_open = Status.CLOSED
+        self.is_open = RoofStatus.CLOSED
 
     def open(self):
-        self.is_open = Status.OPEN
+        self.is_open = RoofStatus.OPEN
         return self.is_open
 
     def close(self):
-        self.is_open = Status.CLOSED
+        self.is_open = RoofStatus.CLOSED
         return self.is_open
 
     def read(self):
