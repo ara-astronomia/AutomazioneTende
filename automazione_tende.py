@@ -97,7 +97,7 @@ class AutomazioneTende:
             #   muovi entrambe le tendine a 0
             self.park_curtains()
             # else if superiore a est_max_height e ovest_max_height
-        elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > (coord['az']) or (coord['az']) > self.azimut_nw or self.azimut_sw > (coord['az']) > self.azimut_se:
+        elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > coord['az'] or coord['az'] > self.azimut_nw or self.azimut_sw > coord['az'] > self.azimut_se:
             #   entrambe le tendine completamente alzate
             self.open_all_curtains()
 
