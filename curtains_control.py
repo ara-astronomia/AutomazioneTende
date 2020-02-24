@@ -42,6 +42,26 @@ class CurtainControl:
             raise TransitionError("""Curtain state invalid - La tenda è
             in uno stato invalido""")
 
+        is_curtain_W_closed = self.gpioconfig.status(GPIOPin.CURTAINS_VERIFY_CLOSED_W)
+        is_curtain_W_open = self.gpioconfig.status(GPIOPin.CURTAINS_VERIFY_OPEN_W)
+        is_curtain_E_closed = self.gpioconfig.status(GPIOPin.CURTAINS_VERIFY_CLOSED_E)
+        is_curtain_E_open = self.gpioconfig.status(GPIOPin.CURTAINS_VERIFY_OPEN_E)
+
+
+        if is_curtain_W_closed and is_curtain_W_open:
+            raise TransitionError("""Curtain W state invalid - La Tenda West è in uno stato invalido""")
+        if is_curtain_E_closed and is_curtain_E_open:
+            raise TransitionError("""Curtain W state invalid - La Tenda Est è in uno stato invalido""")
+
+        elif is_curtain_W_closed:
+            return CurtainStatus.W_CLOSED
+        elif is_curtain_W_open:
+            return CurtainStatus.W_OPEN
+        elif is_curtain_E_closed:
+            return CurtainStatus.E_CLOSED
+        elif is_curtain_E_open:
+            return CurtainStatus.E_OPEN
+
 class EastCurtain(CurtainControl, metaclass=Singleton):
 
     def __init__(self):
