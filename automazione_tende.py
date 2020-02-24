@@ -97,12 +97,12 @@ class AutomazioneTende:
             #   muovi entrambe le tendine a 0
             self.park_curtains()
             # else if superiore a est_max_height e ovest_max_height
-        elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w:
+        elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > (coord['az']) or (coord['az']) > self.azimut_nw or self.azimut_sw > (coord['az']) > self.azimut_se:
             #   entrambe le tendine completamente alzate
             self.open_all_curtains()
-            # else if superiore a est_min_height e azimut del tele a ovest
-        elif self.azimut_ne > (coord['az']) > 0 or self.azimut_sw > (coord['az']) > self.azimut_se or 360 > (coord['az']) > self.azimut_nw or ((coord['alt']) > self.alt_max_tend_e and (coord['alt']) > self.alt_max_tend_w):
-            self.open_all_curtains()
+
+#VALUTARE SE LE CONDIZIONI SEGUENTI SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
+
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
             self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
@@ -128,15 +128,16 @@ class AutomazioneTende:
                 self.encoder_est.move(step_e) # controllo condizione encoder
 
     def park_curtains(self):
-
-        """Metti a zero l'altezza delle tende"""
-
+        """"Metti a zero l'altezza delle tende"""
+        #VALUTARE SE QUESTA CONDIZIONE SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
         self.encoder_est.move(0)
         self.encoder_west.move(0)
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
+        """apri completamente entrambe le tende"""
+        #VALUTARE SE QUESTA CONDIZIONE SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
         self.encoder_west.move(self.n_step_corsa_tot) # controllo condizione encoder
         self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
 
