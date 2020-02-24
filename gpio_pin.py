@@ -3,10 +3,16 @@ from config import Config
 import RPi.GPIO as GPIO
 
 class GPIOPin(Enum):
-
+    #impostazione gpio switch e comando tetto
     VERIFY_CLOSED = (Config.getValue("roof_verify_closed", "roof_board"), GPIO.OUT)
     VERIFY_OPEN = (Config.getValue("roof_verify_open", "roof_board"), GPIO.IN, GPIO.PUD_UP)
     SWITCH_ROOF = (Config.getValue("switch_roof", "roof_board"), GPIO.IN, GPIO.PUD_UP)
+
+    #impostazione gpio switch fine_corsa tende
+    CURTAINS_VERIFY_OPEN_W = (Config.getValue("curtains_verify_open_W", "fine_corsa_curtains"), GPIO.IN, GPIO.PUD_UP)
+    CURTAINS_VERIFY_CLOSED_W = (Config.getValue("curtains_verify_closed_W", "fine_corsa_curtains"), GPIO.OUT)
+    CURTAINS_VERIFY_OPEN_E = (Config.getValue("curtains_verify_open_E", "fine_corsa_curtains"), GPIO.IN, GPIO.PUD_UP)
+    CURTAINS_VERIFY_CLOSED_E = (Config.getValue("curtains_verify_closed_E", "fine_corsa_curtains"), GPIO.OUT)
 
     MOTORE_A = (Config.getValue("motorE_A", "motor_board"), GPIO.OUT)
     MOTORE_B = (Config.getValue("motorE_B", "motor_board"), GPIO.OUT)
