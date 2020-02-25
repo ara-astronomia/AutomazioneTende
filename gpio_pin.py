@@ -9,10 +9,10 @@ class GPIOPin(Enum):
     SWITCH_ROOF = (Config.getValue("switch_roof", "roof_board"), GPIO.IN, GPIO.PUD_UP)
 
     #impostazione gpio switch fine_corsa tende
-    CURTAINS_VERIFY_OPEN_W = (Config.getValue("curtains_verify_open_W", "fine_corsa_curtains"), GPIO.IN, GPIO.PUD_UP)
-    CURTAINS_VERIFY_CLOSED_W = (Config.getValue("curtains_verify_closed_W", "fine_corsa_curtains"), GPIO.OUT)
-    CURTAINS_VERIFY_OPEN_E = (Config.getValue("curtains_verify_open_E", "fine_corsa_curtains"), GPIO.IN, GPIO.PUD_UP)
-    CURTAINS_VERIFY_CLOSED_E = (Config.getValue("curtains_verify_closed_E", "fine_corsa_curtains"), GPIO.OUT)
+    CURTAIN_W_VERIFY_OPEN = (Config.getValue("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_W_VERIFY_CLOSED= (Config.getValue("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.OUT)
+    CURTAIN_E_VERIFY_OPEN = (Config.getValue("curtain_E_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_E_VERIFY_CLOSED = (Config.getValue("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.OUT)
 
     MOTORE_A = (Config.getValue("motorE_A", "motor_board"), GPIO.OUT)
     MOTORE_B = (Config.getValue("motorE_B", "motor_board"), GPIO.OUT)
