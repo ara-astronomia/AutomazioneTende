@@ -25,4 +25,7 @@ python server.py -s
 ## Of course you can use both hardware mock and theSkyX
 python server.py -m -s
 
+## Run the client ##
+python client.py
+
 **flag -t is to be deprecated**
