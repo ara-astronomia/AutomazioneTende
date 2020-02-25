@@ -6,6 +6,7 @@ class Status(IntEnum):
     CLOSED = 2
     OPENING = 3
     CLOSING = 4
+    STOPPED = 5
 
 class CurtainStatus(IntEnum):
 

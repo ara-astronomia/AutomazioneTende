@@ -10,28 +10,34 @@ class CurtainSwitch:
     def __init__(self):
         self.gpioconfig = GPIOConfig()
 
-class CurtainEstSwitch(CurtainSwitch, metaclass=Singleton):
     def read(self):
-        is_curtain_E_closed = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
-        is_curtain_E_open = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-
-        if is_curtain_E_closed and is_curtain_E_open:
+        if self.is_curtain_closed and self.is_curtain_open:
             raise TransitionError("""curtain_E state invalid - La Tenda Est è
             in uno stato invalido""")
-        elif is_curtain_E_closed:
-            return Status.CURTAIN_E_CLOSED
-        elif is_curtain_E_open:
-            return Status.CURTAIN_E_OPEN
+        elif self.is_curtain_open:
+            return Status.OPEN
+        elif self.is_curtain_closed:
+            return Status.CLOSED
+        else:
+            return Status.STOPPED
+
+    def close(self):
+        pass
+
+    def open(self):
+        pass
+
+    def __stop__(self):
+        pass
+
+class CurtainEastSwitch(CurtainSwitch, metaclass=Singleton):
+    def __init__(self):
+        super().__init__()
+        self.is_curtain_closed = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+        self.is_curtain_open = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
 
 class CurtainWestSwitch(CurtainSwitch, metaclass=Singleton):
-    def read(self):
-        is_curtain_W_closed = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
-        is_curtain_W_open = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-
-        if is_curtain_W_closed and is_curtain_W_open:
-            raise TransitionError("""Roof state invalid - La chiusura del tetto è
-            in uno stato invalido""")
-        elif is_curtain_W_closed:
-            return Status.CURTAIN_W_CLOSED
-        elif is_curtain_W_open:
-            return Status.CURTAIN_W_OPEN
+    def __init__(self):
+        super().__init__()
+        self.is_curtain_closed = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
+        self.is_curtain_open = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_OPEN)
