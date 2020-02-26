@@ -1,22 +1,22 @@
-from status import CurtainStatus
+from status import Status
 from base.singleton import Singleton
 from logger import Logger
 
 class CurtainControl:
 
     def __init__(self):
-        self.is_open = CurtainStatus.STOPPED
+        self.is_open = Status.STOPPED
 
     def open(self):
-        self.is_open = CurtainStatus.OPENING
+        self.is_open = Status.OPENING
         return self.is_open
 
     def close(self):
-        self.is_open = CurtainStatus.CLOSING
+        self.is_open = Status.CLOSING
         return self.is_open
 
     def stop(self):
-        self.is_open = CurtainStatus.STOPPED
+        self.is_open = Status.STOPPED
         return self.is_open
 
     def read(self):

@@ -7,9 +7,3 @@ class Status(IntEnum):
     OPENING = 3
     CLOSING = 4
     STOPPED = 5
-
-class CurtainStatus(IntEnum):
-
-    OPENING = 1
-    CLOSING = 2
-    STOPPED = 3
