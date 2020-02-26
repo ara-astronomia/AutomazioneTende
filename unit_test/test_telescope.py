@@ -2,10 +2,12 @@ import unittest, config
 from unittest.mock import MagicMock
 from telescopio import Telescopio
 import socket
+from base.singleton import Singleton
 
 class TelescopeTest(unittest.TestCase):
 
     def setUp(self):
+        Singleton._instances = {}
         self.telescopio = Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
 
     def test_connection(self):
