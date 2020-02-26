@@ -12,12 +12,14 @@ class CurtainSwitch:
         self.gpioconfig = GPIOConfig()
 
     def read(self):
-        if self.is_curtain_closed and self.is_curtain_open:
+        is_curtain_open = self.gpioconfig.status(self.curtain_open)
+        is_curtain_closed = self.gpioconfig.status(self.curtain_closed)
+        if is_curtain_closed and is_curtain_open:
             raise TransitionError("""curtain_E state invalid - La Tenda Est è
             in uno stato invalido""")
-        elif self.is_curtain_open:
+        elif is_curtain_open:
             return Status.OPEN
-        elif self.is_curtain_closed:
+        elif is_curtain_closed:
             return Status.CLOSED
         else:
             return Status.STOPPED
