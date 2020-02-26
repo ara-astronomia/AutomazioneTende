@@ -25,33 +25,25 @@ class CurtainSwitch:
             return Status.STOPPED
 
     def close(self):
-        #pass
         self.motor.close()
-        return self.is_verify_close
+        self.gpioconfig.wait_for_raising(self.curtain_closed)
+        self.motor.stop()
 
-    def open(self):
-        #pass
+    def open(self):mi
         self.motor.open()
-        return self.is_verify_open
-
-
-    def __stop__(self):
-        pass
+        self.gpioconfig.wait_for_raising(self.curtain_open)
+        self.motor.stop()
 
 class CurtainEastSwitch(CurtainSwitch, metaclass=Singleton):
     def __init__(self):
         super().__init__()
-        self.is_curtain_closed = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
-        self.is_curtain_open = self.gpioconfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-        self.is_verify_open = self.gpioconfig.wait_for_falling(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-        self.is_verify_close = self.gpioconfig.wait_for_falling(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+        self.curtain_closed = GPIOPin.CURTAIN_E_VERIFY_CLOSED
+        self.curtain_open = GPIOPin.CURTAIN_E_VERIFY_OPEN
         self.motor = EastCurtain()
 
 class CurtainWestSwitch(CurtainSwitch, metaclass=Singleton):
     def __init__(self):
         super().__init__()
-        self.is_curtain_closed = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
-        self.is_curtain_open = self.gpioconfig.status(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-        self.is_verify_open = self.gpioconfig.wait_for_falling(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-        self.is_verify_close = self.gpioconfig.wait_for_falling(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
+        self.curtain_closed = GPIOPin.CURTAIN_W_VERIFY_CLOSED
+        self.curtain_open = GPIOPin.CURTAIN_W_VERIFY_OPEN
         self.motor = WestCurtain()
