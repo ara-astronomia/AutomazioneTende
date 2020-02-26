@@ -5,18 +5,37 @@ from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from status import Status
 from curtains_control import EastCurtain, WestCurtain
+from transition_error import TransitionError
+from base.singleton import Singleton
 
 class CurtainSwitchTest(unittest.TestCase):
+
+    def setUp(self):
+        Singleton._instances = {}
 
     def test_east_read_open(self):
         GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.CURTAIN_E_VERIFY_OPEN else False)
         switch = CurtainEastSwitch()
         self.assertEqual(switch.read(), Status.OPEN)
+        GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.CURTAIN_E_VERIFY_CLOSED else False)
+        self.assertEqual(switch.read(), Status.CLOSED)
+        GPIOConfig.status = MagicMock(return_value=False)
+        self.assertEqual(switch.read(), Status.STOPPED)
+        GPIOConfig.status = MagicMock(return_value=True)
+        with self.assertRaises(TransitionError):
+            switch.read()
 
     def test_west_read_open(self):
         GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.CURTAIN_W_VERIFY_OPEN else False)
         switch = CurtainWestSwitch()
         self.assertEqual(switch.read(), Status.OPEN)
+        GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.CURTAIN_W_VERIFY_CLOSED else False)
+        self.assertEqual(switch.read(), Status.CLOSED)
+        GPIOConfig.status = MagicMock(return_value=False)
+        self.assertEqual(switch.read(), Status.STOPPED)
+        GPIOConfig.status = MagicMock(return_value=True)
+        with self.assertRaises(TransitionError):
+            switch.read()
 
     def test_est_open(self):
         # configuration

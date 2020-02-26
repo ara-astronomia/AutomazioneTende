@@ -1,11 +1,12 @@
 import unittest
 from unittest.mock import patch, MagicMock
-
+from base.singleton import Singleton
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 
 class GPIOConfigTest(unittest.TestCase):
     def setUp(self):
+        Singleton._instances = {}
         self.gpioConfig = GPIOConfig()
 
     def test_is_instance(self):

@@ -5,10 +5,12 @@ from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from status import CurtainStatus
 from logger import Logger
+from base.singleton import Singleton
 
 class EastCurtainsTest(unittest.TestCase):
 
     def setUp(self):
+        Singleton._instances = {}
         self.eastCurtain = EastCurtain()
 
     def test_open_curtain(self):
@@ -26,6 +28,7 @@ class EastCurtainsTest(unittest.TestCase):
 class WestCurtainsTest(unittest.TestCase):
 
     def setUp(self):
+        Singleton._instances = {}
         self.westCurtain = WestCurtain()
 
     def test_open_curtain(self):
