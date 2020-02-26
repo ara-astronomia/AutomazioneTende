@@ -5,9 +5,11 @@ from roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from status import Status
+from base.singleton import Singleton
 
 class RoofControlTest(unittest.TestCase):
     def setUp(self):
+        Singleton._instances = {}
         self.roofControl = RoofControl()
 
     def test_is_instance(self):
