@@ -29,7 +29,7 @@ class CurtainSwitch:
         self.gpioconfig.wait_for_raising(self.curtain_closed)
         self.motor.stop()
 
-    def open(self):mi
+    def open(self):
         self.motor.open()
         self.gpioconfig.wait_for_raising(self.curtain_open)
         self.motor.stop()
