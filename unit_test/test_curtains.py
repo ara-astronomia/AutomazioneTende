@@ -32,6 +32,8 @@ class EncoderTest(unittest.TestCase):
 
     def setUp(self):
         Singleton._instances = {}
+        GPIOConfig.add_event_detect_both = add_event_detect_both
+        GPIOConfig.add_event_detect_raising = add_event_detect_raising
 
     def test_est_open(self):
         GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORE_A or value == GPIOPin.MOTORE_E else False)
@@ -54,6 +56,8 @@ class EncoderTest(unittest.TestCase):
         encoder = WestEncoder()
         encoder.steps = 10
         encoder.move(5)
+
+
 
     # TODO improve these tests
     # def test_count_step(self):

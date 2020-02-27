@@ -25,8 +25,17 @@ class GPIOConfig(metaclass=Singleton):
     def status(self, switch):
         return GPIO.input(switch.id_pin)
 
-    def add_event_detect(self, switch, callback):
-        GPIO.add_event_detect(switch.id_pin, GPIO.RISING, callback=callback)
+    def add_event_detect_raising(self, switch, callback, bouncetime=0):
+        self.add_event_detect(switch, GPIO.RAISING, callback, bouncetime)
+
+    def add_event_detect_falling(self, switch, callback, bouncetime=0):
+        self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)
+
+    def add_event_detect_both(self, switch, callback, bouncetime=0):
+        self.add_event_detect(switch, GPIO.BOTH, callback, bouncetime)
+
+    def add_event_detect(self, switch, edge, callback, bouncetime):
+        GPIO.add_event_detect(switch.id_pin, edge, callback=callback, bouncetime=bouncetime)
 
     def remove_event_detect(self, switch):
         GPIO.remove_event_detect(switch.id_pin)

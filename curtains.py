@@ -49,27 +49,31 @@ class EncoderControl:
         self.switch_b = self.gpioconfig.status(self.clk)
         if self.switch_a and self.switch_b:
             self.lockRotary.acquire()
-            if dt_or_clk == self.clk and self.read() == Status.CLOSING:
-                self.steps -= 1
-            elif dt_or_clk == self.dt and self.read() == Status.OPENING:
-                self.steps += 1
-            if self.steps == self.target or self.target == None or self.steps == self.__security_step__:
-                self.target = None
-                self.__stop__()
-            if self.steps < self.__min_step__:
-                self.steps = self.__min_step__
-            self.lockRotary.release()
+            try:
+                if dt_or_clk == self.clk and self.read() == Status.CLOSING:
+                    self.steps -= 1
+                elif dt_or_clk == self.dt and self.read() == Status.OPENING:
+                    self.steps += 1
+                if self.steps == self.target or self.target == None or self.steps == self.__security_step__:
+                    self.target = None
+                    self.__stop__()
+                if self.steps < self.__min_step__:
+                    self.steps = self.__min_step__
+            finally:
+                self.lockRotary.release()
 
     def __count_steps_simple__(self, dt):
         self.lockRotary.acquire()
-        if self.read() == Status.CLOSING:
-            self.steps -= 1
-        elif self.read() == Status.OPENING:
-            self.steps += 1
-        if self.steps == self.target or self.target == None or self.steps >= self.__security_step__:
-            self.target = None
-            self.__stop__()
-        self.lockRotary.release()
+        try:
+            if self.read() == Status.CLOSING:
+                self.steps -= 1
+            elif self.read() == Status.OPENING:
+                self.steps += 1
+            if self.steps == self.target or self.target == None or self.steps >= self.__security_step__:
+                self.target = None
+                self.__stop__()
+        finally:
+            self.lockRotary.release()
 
     def __reset_steps__(self, dt_or_clk):
         self.lockRotary.acquire()

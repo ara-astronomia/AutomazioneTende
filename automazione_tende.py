@@ -29,7 +29,7 @@ class AutomazioneTende:
             import mock.telescopio as telescopio
 
         self.roof_control = RoofControl()
-        self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
+        self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
         self.encoder_est = EastEncoder()
         self.encoder_west = WestEncoder()
@@ -50,8 +50,8 @@ class AutomazioneTende:
         self.azimut_nw = config.Config.getInt("azNW", "azimut")
 
         # stabilisco il valore di increm per ogni tenda, increm corrisponde al valore dell'angolo della tenda coperto da 1 step)
-        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
-        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
+        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
+        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
     def park_tele(self):
         """ manda il tele alle coordinate AltAz di parking"""
@@ -105,7 +105,7 @@ class AutomazioneTende:
 
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
-            self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
+            self.encoder_est.move(self.n_step_corsa) # controllo condizione encoder
             #   if inferiore a ovest_min_height
             if coord["alt"] <= self.alt_min_tend_w:
                 #     muovi la tendina ovest a 0
@@ -117,7 +117,7 @@ class AutomazioneTende:
             # else if superiore a ovest_min_height e azimut del tele a est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   alza completamente la tendina ovest
-            self.encoder_west.move(self.n_step_corsa_tot) # controllo condizione encoder
+            self.encoder_west.move(self.n_step_corsa) # controllo condizione encoder
             #   if inferiore a est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 # muovi la tendina est a 0
@@ -138,8 +138,8 @@ class AutomazioneTende:
     def open_all_curtains(self):
         """apri completamente entrambe le tende"""
         #VALUTARE SE QUESTA CONDIZIONE SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
-        self.encoder_west.move(self.n_step_corsa_tot) # controllo condizione encoder
-        self.encoder_est.move(self.n_step_corsa_tot) # controllo condizione encoder
+        self.encoder_west.move(self.n_step_corsa) # controllo condizione encoder
+        self.encoder_est.move(self.n_step_corsa) # controllo condizione encoder
 
     def diff_coordinates(self, prevCoord, coord):
 
