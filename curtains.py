@@ -57,8 +57,6 @@ class EncoderControl:
                 if self.steps == self.target or self.target == None or self.steps == self.__security_step__:
                     self.target = None
                     self.__stop__()
-                if self.steps < self.__min_step__:
-                    self.steps = self.__min_step__
             finally:
                 self.lockRotary.release()
 
@@ -124,7 +122,7 @@ class EncoderControl:
         if self.steps > self.target:
             self.__close__()
 
-class WestEncoder(EncoderControl, metaclass=Singleton):
+class WestCurtain(EncoderControl, metaclass=Singleton):
     def __init__(self):
         self.clk = GPIOPin.CLK_W
         self.dt = GPIOPin.DT_W
@@ -135,7 +133,7 @@ class WestEncoder(EncoderControl, metaclass=Singleton):
         self.pin_enabling_motor = GPIOPin.MOTORW_E
         super().__init__()
 
-class EastEncoder(EncoderControl, metaclass=Singleton):
+class EastCurtain(EncoderControl, metaclass=Singleton):
     def __init__(self):
         self.clk = GPIOPin.CLK_E
         self.dt = GPIOPin.DT_E
