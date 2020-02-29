@@ -6,6 +6,7 @@ from gpio_pin import GPIOPin
 from base.singleton import Singleton
 from threading import Thread
 import time
+from status import Status
 
 def thread_function(pin, pin_status, edge, callback, bouncetime=100):
     new_pin_status = GPIOConfig().status(pin)
@@ -78,40 +79,37 @@ class EncoderTest(unittest.TestCase):
         encoder.steps = 105
         self.count_step(encoder, 95, False)
 
-    # def test_west_open(self):
-    #     GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORW_A or value == GPIOPin.MOTORW_E else False)
-    #     encoder = WestEncoder()
-    #     encoder.move(5)
-    #
-    # def test_est_close(self):
-    #     GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORE_B or value == GPIOPin.MOTORE_E else False)
-    #     encoder = EastEncoder()
-    #     encoder.steps = 10
-    #     encoder.move(5)
-    #
-    # def test_west_close(self):
-    #     GPIOConfig.status = MagicMock(side_effect=lambda value: True if value == GPIOPin.MOTORW_B or value == GPIOPin.MOTORW_E else False)
-    #     encoder = WestEncoder()
-    #     encoder.steps = 10
-    #     encoder.move(5)
+    def __move_open__(self, curtain, final_steps, initial_steps=0):
+        curtain.read = MagicMock(return_value=Status.CLOSED)
+        curtain.steps = initial_steps
+        curtain.__open__ = MagicMock()
+        curtain.move(final_steps)
+        curtain.read.assert_called_once()
+        curtain.__open__.assert_called_once()
 
+    def test_west_open(self):
+        curtain = WestCurtain()
+        self.__move_open__(curtain, 5)
 
+    def test_east_open(self):
+        curtain = EastCurtain()
+        self.__move_open__(curtain, 5)
 
-    # TODO improve these tests
-    # def test_count_step(self):
-    #     encoder = WestEncoder()
-    #     GPIOConfig.status = MagicMock(side_effect=lambda value: value != GPIOPin.DT_W)
-    #     encoder.target = 100
-    #     encoder.__count_steps__()
-    #     self.assertEqual(1, encoder.steps)
-    #
-    # def test_count_step_back(self):
-    #     GPIOConfig.status = MagicMock(side_effect=lambda value: value == GPIOPin.DT_W)
-    #     encoder = WestEncoder()
-    #     encoder.steps = 5
-    #     encoder.target = 1
-    #     encoder.__count_steps__()
-    #     self.assertEqual(4, encoder.steps)
+    def __move_close__(self, curtain, final_steps, initial_steps=150):
+        curtain.read = MagicMock(return_value=Status.STOPPED)
+        curtain.steps = initial_steps
+        curtain.__close__ = MagicMock()
+        curtain.move(final_steps)
+        curtain.read.assert_called_once()
+        curtain.__close__.assert_called_once()
+
+    def test_east_close(self):
+        curtain = EastCurtain()
+        self.__move_close__(curtain, 5)
+
+    def test_west_close(self):
+        curtain = WestCurtain()
+        self.__move_close__(curtain, 5)
 
 if __name__ == '__main__':
     unittest.main()
