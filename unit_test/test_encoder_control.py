@@ -10,7 +10,7 @@ import time
 def add_event_detect_both(s, pin, callback, bouncetime=0):
     add_event_detect(pin, "BOTH", callback=callback, bouncetime=bouncetime)
 
-def add_event_detect_raising(s, pin, callback, bouncetime=0):
+def add_event_detect_on(s, pin, callback, bouncetime=0):
     add_event_detect(pin, "RAISING", callback=callback, bouncetime=bouncetime)
 
 def add_event_detect(pin, edge, callback, bouncetime):

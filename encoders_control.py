@@ -23,8 +23,8 @@ class EncoderControl:
             self.gpioconfig.add_event_detect_both(self.clk, callback=self.__count_steps__)
         else:
             self.gpioconfig.add_event_detect_both(self.dt, callback=self.__count_steps_simple__)
-        self.gpioconfig.add_event_detect_raising(self.curtain_open, callback=self.__reset_steps__)
-        self.gpioconfig.add_event_detect_raising(self.curtain_closed, callback=self.__reset_steps__)
+        self.gpioconfig.add_event_detect_on(self.curtain_open, callback=self.__reset_steps__)
+        self.gpioconfig.add_event_detect_on(self.curtain_closed, callback=self.__reset_steps__)
         self.switch_a = False
         self.switch_b = False
         self.lockRotary = threading.Lock()
