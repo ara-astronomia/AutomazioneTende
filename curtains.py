@@ -30,6 +30,12 @@ class Curtain:
         self.gpioconfig.add_event_detect_on(self.curtain_open, callback=self.__reset_steps__)
         self.gpioconfig.add_event_detect_on(self.curtain_closed, callback=self.__reset_steps__)
 
+    def __remove_event_detect__(self):
+        self.gpioconfig.remove_event_detect(self.dt)
+        self.gpioconfig.remove_event_detect(self.clk)
+        self.gpioconfig.remove_event_detect(self.curtain_open)
+        self.gpioconfig.remove_event_detect(self.curtain_closed)
+
     def __open__(self):
         self.gpioconfig.turn_on(self.pin_opening)
         self.gpioconfig.turn_off(self.pin_closing)
@@ -89,9 +95,6 @@ class Curtain:
                 self.steps = self.__max_step__
             elif open_or_closed == self.curtain_closed:
                 self.steps = self.__min_step__
-            else:
-                raise TransitionError("""Curtain state invalid - La tenda è
-                in uno stato invalido""")
         finally:
             self.lockRotary.release()
 
@@ -99,26 +102,27 @@ class Curtain:
         status = self.read()
         if status != Status.STOPPED and status != Status.DANGER:
             return
+        self.__remove_event_detect__()
 
-        self.gpioconfig.remove_event_detect(self.dt)
-        self.gpioconfig.remove_event_detect(self.clk)
-        self.gpioconfig.remove_event_detect(self.curtain_open)
-        self.gpioconfig.remove_event_detect(self.curtain_closed)
+        distance_to_min_step = abs(self.steps - self.__min_step__)
+        distance_to_max_step = abs(self.__max_step__ - self.steps)
 
-        if abs(self.steps - self.__min_step__) <= abs(self.__max_step__ - self.steps):
+        if distance_to_min_step <= distance_to_max_step:
             self.__close__()
             pin = self.gpioconfig.wait_for_on(self.curtain_closed)
             self.__stop__()
-            if pin is None:
+            if pin:
+                self.steps = self.__min_step__
+            else:
                 self.steps = self.__sub_min_step__
-            self.steps = self.__min_step__
         else:
             self.__open__()
-            self.gpioconfig.wait_for_on(self.curtain_open)
+            pin = self.gpioconfig.wait_for_on(self.curtain_open)
             self.__stop__()
-            if pin is None:
+            if pin:
+                self.steps = self.__max_step__
+            else:
                 self.steps = self.__security_step__
-            self.steps = self.__max_step__
 
         self.__event_detect__()
 
