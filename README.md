@@ -4,17 +4,45 @@ this app automates the roof and curtains opening and closing on telescope pointi
 ## Prerequisite on linux
 sudo apt-get install python3-tk python3-pip
 
-## Freeze local dependency:
-pip3 freeze -l > requirements.txt
+## Install dependency:
+
+```
+pip3 install pipenv
+pipenv install --dev
+```
 
 ## Update pip dependency:
-pip3 install -U $(pip3 freeze -l | awk '{split($0, a, "=="); print a[1]}')
+
+```
+pipenv update --dev
+```
 
 ## Run the unit test:
+
+```
 python -m unittest discover -v
+```
+
+## Run unit test with coverage:
+
+```
+coverage run -m unittest discover -v
+coverage html
+```
 
 ## Run a single unit test:
 python -m unittest unit_test/roof_control_test.py
+
+## Run a single unit test with coverage:
+
+```
+coverage run -m unittest unit_test/test_curtains.py
+coverage html
+```
+
+## Check the coverage
+Open up the file manager and navigate to  ./htmlcov
+Double click on the html file relative to the class you want to check coverage
 
 ## Run the server with the hardware mocked
 python server.py -m
