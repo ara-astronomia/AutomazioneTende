@@ -13,7 +13,7 @@ class EncoderControl:
 
     def __count_steps__(self):
         if self.gpioconfig.status(self.dt):
-             self.steps -= 1
+            self.steps -= 1
         else:
             self.steps += 1
         if self.steps == self.target:
@@ -28,7 +28,7 @@ class EncoderControl:
         if self.steps < self.target:
             self.motor.open()
         if self.steps > self.target:
-             self.motor.close()
+            self.motor.close()
         if self.steps != self.target:
             self.gpioconfig.add_event_detect_on(self.clk, callback=self.__count_steps__)
             self.moving = True
