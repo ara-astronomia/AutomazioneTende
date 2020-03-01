@@ -13,11 +13,11 @@ class RoofControl(metaclass=Singleton):
 
     def open(self):
         self.gpioconfig.turn_on(GPIOPin.SWITCH_ROOF)
-        return self.gpioconfig.wait_for_falling(GPIOPin.VERIFY_OPEN)
+        return self.gpioconfig.wait_for_off(GPIOPin.VERIFY_OPEN)
 
     def close(self):
         self.gpioconfig.turn_off(GPIOPin.SWITCH_ROOF)
-        return self.gpioconfig.wait_for_falling(GPIOPin.VERIFY_CLOSED)
+        return self.gpioconfig.wait_for_off(GPIOPin.VERIFY_CLOSED)
 
     def read(self):
         is_roof_closed = self.gpioconfig.status(GPIOPin.VERIFY_CLOSED)

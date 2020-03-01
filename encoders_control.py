@@ -24,12 +24,13 @@ class EncoderControl:
 
     def move(self, step):
         self.target = int(step)
+
         if self.steps < self.target:
             self.motor.open()
         if self.steps > self.target:
             self.motor.close()
         if self.steps != self.target:
-            self.gpioconfig.add_event_detect(self.clk, callback=self.__count_steps__)
+            self.gpioconfig.add_event_detect_on(self.clk, callback=self.__count_steps__)
             self.moving = True
 
 class WestEncoder(EncoderControl, metaclass=Singleton):

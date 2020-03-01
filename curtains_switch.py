@@ -26,12 +26,12 @@ class CurtainSwitch:
 
     def close(self):
         self.motor.close()
-        self.gpioconfig.wait_for_raising(self.curtain_closed)
+        self.gpioconfig.wait_for_on(self.curtain_closed)
         self.motor.stop()
 
     def open(self):
         self.motor.open()
-        self.gpioconfig.wait_for_raising(self.curtain_open)
+        self.gpioconfig.wait_for_on(self.curtain_open)
         self.motor.stop()
 
 class CurtainEastSwitch(CurtainSwitch, metaclass=Singleton):

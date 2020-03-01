@@ -13,11 +13,11 @@ class EncoderControl:
 class WestEncoder(EncoderControl, metaclass=Singleton):
     def __init__(self):
         super().__init__()
-        self.__max_step__ = config.Config.getInt("n_step_finecorsa", "encoder_step")
+        self.__max_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.motor = WestCurtain()
 
 class EastEncoder(EncoderControl, metaclass=Singleton):
     def __init__(self):
         super().__init__()
-        self.__max_step__ = config.Config.getInt("n_step_finecorsa", "encoder_step")
+        self.__max_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.motor = EastCurtain()

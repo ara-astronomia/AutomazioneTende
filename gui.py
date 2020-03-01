@@ -7,13 +7,13 @@ from logger import Logger
 class Gui:
 
     def __init__(self):
-        self.n_step_corsa_tot = config.Config.getInt('n_step_corsa_tot', "encoder_step")
+        self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
         self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
-        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa_tot
-        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa_tot
+        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
+        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
         self.status_tele = ""
 
         self.l=400
