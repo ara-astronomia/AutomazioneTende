@@ -4,11 +4,23 @@ this app automates the roof and curtains opening and closing on telescope pointi
 ## Prerequisite on linux
 sudo apt-get install python3-tk python3-pip
 
-## Install dependency:
+## First time configuration and install dependency:
 
 ```
 pip3 install pipenv
 pipenv install --dev
+```
+
+# Enter in the CRaC environment
+
+```
+pipenv shell
+```
+
+# Exit from the CRaC environment
+
+```
+exit
 ```
 
 ## Update dependency:
