@@ -1,4 +1,4 @@
-import unittest
+import config, unittest
 from unittest.mock import patch, MagicMock
 from base.singleton import Singleton
 from gpio_config import GPIOConfig
@@ -24,3 +24,7 @@ class GPIOConfigTest(unittest.TestCase):
 
     def test_is_singleton(self):
         self.assertEqual(GPIOConfig(), self.gpioConfig)
+
+    def test_timeout_value(self):
+        self.assertEqual(config.Config.getInt("wait_for_timeout", "roof_board"), 180000)
+        self.assertEqual(config.Config.getInt("event_bouncetime", "roof_board"), 0)
