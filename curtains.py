@@ -1,7 +1,6 @@
 import config
 from base.singleton import Singleton
 from gpio_pin import GPIOPin
-from curtains_control import EastCurtain, WestCurtain
 from gpio_config import GPIOConfig
 import threading
 from status import Status
