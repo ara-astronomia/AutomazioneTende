@@ -20,8 +20,9 @@ class AutomazioneTende:
             patcher = patch.dict("sys.modules", modules)
             patcher.start()
         else:
-            from encoders_control import WestEncoder, EastEncoder
+            #from encoders_control import WestEncoder, EastEncoder
             from roof_control import RoofControl
+            from curtains import WestCurtain, EastCurtain
 
         if thesky:
             import telescopio
@@ -31,8 +32,10 @@ class AutomazioneTende:
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
-        self.encoder_est = EastEncoder()
-        self.encoder_west = WestEncoder()
+        #self.encoder_est = EastEncoder()
+        #self.encoder_west = WestEncoder()
+        self.curtain_east = EastCurtain()
+        self.curtain_west = WestCurtain()
 
         self.started = False
         self.prevCoord = { 'alt': 0, 'az': 0 }
@@ -105,11 +108,11 @@ class AutomazioneTende:
 
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   alza completamente la tendina est
-            self.encoder_est.move(self.n_step_corsa) # controllo condizione encoder
+            self.curtain_east.open_up()
             #   if inferiore a ovest_min_height
             if coord["alt"] <= self.alt_min_tend_w:
-                #     muovi la tendina ovest a 0
-                self.encoder_west.move(0) # controllo condizione encoder
+                #   muovi la tendina ovest a 0
+                self.curtain_west.bring_down()
             else:
                 #     muovi la tendina ovest a f(altezza telescopio - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
@@ -117,11 +120,11 @@ class AutomazioneTende:
             # else if superiore a ovest_min_height e azimut del tele a est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   alza completamente la tendina ovest
-            self.encoder_west.move(self.n_step_corsa) # controllo condizione encoder
+            self.curtain_west.open_up()
             #   if inferiore a est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 # muovi la tendina est a 0
-                self.encoder_est.move(0) # controllo condizione encoder
+                self.curtain_east.bring_down()
             else:
                 #     muovi la tendina est a f(altezza telescopio - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
@@ -129,17 +132,15 @@ class AutomazioneTende:
 
     def park_curtains(self):
         """"Metti a zero l'altezza delle tende"""
-        #VALUTARE SE QUESTA CONDIZIONE SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
-        self.encoder_est.move(0)
-        self.encoder_west.move(0)
+        self.curtain_east.bring_down()
+        self.curtain_west.bring_down()
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
-        """apri completamente entrambe le tende"""
-        #VALUTARE SE QUESTA CONDIZIONE SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
-        self.encoder_west.move(self.n_step_corsa) # controllo condizione encoder
-        self.encoder_est.move(self.n_step_corsa) # controllo condizione encoder
+        """opening max apri completamente entrambe le tende"""
+        self.curtain_east.open_up()
+        self.curtain_west.open_up()
 
     def diff_coordinates(self, prevCoord, coord):
 
