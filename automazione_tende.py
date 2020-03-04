@@ -97,12 +97,12 @@ class AutomazioneTende:
         if coord["alt"] <= self.alt_min_tend_e and coord["alt"] <= self.alt_min_tend_w:
             #   move both curtains to 0
             self.park_curtains()
-            # else if higher to east_max_height e ovest_max_height
+            #   else if higher to east_max_height e ovest_max_height
         elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > coord['az'] or coord['az'] > self.azimut_nw or self.azimut_sw > coord['az'] > self.azimut_se:
             #   move both curtains max open
             self.open_all_curtains()
 
-            # else if higher to ovest_min_height and Az tele to west
+            #   else if higher to ovest_min_height and Az tele to west
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   move curtain east max open
             self.curtain_east.open_up()
@@ -111,20 +111,20 @@ class AutomazioneTende:
                 #   move curtain west to 0 (closed)
                 self.curtain_west.bring_down()
             else:
-                #     move curtain west to f(Alt telescope - x)
+                #   move curtain west to f(Alt telescope - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
                 self.curtain_west.move(step_w) # move curtain west to step
 
-            # else if higher to ovest_min_height and Az tele to est
+            #   else if higher to ovest_min_height and Az tele to est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   move curtian west max open
             self.curtain_west.open_up()
             #   if inferior yo est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
-                # move curtain east to 0 (closed)
+                #   move curtain east to 0 (closed)
                 self.curtain_east.bring_down()
             else:
-                #     move curtain east to f(Alt tele - x)
+                #   move curtain east to f(Alt tele - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(step_e) # move curtain east to step
 
