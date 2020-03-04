@@ -10,9 +10,8 @@ class AutomazioneTende:
         self.thesky = thesky
         if mock:
             from unittest.mock import patch, MagicMock
-            from mock.encoders_control import WestEncoder, EastEncoder
             from mock.roof_control import RoofControl
-            #from mock.curtains import WestCurtain, EastCurtain
+            from mock.curtains import WestCurtain, EastCurtain
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -55,7 +54,7 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
     def park_tele(self):
-        """ manda il tele alle coordinate AltAz di parking"""
+        """ Park the Telescope """
         try:
             self.telescopio.open_connection()
             self.telescopio.park_tele()
@@ -67,7 +66,7 @@ class AutomazioneTende:
 
     def read_altaz_mount_coordinate(self):
 
-        """Leggi le coordinate della montatura"""
+        """ Read Telescope Coordinates """
         try:
             coords = self.telescopio.coords()
             Logger.getLogger().debug("Telescopio")
@@ -84,13 +83,13 @@ class AutomazioneTende:
 
     def read_curtains_height(self):
 
-        """read high curtains"""
+        """ Read the height of the curtains """
 
         pass
 
     def move_curtains_height(self, coord):
 
-        """Move curtains to ..."""
+        """ Change the height of the curtains to based on the given Coordinates """
 
         # TODO verify tele height:
         # if less than east_min_height e ovest_min_height
@@ -113,7 +112,7 @@ class AutomazioneTende:
             else:
                 #   move curtain west to f(Alt telescope - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
-                self.curtain_west.move(step_w) # move curtain west to step
+                self.curtain_west.move(int(step_w)) # move curtain west to step
 
             #   else if higher to ovest_min_height and Az tele to est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
@@ -126,23 +125,23 @@ class AutomazioneTende:
             else:
                 #   move curtain east to f(Alt tele - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
-                self.curtain_east.move(step_e) # move curtain east to step
+                self.curtain_east.move(int(step_e)) # move curtain east to step
 
     def park_curtains(self):
-        """"move both curtains to 0"""
+        """" Bring down both curtains """
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
-        """move both curtains max open"""
+        """ Open up both curtains to the max extents """
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
     def diff_coordinates(self, prevCoord, coord):
 
-        """Verifica se la differenza tra coordinate giustifichi lo spostamento dell'altezza delle tendine"""
+        """ Verifica se la differenza tra coordinate giustifichi lo spostamento dell'altezza delle tendine """
 
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 

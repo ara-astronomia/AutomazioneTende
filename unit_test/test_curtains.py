@@ -70,10 +70,16 @@ class TestCurtain(unittest.TestCase):
                 return not statusA
             elif value == curtain.clk:
                 return not statusB
+            elif not curtain.is_opening and not curtain.is_closing and curtain.steps == curtain.__min_step__ and value == curtain.curtain_closed:
+                return True
+            elif not curtain.is_opening and not curtain.is_closing and curtain.steps == curtain.__max_step__ and value == curtain.curtain_open:
+                return True
             else:
-                return (value == curtain.pin_enabling_motor or
-                        (forward and value == curtain.pin_opening) or
-                        not forward and value == curtain.pin_closing)
+                return (
+                            value == curtain.pin_enabling_motor or
+                            (forward and value == curtain.pin_opening) or
+                            (not forward and value == curtain.pin_closing)
+                        )
 
         curtain.gpioconfig.status = MagicMock(side_effect=side_effect)
 
@@ -102,10 +108,16 @@ class TestCurtain(unittest.TestCase):
                 return not statusA
             elif value == curtain.clk:
                 return not statusB
+            elif not curtain.is_opening and not curtain.is_closing and curtain.steps == curtain.__min_step__ and value == curtain.curtain_closed:
+                return True
+            elif not curtain.is_opening and not curtain.is_closing and curtain.steps == curtain.__max_step__ and value == curtain.curtain_open:
+                return True
             else:
-                return (value == curtain.pin_enabling_motor or
-                        (forward and value == curtain.pin_opening) or
-                        not forward and value == curtain.pin_closing)
+                return (
+                    value == curtain.pin_enabling_motor or
+                    (forward and value == curtain.pin_opening) or
+                    (not forward and value == curtain.pin_closing)
+                )
 
         curtain.gpioconfig.status = MagicMock(side_effect=side_effect)
 
@@ -196,6 +208,7 @@ class TestCurtain(unittest.TestCase):
 
     def test_read_is_open(self):
         curtain = WestCurtain()
+        curtain.steps = curtain.__max_step__
         curtain.gpioconfig.status = MagicMock(side_effect=lambda value: True if value == curtain.curtain_open else False)
         self.assertEqual(Status.OPEN, curtain.read())
 
@@ -206,6 +219,7 @@ class TestCurtain(unittest.TestCase):
 
     def test_read_is_stopped(self):
         curtain = WestCurtain()
+        curtain.steps = 10
         curtain.gpioconfig.status = MagicMock(return_value=False)
         self.assertEqual(Status.STOPPED, curtain.read())
 

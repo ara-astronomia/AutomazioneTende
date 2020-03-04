@@ -68,7 +68,7 @@ try:
                         if r == -1:
                             steps = "E0000S"
                         else:
-                            steps = "{:0>3d}".format(automazioneTende.encoder_est.steps)+"{:0>3d}".format(automazioneTende.encoder_west.steps)
+                            steps = "{:0>3d}".format(automazioneTende.curtain_east.steps)+"{:0>3d}".format(automazioneTende.curtain_west.steps)
 
                     Logger.getLogger().debug("steps: "+steps)
 

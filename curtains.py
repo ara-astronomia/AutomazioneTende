@@ -15,10 +15,21 @@ class Curtain:
         self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.target = None
         self.gpioconfig = GPIOConfig()
-        self.__event_detect__()
         self.encoder_a = False
         self.encoder_b = False
         self.lockRotary = threading.Lock()
+        self.is_opening = False
+        self.is_closing = False
+        self.is_enable = False
+        self.is_open = False
+        self.is_closed = False
+        self.dt = None
+        self.clk = None
+        self.curtain_open = None
+        self.curtain_closed = None
+        self.pin_opening = None
+        self.pin_closing = None
+        self.pin_enabling_motor = None
 
     def __event_detect__(self):
         if config.Config.getInt("count_steps_simple", "encoder_step") == 0:
@@ -98,6 +109,9 @@ class Curtain:
             self.lockRotary.release()
 
     def manual_reset(self):
+
+        """ Reset the steps counter with the help of the edge switchers """
+
         status = self.read()
         if status != Status.STOPPED and status != Status.DANGER:
             return
@@ -126,30 +140,45 @@ class Curtain:
         self.__event_detect__()
 
     def read(self):
+
+        """ Read the status of the curtain based on the pin of motor, encoder and switches """
+
         self.is_opening = self.gpioconfig.status(self.pin_opening)
         self.is_closing = self.gpioconfig.status(self.pin_closing)
         self.is_enable = self.gpioconfig.status(self.pin_enabling_motor)
         self.is_open = self.gpioconfig.status(self.curtain_open)
         self.is_closed = self.gpioconfig.status(self.curtain_closed)
-        if self.steps >= self.__max_step__ or self.steps < self.__min_step__:
-            return Status.DANGER
+
+        status = None
+        if (
+            self.steps > self.__max_step__ or self.steps < self.__min_step__ or
+            (self.steps == self.__max_step__ and not self.is_open and not self.is_closing) or
+            (self.steps == self.__min_step__ and not self.is_closed and not self.is_opening)
+        ):
+            status = Status.DANGER
         elif self.is_opening and self.is_enable and not self.is_closing and not self.is_open and not self.is_closed:
-            return Status.OPENING
+            status = Status.OPENING
         elif self.is_enable and self.is_closing and not self.is_opening and not self.is_open and not self.is_closed:
-            return Status.CLOSING
+            status = Status.CLOSING
         elif self.is_open and not self.is_enable:
-            return Status.OPEN
+            status = Status.OPEN
         elif self.is_closed and not self.is_enable:
-            return Status.CLOSED
+            status = Status.CLOSED
         elif not self.is_enable:
-            return Status.STOPPED
-        else:
+            status = Status.STOPPED
+
+        if not status:
             raise TransitionError("""Curtain state invalid - La tenda è
             in uno stato invalido""")
 
+        return status
+
     def move(self, step):
+
+        """ Move the motor in a direction based on the starting and target steps """
+
         # while the motors are moving we don't want to start another movement
-        if (self.read() > Status.OPEN or self.steps ==self.target):
+        if (self.read() > Status.OPEN):
             return
 
         self.target = int(step)
@@ -161,13 +190,26 @@ class Curtain:
             self.__close__()
 
     def open_up(self):
+
+        """ 
+            Open up the curtain completely 
+            It's a shortcut to move()    
+        """
+
         self.move(self.__max_step__)
 
     def bring_down(self):
+
+        """ 
+            Bring down the curtain completely 
+            It's a shortcut to move()    
+        """
+
         self.move(self.__min_step__)
 
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
+        super().__init__()
         self.clk = GPIOPin.CLK_W
         self.dt = GPIOPin.DT_W
         self.curtain_closed = GPIOPin.CURTAIN_W_VERIFY_CLOSED
@@ -175,10 +217,11 @@ class WestCurtain(Curtain, metaclass=Singleton):
         self.pin_opening = GPIOPin.MOTORW_A
         self.pin_closing = GPIOPin.MOTORW_B
         self.pin_enabling_motor = GPIOPin.MOTORW_E
-        super().__init__()
+        self.__event_detect__()
 
 class EastCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
+        super().__init__()
         self.clk = GPIOPin.CLK_E
         self.dt = GPIOPin.DT_E
         self.curtain_closed = GPIOPin.CURTAIN_E_VERIFY_CLOSED
@@ -186,4 +229,4 @@ class EastCurtain(Curtain, metaclass=Singleton):
         self.pin_opening = GPIOPin.MOTORE_A
         self.pin_closing = GPIOPin.MOTORE_B
         self.pin_enabling_motor = GPIOPin.MOTORE_E
-        super().__init__()
+        self.__event_detect__()
