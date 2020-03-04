@@ -12,6 +12,7 @@ class AutomazioneTende:
             from unittest.mock import patch, MagicMock
             from mock.encoders_control import WestEncoder, EastEncoder
             from mock.roof_control import RoofControl
+            #from mock.curtains import WestCurtain, EastCurtain
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -20,7 +21,6 @@ class AutomazioneTende:
             patcher = patch.dict("sys.modules", modules)
             patcher.start()
         else:
-            #from encoders_control import WestEncoder, EastEncoder
             from roof_control import RoofControl
             from curtains import WestCurtain, EastCurtain
 
@@ -32,8 +32,6 @@ class AutomazioneTende:
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
-        #self.encoder_est = EastEncoder()
-        #self.encoder_west = WestEncoder()
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
 
@@ -86,59 +84,59 @@ class AutomazioneTende:
 
     def read_curtains_height(self):
 
-        """Leggi l'altezza delle tende"""
+        """read high curtains"""
 
         pass
 
     def move_curtains_height(self, coord):
 
-        """Muovi l'altezza delle tende"""
+        """Move curtains to ..."""
 
-        # TODO verifica altezza del tele:
-        # if inferiore a est_min_height e ovest_min_height
+        # TODO verify tele height:
+        # if less than east_min_height e ovest_min_height
         if coord["alt"] <= self.alt_min_tend_e and coord["alt"] <= self.alt_min_tend_w:
-            #   muovi entrambe le tendine a 0
+            #   move both curtains to 0
             self.park_curtains()
-            # else if superiore a est_max_height e ovest_max_height
+            # else if higher to east_max_height e ovest_max_height
         elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > coord['az'] or coord['az'] > self.azimut_nw or self.azimut_sw > coord['az'] > self.azimut_se:
-            #   entrambe le tendine completamente alzate
+            #   move both curtains max open
             self.open_all_curtains()
 
-#VALUTARE SE LE CONDIZIONI SEGUENTI SIA PIU OPPORTUNO GESTIRLE CON GLI SWICTH ANZICHE CON GLI ENCODER DI FINE CORSA
-
+            # else if higher to ovest_min_height and Az tele to west
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
-            #   alza completamente la tendina est
+            #   move curtain east max open
             self.curtain_east.open_up()
-            #   if inferiore a ovest_min_height
+            #   if less than west_min_height
             if coord["alt"] <= self.alt_min_tend_w:
-                #   muovi la tendina ovest a 0
+                #   move curtain west to 0 (closed)
                 self.curtain_west.bring_down()
             else:
-                #     muovi la tendina ovest a f(altezza telescopio - x)
+                #     move curtain west to f(Alt telescope - x)
                 step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
-                self.encoder_west.move(step_w) # controllo condizione encoder
-            # else if superiore a ovest_min_height e azimut del tele a est
+                self.curtain_west.move(step_w) # move curtain west to step
+
+            # else if higher to ovest_min_height and Az tele to est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
-            #   alza completamente la tendina ovest
+            #   move curtian west max open
             self.curtain_west.open_up()
-            #   if inferiore a est_min_height
+            #   if inferior yo est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
-                # muovi la tendina est a 0
+                # move curtain east to 0 (closed)
                 self.curtain_east.bring_down()
             else:
-                #     muovi la tendina est a f(altezza telescopio - x)
+                #     move curtain east to f(Alt tele - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
-                self.encoder_est.move(step_e) # controllo condizione encoder
+                self.curtain_east.move(step_e) # move curtain east to step
 
     def park_curtains(self):
-        """"Metti a zero l'altezza delle tende"""
+        """"move both curtains to 0"""
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
 
         return { 'alt': 0, 'az': 0 }
 
     def open_all_curtains(self):
-        """opening max apri completamente entrambe le tende"""
+        """move both curtains max open"""
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
