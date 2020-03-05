@@ -26,9 +26,9 @@ class GPIOPin(Enum):
     CLK_W = (Config.getValue("clk_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
     DT_W = (Config.getValue("dt_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
 
-    def __init__(self, id_pin, setup, pull=None):
+    def __init__(self, id_pin, pin_setup, pull=None):
         self.id_pin = id_pin
-        self.setup = setup
+        self.pin_setup = pin_setup
         self.pull = pull
 
     @staticmethod
@@ -36,6 +36,6 @@ class GPIOPin(Enum):
         GPIO.setmode(mode)
         for pin in list(GPIOPin):
             if pin.pull:
-                GPIO.setup(pin.id_pin, pin.setup, pull_up_down=pin.pull)
+                GPIO.setup(pin.id_pin, pin.pin_setup, pull_up_down=pin.pull)
             else:
-                GPIO.setup(pin.id_pin, pin.setup)
+                GPIO.setup(pin.id_pin, pin.pin_setup)

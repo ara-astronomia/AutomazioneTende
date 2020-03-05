@@ -1,2 +1,0 @@
-PySimpleGUI==3.24.0
-RPi.GPIO==0.6.5
