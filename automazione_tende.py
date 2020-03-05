@@ -141,7 +141,7 @@ class AutomazioneTende:
 
     def diff_coordinates(self, prevCoord, coord):
 
-        """ Verifica se la differenza tra coordinate giustifichi lo spostamento dell'altezza delle tendine """
+        """ Check if delta coord is enough to move the curtains """
 
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 

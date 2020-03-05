@@ -168,8 +168,7 @@ class Curtain:
             status = Status.STOPPED
 
         if not status:
-            raise TransitionError("""Curtain state invalid - La tenda è
-            in uno stato invalido""")
+            raise TransitionError("""Curtain state invalid """)
 
         return status
 
@@ -191,18 +190,18 @@ class Curtain:
 
     def open_up(self):
 
-        """ 
-            Open up the curtain completely 
-            It's a shortcut to move()    
+        """
+            Open up the curtain completely
+            It's a shortcut to move()
         """
 
         self.move(self.__max_step__)
 
     def bring_down(self):
 
-        """ 
-            Bring down the curtain completely 
-            It's a shortcut to move()    
+        """
+            Bring down the curtain completely
+            It's a shortcut to move()
         """
 
         self.move(self.__min_step__)
