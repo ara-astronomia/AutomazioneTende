@@ -81,11 +81,11 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
             raise
 
-    def read_curtains_height(self):
+    def is_curtains_status_danger(self):
 
         """ Read the height of the curtains """
 
-        pass
+        return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
 
     def move_curtains_height(self, coord):
 
@@ -118,7 +118,7 @@ class AutomazioneTende:
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   move curtian west max open
             self.curtain_west.open_up()
-            #   if inferior yo est_min_height
+            #   if inferior to est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 #   move curtain east to 0 (closed)
                 self.curtain_east.bring_down()
