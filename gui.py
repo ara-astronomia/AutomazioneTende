@@ -1,8 +1,7 @@
 import PySimpleGUI as sg
 import math, config
-from graphics import *
-from tkinter import *
 from logger import Logger
+from tkinter import PhotoImage, NW
 
 class Gui:
 
@@ -14,13 +13,11 @@ class Gui:
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
-        self.status_tele = ""
 
         self.l=400
         self.t=self.l/4.25
         self.delta_pt= 1.5*self.t
         self.h=int(self.l/1.8) # int((l/3)*2)
-        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         sg.ChangeLookAndFeel('GreenTan')
 
         menu_def = [['File', ['Exit']],['Help', 'About...']]
@@ -35,11 +32,11 @@ class Gui:
                  [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
                  sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
                  [sg.Text('stato del CRaC', size=(28, 1), justification='center', font=("Arial",8, "bold"), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('in attesa' , size=(10, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
+                 sg.InputText('in attesa' , size=(20, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
-
+        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
         p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
@@ -84,7 +81,6 @@ class Gui:
 
     def update_status_roof(self, status_roof):
         """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
-        canvas = self.win.FindElement('canvas')
         status = status_roof
         Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
@@ -99,28 +95,25 @@ class Gui:
 
 
     def open_roof(self, status_roof):
+
         """avvisa sullo stato aperto del tetto"""
+        
         self.win.FindElement('progbar_tetto').UpdateBar(100)
         status = status_roof
         Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status)
 
-    def update_status_tele(self,status_tele):
-        """Update stato del telescopio"""
-        Logger.getLogger().info('update_status_tele in gui')
-        new_status_tele = (status_tele) #legge lo status tele in automazioneTende
-
-        if new_status_tele == "park":
-            font ="Arial, 10 ,bold, red"
-            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "red")
-        if new_status_tele == "tracking":
-            Logger.getLogger().info("cambio il format del font")
-            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "green")
-        return
+    def update_status_crac(self, status, color='black'):
+        
+        """ Update CRaC Status """
+        
+        Logger.getLogger().info('update_status_crac in gui')
+        self.win.FindElement('status-CRaC').Update(status, text_color = color)
 
     def update_curtains_text(self, e_e, e_w):
 
-        """Update valori angolari tende"""
+        """ Update curtains angular values """
+
         print(e_e)
         print(e_w)
         alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
@@ -132,7 +125,7 @@ class Gui:
 
     def update_curtains_graphic(self, alpha_e, alpha_w):
 
-        """Disegna le tende con canvas"""
+        """ Draw curtains position with canvas """
 
         #-------definizione settori angolari tende -----------#
 
@@ -181,12 +174,6 @@ class Gui:
 
         pt_e = (x_e, y_e)
         pt_w = (x_w, y_w)
-
-        pt_e0 = (x_e-self.t, y_e)
-        pt_w0 = (x_w+self.t, y_w)
-
-        x_e1 = (math.cos(angolo_e_min)*self.t)+x_e
-        x_w1 = (math.cos(angolo_e_min)*self.t)+x_w
 
         pt_e1= (x_e+(int(math.cos(angolo_e_min)*self.t)),y_e-(int(math.sin(angolo_e_min)*self.t)))
         pt_e2= (x_e+(int(math.cos(angolo1_e)*self.t)),y_e-(int(math.sin(angolo1_e)*self.t)))
