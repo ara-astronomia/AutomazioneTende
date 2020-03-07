@@ -6,7 +6,7 @@ def connection(error, roof, curtains):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            ev1, vals1 = g_ui.win.Read(timeout=10000)
+            ev1, _ = g_ui.win.Read(timeout=10000)
 
             if ev1 is None or ev1 == "exit":
                 v = "E"
@@ -31,7 +31,7 @@ def connection(error, roof, curtains):
                 if roof is False:
                     g_ui.roof_alert('Attenzione tetto chiuso')
                     continue
-                g_ui.base_draw()
+ #               g_ui.base_draw()
                 v = "1"
 
             elif ev1 == 'stop-curtains':
@@ -53,27 +53,28 @@ def connection(error, roof, curtains):
                 g_ui.update_curtains_text(0,0)
                 g_ui.update_curtains_graphic(0,0)
                 curtains = False
-                g_ui.closed_roof("Tetto Chiuso")
+                g_ui.closed_roof()
+                g_ui.update_status_roof('Chiuso')
                 roof = False
                 s.close()
-                return "E", None
+                return "E"
 
             data = rcv.decode("UTF-8")
             Logger.getLogger().debug("Data: "+data)
             if data[0] == "R":
                 if data[-1] == "1":
                     roof = True
-                    g_ui.open_roof("Tetto Aperto")
-                    g_ui.update_status_crac('tetto aperto')
+                    g_ui.open_roof()
+                    g_ui.update_status_roof("Aperto")
                 elif data[-1] == "0":
                     roof = False
-                    g_ui.closed_roof("Tetto Chiuso")
-                    g_ui.update_status_crac('tetto chiuso')
+                    g_ui.closed_roof()
+                    g_ui.update_status_roof('Chiuso')
                 elif data[-1] == "P":
                     Logger.getLogger().info("telescopio inviato alla posizione di park (park_tele) ")
-                    g_ui.update_status_crac('tele in park')
+                    g_ui.update_status_tele('Parked')
             elif data[0] == "D":
-                g_ui.update_status_crac('controllare switch tendine')
+                g_ui.update_status_curtains('controllare switch tendine')
             elif data[0] == "E":
                 # la if si potrebbe togliere, l'errore dovrebbe sempre essere bloccante
                 # ma va testato meglio
@@ -83,10 +84,12 @@ def connection(error, roof, curtains):
             else:
                 if data == "000000":
                     curtains = False
-                    g_ui.update_status_crac('tendine chiuse')
+                    g_ui.update_status_curtains('Chiuse')
+                    g_ui.update_status_tele('Parked')
                 else:
                     curtains = True
-                    g_ui.update_status_crac('tendine aperte')
+                    g_ui.update_status_curtains('Aperte')
+                    g_ui.update_status_tele('Unparked')
                 alpha_e, alpha_w = g_ui.update_curtains_text(int(data[0:3]), int(data[3:6]))
                 g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
@@ -100,9 +103,6 @@ error = False
 
 while True:
     Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
-    key, value = connection(error, roof, curtains)
+    key = connection(error, roof, curtains)
     if key == "E":
         exit(0)
-    else:
-        HOST = value[0]
-        PORT = value[1]

@@ -26,22 +26,26 @@ class Gui:
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8) # int((l/3)*2)
-        sg.theme('DarkAmber')
+        sg.theme('DarkBlue')
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
                  [sg.Text('Monitor Tende e Tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
+                 [sg.Button('Apri tetto', key='open-roof'), sg.Button('Apri Tende', key='start-curtains'), sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"), sg.Button('Esci', key="exit")],
                  [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
                  [sg.Text('Tenda est °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e', background_color="white", text_color="#2c2825")],
+                 sg.Text('  ', size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e', background_color="white", text_color="#2c2825")],
                  [sg.Text('Tenda ovest °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w', background_color="white", text_color="#2c2825")],
+                 sg.Text('  ', size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w', background_color="white", text_color="#2c2825")],
+                 [sg.Text(' ', size=(15, 1), justification='center', font=("Helvetica",12)),
+                 sg.Text('Tetto', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
+                 sg.Text('Telescopio', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
+                 sg.Text('Tendine', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE)],
                  [sg.Text('Stato del CRaC', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('Tetto chiuso',size=(15, 1),justification='center', font=("Helvetica", 12), key='aperturatetto', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
-                 sg.Text('Tele in park' , size=(15, 1), justification='center', font=("Helvetica", 12),  key ='status-CRaC', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
-                 sg.Text('Tende chiuse',size=(15, 1), justification='center', font=("Helvetica", 12), key='curtains', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825")],
-                 [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
+                 sg.Text('Chiuso', size=(15, 1),justification='center', font=("Helvetica", 12), key='status-roof', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
+                 sg.Text('Park', size=(15, 1), justification='center', font=("Helvetica", 12), key='status-tele', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
+                 sg.Text('Chiuse', size=(15, 1), justification='center', font=("Helvetica", 12), key='status-curtains', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825")],
+                 ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
@@ -69,42 +73,41 @@ class Gui:
 
         canvas = self.win.FindElement('canvas')
         alert = mess_alert
-        self.win.FindElement('aperturatetto').Update(alert)
+        self.win.FindElement('status-roof').Update(alert)
         canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
 
-
-    def update_status_roof(self, status_roof):
-        
-        """ Avvisa sullo stato del tetto in fase chiusura o di apertura """
-        
-        Logger.getLogger().debug(status_roof + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status_roof) #'Tetto in fase di apertura')
-
-
-    def closed_roof(self, status_roof):
+    def closed_roof(self):
 
         """ avvisa sullo stato chiuso del tetto """
         
         self.win.FindElement('progbar_tetto').UpdateBar(0)
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status)
 
-
-    def open_roof(self, status_roof):
+    def open_roof(self):
 
         """ avvisa sullo stato aperto del tetto """
         
         self.win.FindElement('progbar_tetto').UpdateBar(100)
-        Logger.getLogger().debug(str(status_roof) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status_roof)
 
-    def update_status_crac(self, status, color='black'):
+    def update_status_roof(self, status, color='black'):
         
-        """ Update CRaC Status """
+        """ Update Roof Status """
         
-        Logger.getLogger().info('update_status_crac in gui')
-        self.win.FindElement('status-CRaC').Update(status, text_color=color)
+        Logger.getLogger().info('update_status_roof in gui')
+        self.win.FindElement('status-roof').Update(status, text_color=color)
+
+    def update_status_tele(self, status, color='black'):
+        
+        """ Update Tele Status """
+        
+        Logger.getLogger().info('update_status_tele in gui')
+        self.win.FindElement('status-tele').Update(status, text_color=color)
+
+    def update_status_curtains(self, status, color='black'):
+        
+        """ Update Curtains Status """
+        
+        Logger.getLogger().info('update_status_curtains in gui')
+        self.win.FindElement('status-curtains').Update(status, text_color=color)
 
     def update_curtains_text(self, e_e, e_w):
 
