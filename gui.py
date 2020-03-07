@@ -22,23 +22,24 @@ class Gui:
 
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
-                 [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
+                 [sg.Text('Monitor Tende e Tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
                  [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
-                 [sg.InputText('Tetto Chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
-                 [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
-                 [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
-                 [sg.Text('stato del CRaC', size=(28, 1), justification='center', font=("Arial",8, "bold"), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('in attesa' , size=(20, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
+                 [sg.Text('Tenda est °', size=(15,1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
+                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e')],
+                 [sg.Text('Tenda ovest °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
+                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w')],
+                 [sg.Text('Stato del CRaC', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
+                 sg.InputText('Tetto chiuso',size=(15, 1),justification='center', font=("Helvetica", 12), key='aperturatetto'),
+                 sg.InputText('Tele in park' , size=(15, 1), justification='center', font=("Helvetica", 12),  key ='status-CRaC'),
+                 sg.InputText('Tende chiuse',size=(15, 1), justification='center', font=("Helvetica", 12), key='curtains')],
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
+        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Helvetica', 25), fill='#FE2E2E', text= "Tetto aperto")
         p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
         p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
         p3 = self.l/2, 1.2*(self.h/2)
@@ -69,21 +70,20 @@ class Gui:
         canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
 
-    def roof_alert(self,mess_alert):
+    def roof_alert(self, mess_alert):
 
         """Avvisa che le tende non possono essere aperte"""
 
         canvas = self.win.FindElement('canvas')
         alert = mess_alert
         self.win.FindElement('aperturatetto').Update(alert)
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= alert)
+        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Helvetica', 25), fill='#FE2E2E', text= alert)
 
 
     def update_status_roof(self, status_roof):
         """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
+        Logger.getLogger().debug(status_roof + '  questo è lo status passato alla gui')
+        self.win.FindElement('aperturatetto').Update(status_roof) #'Tetto in fase di apertura')
 
 
     def closed_roof(self, status_roof):
@@ -99,9 +99,8 @@ class Gui:
         """avvisa sullo stato aperto del tetto"""
         
         self.win.FindElement('progbar_tetto').UpdateBar(100)
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status)
+        Logger.getLogger().debug(str(status_roof) + '  questo è lo status passato alla gui')
+        self.win.FindElement('aperturatetto').Update(status_roof)
 
     def update_status_crac(self, status, color='black'):
         

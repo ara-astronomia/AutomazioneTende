@@ -91,7 +91,7 @@ def connection(error, roof, curtains):
                 g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
-PORT = config.Config.getInt("port", "server")        # The port used by the server
+PORT = config.Config.getInt("port", "server")  # The port used by the server
 
 g_ui = gui.Gui()
 roof = False
