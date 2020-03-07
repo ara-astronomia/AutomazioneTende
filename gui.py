@@ -13,62 +13,55 @@ class Gui:
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
+        self.tenda_e = None
+        self.line2_e = None
+        self.line3_e = None
+        self.line4_e = None
+        self.tenda_w = None
+        self.line2_w = None
+        self.line3_w = None
+        self.line4_w = None
 
-        self.l=400
-        self.t=self.l/4.25
-        self.delta_pt= 1.5*self.t
-        self.h=int(self.l/1.8) # int((l/3)*2)
-        sg.ChangeLookAndFeel('GreenTan')
-
+        self.l = 400
+        self.t = self.l / 4.25
+        self.delta_pt = 1.5 * self.t
+        self.h = int(self.l / 1.8) # int((l/3)*2)
+        sg.theme('DarkAmber')
         menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [[sg.Menu(menu_def, tearoff=True)],
                  [sg.Text('Monitor Tende e Tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
                  [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
-                 [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
+                 [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
                  [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
-                 [sg.Text('Tenda est °', size=(15,1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e')],
+                 [sg.Text('Tenda est °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
+                 sg.Text('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e', background_color="white", text_color="#2c2825")],
                  [sg.Text('Tenda ovest °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w')],
+                 sg.Text('  ' , size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w', background_color="white", text_color="#2c2825")],
                  [sg.Text('Stato del CRaC', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('Tetto chiuso',size=(15, 1),justification='center', font=("Helvetica", 12), key='aperturatetto'),
-                 sg.InputText('Tele in park' , size=(15, 1), justification='center', font=("Helvetica", 12),  key ='status-CRaC'),
-                 sg.InputText('Tende chiuse',size=(15, 1), justification='center', font=("Helvetica", 12), key='curtains')],
+                 sg.Text('Tetto chiuso',size=(15, 1),justification='center', font=("Helvetica", 12), key='aperturatetto', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
+                 sg.Text('Tele in park' , size=(15, 1), justification='center', font=("Helvetica", 12),  key ='status-CRaC', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
+                 sg.Text('Tende chiuse',size=(15, 1), justification='center', font=("Helvetica", 12), key='curtains', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825")],
                  [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
-        canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Helvetica', 25), fill='#FE2E2E', text= "Tetto aperto")
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
+        self.base_draw()
 
     def base_draw(self):
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
+        p1 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), self.h)
+        p2 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), ((self.h / 12) * 10))
+        p3 = self.l / 2, 1.2 * (self.h / 2)
+        p4 = ((int((self.l / 2) + (self.delta_pt / 2))) + (0.9 * self.t), ((self.h / 12) * 10))
+        p5 = ((int((self.l / 2) + (self.delta_pt / 2))) + (0.9 * self.t), self.h)
+        p6 = 1, self.h
+        p7 = self.l - 1, self.h
+        p8 = self.l - 1, (self.h / 11) * 8
+        p9 = self.l / 2, (self.h / 11) * 4.5
+        p10 = 1, (self.h / 11) * 8
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
+        canvas.TKCanvas.create_polygon((p6, p7, p8, p9, p10), width=1, outline='grey', fill='#D8D8D8')
+        canvas.TKCanvas.create_polygon((p1, p5, p4, p3, p2), width=1, outline='grey', fill='#848484')
 
     def roof_alert(self, mess_alert):
 
@@ -77,17 +70,21 @@ class Gui:
         canvas = self.win.FindElement('canvas')
         alert = mess_alert
         self.win.FindElement('aperturatetto').Update(alert)
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Helvetica', 25), fill='#FE2E2E', text= alert)
+        canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
 
 
     def update_status_roof(self, status_roof):
-        """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
+        
+        """ Avvisa sullo stato del tetto in fase chiusura o di apertura """
+        
         Logger.getLogger().debug(status_roof + '  questo è lo status passato alla gui')
         self.win.FindElement('aperturatetto').Update(status_roof) #'Tetto in fase di apertura')
 
 
     def closed_roof(self, status_roof):
-        """avvisa sullo stato chiuso del tetto"""
+
+        """ avvisa sullo stato chiuso del tetto """
+        
         self.win.FindElement('progbar_tetto').UpdateBar(0)
         status = status_roof
         Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
@@ -96,7 +93,7 @@ class Gui:
 
     def open_roof(self, status_roof):
 
-        """avvisa sullo stato aperto del tetto"""
+        """ avvisa sullo stato aperto del tetto """
         
         self.win.FindElement('progbar_tetto').UpdateBar(100)
         Logger.getLogger().debug(str(status_roof) + '  questo è lo status passato alla gui')
@@ -107,7 +104,7 @@ class Gui:
         """ Update CRaC Status """
         
         Logger.getLogger().info('update_status_crac in gui')
-        self.win.FindElement('status-CRaC').Update(status, text_color = color)
+        self.win.FindElement('status-CRaC').Update(status, text_color=color)
 
     def update_curtains_text(self, e_e, e_w):
 
@@ -126,77 +123,46 @@ class Gui:
 
         """ Draw curtains position with canvas """
 
-        #-------definizione settori angolari tende -----------#
+        self.__delete_polygons__(self.tenda_e, self.line2_e, self.line3_e, self.line4_e)
+        self.__delete_polygons__(self.tenda_w, self.line2_w, self.line3_w, self.line4_w)
 
+        self.tenda_e, self.line2_e, self.line3_e, self.line4_e = self.__create_curtain_polygon__(alpha_e, "E")
+        self.tenda_w, self.line2_w, self.line3_w, self.line4_w = self.__create_curtain_polygon__(alpha_w, "W")
+
+    def __delete_polygons__(self, *polygons_and_lines):
+        canvas = self.win.FindElement('canvas')
+        print(polygons_and_lines)
+        for polygon in polygons_and_lines:
+            print(polygon)
+            canvas.TKCanvas.delete(polygon)
+    
+    def __create_curtain_polygon__(self, alpha, orientation):
         conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
-        alpha_e_min = -12
-        alpha_w_min = -12
-        angolo_e_min=alpha_e_min*conv # valore dell'inclinazione della base della tenda est in radianti
-        angolo_w_min=alpha_w_min*conv # valore dell'inclinazione della base della tenda west in radianti
-        angolo1_e = ((alpha_e/4)+alpha_e_min) * conv
-        angolo2_e = ((alpha_e/2)+alpha_e_min) * conv
-        angolo3_e = (((alpha_e/4)*3)+alpha_e_min) * conv
-        angolo_e = (alpha_e + alpha_e_min) * conv
+        alpha_min = -12
+        angolo_min=alpha_min*conv # valore dell'inclinazione della base della tenda est in radianti
+        angolo1 = ((alpha / 4) + alpha_min) * conv
+        angolo2 = ((alpha / 2) + alpha_min) * conv
+        angolo3 = (((alpha / 4) * 3) + alpha_min) * conv
+        angolo = (alpha + alpha_min) * conv
 
-        angolo1_w = ((alpha_w/4)+alpha_w_min) * conv
-        angolo2_w = ((alpha_w/2)+alpha_w_min) * conv
-        angolo3_w = (((alpha_w/4)*3)+alpha_w_min) * conv
-        angolo_w = (alpha_w + alpha_w_min)* conv
+        
+        i = 1 if orientation == "E" else -1
 
-      #-------------parametri grafici tende--------#
+        y = int(self.h/3)*2
+        x = int((self.l/2)+(i*self.delta_pt / 2)) # int(l/5)*3
+        pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
+        pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
+        pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
+        pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
+        pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
 
-        #---origine tende----#
-        x_e = int((self.l/2)+(self.delta_pt/2)) # int(l/5)*3
-        y_e = int(self.h/3)*2
-
-        x_w = int((self.l/2)-(self.delta_pt/2)) # int(l/5)*2
-        y_w = int(self.h/3)*2
-
-        #-------vertici poligoni tende----------#
-        #delete = canvas.TKCanvas.delete(canvas)
+        pt = (x, y)
 
         canvas = self.win.FindElement('canvas')
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
 
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8') # pareti osservatorio
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484') # pareti osservatorio
-
-        pt_e = (x_e, y_e)
-        pt_w = (x_w, y_w)
-
-        pt_e1= (x_e+(int(math.cos(angolo_e_min)*self.t)),y_e-(int(math.sin(angolo_e_min)*self.t)))
-        pt_e2= (x_e+(int(math.cos(angolo1_e)*self.t)),y_e-(int(math.sin(angolo1_e)*self.t)))
-        pt_e3= (x_e+(int(math.cos(angolo2_e)*self.t)),y_e-(int(math.sin(angolo2_e)*self.t)))
-        pt_e4= (x_e+(int(math.cos(angolo3_e)*self.t)),y_e-(int(math.sin(angolo3_e)*self.t)))
-        pt_e5= (x_e+(int(math.cos(angolo_e)*self.t)),y_e-(int(math.sin(angolo_e)*self.t)))
-
-        canvas.TKCanvas.create_polygon((pt_e,pt_e1,pt_e2,pt_e3,pt_e4,pt_e5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_e
-
-        canvas.TKCanvas.create_line((pt_e,pt_e2), width=1,fill='#E0F8F7') #line2_e
-        canvas.TKCanvas.create_line((pt_e,pt_e3), width=1,fill='#E0F8F7') #line3_e
-        canvas.TKCanvas.create_line((pt_e,pt_e4), width=1,fill='#E0F8F7') #line4_e
-
-
-        pt_w1= (x_w-(int(math.cos(angolo_w_min)*self.t)),y_w-(int(math.sin(angolo_w_min)*self.t)))
-        pt_w2= (x_w-(int(math.cos(angolo1_w)*self.t)),y_w-(int(math.sin(angolo1_w)*self.t)))
-        pt_w3= (x_w-(int(math.cos(angolo2_w)*self.t)),y_w-(int(math.sin(angolo2_w)*self.t)))
-        pt_w4= (x_w-(int(math.cos(angolo3_w)*self.t)),y_w-(int(math.sin(angolo3_w)*self.t)))
-        pt_w5= (x_w-(int(math.cos(angolo_w)*self.t)),y_w-(int(math.sin(angolo_w)*self.t)))
-
-        canvas.TKCanvas.create_polygon((pt_w,pt_w1,pt_w2,pt_w3,pt_w4,pt_w5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_w
-
-        canvas.TKCanvas.create_line((pt_w,pt_w2), width=1,fill='#E0F8F7') #line2_w
-        canvas.TKCanvas.create_line((pt_w,pt_w3), width=1,fill='#E0F8F7') #line3_w
-        canvas.TKCanvas.create_line((pt_w,pt_w4), width=1,fill='#E0F8F7') #line4_w
-
-      #---------fine parte grafica ------#
+        return (
+                canvas.TKCanvas.create_polygon((pt, pt1, pt2, pt3, pt4, pt5), width=1, outline='#E0F8F7', fill='#0B4C5F'),
+                canvas.TKCanvas.create_line((pt, pt2), width=1, fill='#E0F8F7'),
+                canvas.TKCanvas.create_line((pt, pt3), width=1, fill='#E0F8F7'),
+                canvas.TKCanvas.create_line((pt, pt4), width=1, fill='#E0F8F7')
+            )
