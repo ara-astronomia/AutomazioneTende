@@ -27,24 +27,60 @@ class Gui:
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8) # int((l/3)*2)
         sg.theme('DarkBlue')
-        menu_def = [['File', ['Exit']],['Help', 'About...']]
-        layout = [[sg.Menu(menu_def, tearoff=True)],
-                 [sg.Text('Monitor Tende e Tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Button('Apri tetto', key='open-roof'), sg.Button('Apri Tende', key='start-curtains'), sg.Button('Chiudi tende', key="stop-curtains"), sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"), sg.Button('Esci', key="exit")],
-                 [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
-                 [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
-                 [sg.Text('Tenda est °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('  ', size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_e', background_color="white", text_color="#2c2825")],
-                 [sg.Text('Tenda ovest °', size=(15, 1), justification='center', font=("Helvetica", 12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('  ', size=(3, 1), justification='left', font=("Helvetica", 12),  key ='apert_w', background_color="white", text_color="#2c2825")],
-                 [sg.Text(' ', size=(15, 1), justification='center', font=("Helvetica",12)),
-                 sg.Text('Tetto', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('Telescopio', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('Tendine', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE)],
-                 [sg.Text('Stato del CRaC', size=(15, 1), justification='center', font=("Helvetica",12), relief=sg.RELIEF_RIDGE),
-                 sg.Text('Chiuso', size=(15, 1),justification='center', font=("Helvetica", 12), key='status-roof', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
-                 sg.Text('Park', size=(15, 1), justification='center', font=("Helvetica", 12), key='status-tele', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825"),
-                 sg.Text('Chiuse', size=(15, 1), justification='center', font=("Helvetica", 12), key='status-curtains', relief=sg.RELIEF_RIDGE, background_color="white", text_color="#2c2825")],
+#        menu_def = [['File', ['Exit']],['Help', 'About...']]
+        layout = [
+                    [sg.Menu([], tearoff=True)],
+                    [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
+                    [
+                        sg.Frame(layout=([[
+                            sg.Button('Apri', key='open-roof', size=(6, 1)), 
+                            sg.Button('Chiudi', key="close-roof", size=(6, 1))
+                        ]]), title="Tetto"),
+                        sg.Frame(layout=([[
+                            sg.Button('Park', key="park-tele", size=(6, 1))
+                        ]]), title="Telescopio"),
+                        sg.Frame(layout=([[
+                            sg.Button('Attiva', key='start-curtains', size=(9, 1)), 
+                            sg.Button('Disattiva', key="stop-curtains", size=(9, 1)),
+                            sg.Button('Calibra', key="calibrate-curtains", size=(9, 1))
+                        ]]), title="Tende")
+                    ],
+                    [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
+                    [sg.Canvas(size=(self.l,self.h), background_color='grey', key='canvas')],
+                    [sg.Frame(layout=
+                        ([[
+                            sg.Column(layout=(
+                                [sg.Text('Tetto', size=(19, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Chiuso', size=(19, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                            )),
+                            sg.Column(layout=(
+                                [sg.Text('Telescopio', size=(19, 1), justification='center', font=("Helvetica", 12))], 
+                                [sg.Text('Parked', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                            )),
+                            sg.Column(layout=(
+                                [sg.Text('Tendine', size=(19, 1), justification='center', font=("Helvetica", 12))], 
+                                [sg.Text('Chiuse', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                            ))
+                        ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
+                    )],
+                    [sg.Frame(layout=
+                        ([[
+                            sg.Column(layout=(
+                                [sg.Text('Est', size=(15, 1), justification='left', font=("Helvetica", 12))],
+                                [
+                                    sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825"),
+                                    sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
+                                ]
+                            )),
+                            sg.Column(layout=(
+                                [sg.Text('Ovest', size=(15, 1), justification='left', font=("Helvetica", 12))], 
+                                [
+                                    sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825"),
+                                    sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
+                                ]
+                            ))
+                        ]]), title='Altezza Tende', relief=sg.RELIEF_GROOVE
+                    )]
                  ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
@@ -88,33 +124,31 @@ class Gui:
         
         self.win.FindElement('progbar_tetto').UpdateBar(100)
 
-    def update_status_roof(self, status, color='black'):
+    def update_status_roof(self, status, text_color='white', background_color='red'):
         
         """ Update Roof Status """
         
         Logger.getLogger().info('update_status_roof in gui')
-        self.win.FindElement('status-roof').Update(status, text_color=color)
+        self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_status_tele(self, status, color='black'):
+    def update_status_tele(self, status, text_color='white', background_color='red'):
         
         """ Update Tele Status """
         
         Logger.getLogger().info('update_status_tele in gui')
-        self.win.FindElement('status-tele').Update(status, text_color=color)
+        self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_status_curtains(self, status, color='black'):
+    def update_status_curtains(self, status, text_color='white', background_color='red'):
         
         """ Update Curtains Status """
         
         Logger.getLogger().info('update_status_curtains in gui')
-        self.win.FindElement('status-curtains').Update(status, text_color=color)
+        self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e, e_w):
 
         """ Update curtains angular values """
 
-        print(e_e)
-        print(e_w)
         alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
         alpha_w = int(e_w*float("{0:.3f}".format(self.increm_w))) # COME SOPRA
 
@@ -134,9 +168,7 @@ class Gui:
 
     def __delete_polygons__(self, *polygons_and_lines):
         canvas = self.win.FindElement('canvas')
-        print(polygons_and_lines)
         for polygon in polygons_and_lines:
-            print(polygon)
             canvas.TKCanvas.delete(polygon)
     
     def __create_curtain_polygon__(self, alpha, orientation):

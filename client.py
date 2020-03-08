@@ -50,12 +50,6 @@ def connection(error, roof, curtains):
             rcv = s.recv(6)
 
             if ev1 is None or ev1 == "exit" or ev1 == "shutdown":
-                g_ui.update_curtains_text(0,0)
-                g_ui.update_curtains_graphic(0,0)
-                curtains = False
-                g_ui.closed_roof()
-                g_ui.update_status_roof('Chiuso')
-                roof = False
                 s.close()
                 return "E"
 
@@ -65,7 +59,7 @@ def connection(error, roof, curtains):
                 if data[-1] == "1":
                     roof = True
                     g_ui.open_roof()
-                    g_ui.update_status_roof("Aperto")
+                    g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
                 elif data[-1] == "0":
                     roof = False
                     g_ui.closed_roof()
@@ -88,8 +82,8 @@ def connection(error, roof, curtains):
                     g_ui.update_status_tele('Parked')
                 else:
                     curtains = True
-                    g_ui.update_status_curtains('Aperte')
-                    g_ui.update_status_tele('Unparked')
+                    g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
+                    g_ui.update_status_tele('Unparked', text_color="#2c2825", background_color="green")
                 alpha_e, alpha_w = g_ui.update_curtains_text(int(data[0:3]), int(data[3:6]))
                 g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
