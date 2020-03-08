@@ -188,6 +188,6 @@ class AutomazioneTende:
             Logger.getLogger().debug(self.prevCoord)
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
-            # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
+            # altrimenti muovendosi a piccoli movimenti le tende non verrebbero mai spostate
         time.sleep(config.Config.getFloat("sleep", "automazione"))
         return 1

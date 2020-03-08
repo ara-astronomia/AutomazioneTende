@@ -22,7 +22,7 @@ def connection(error, roof, curtains):
                 
             elif ev1 == 'close-roof':
                 if curtains is True:
-                    g_ui.roof_alert('Attenzione tendine aperte')
+                    g_ui.roof_alert('Attenzione tende aperte')
                     continue
                 v = "T"
                 Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
@@ -68,7 +68,7 @@ def connection(error, roof, curtains):
                     Logger.getLogger().info("telescopio inviato alla posizione di park (park_tele) ")
                     g_ui.update_status_tele('Parked')
             elif data[0] == "D":
-                g_ui.update_status_curtains('controllare switch tendine')
+                g_ui.update_status_curtains('controllare switch tende')
             elif data[0] == "E":
                 # la if si potrebbe togliere, l'errore dovrebbe sempre essere bloccante
                 # ma va testato meglio

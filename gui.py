@@ -22,7 +22,7 @@ class Gui:
         self.line3_w = None
         self.line4_w = None
 
-        self.l = 400
+        self.l = 390
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8) # int((l/3)*2)
@@ -46,7 +46,19 @@ class Gui:
                         ]]), title="Tende")
                     ],
                     [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
-                    [sg.Canvas(size=(self.l,self.h), background_color='grey', key='canvas')],
+                    [
+                        sg.Canvas(size=(self.l,self.h), background_color='grey', key='canvas'),
+                        sg.Frame(layout=
+                            ([[
+                                sg.Column(layout=(
+                                    [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (35, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825", pad=(0, 0))],
+                                    [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))], 
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 35)))]
+                                ))
+                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0, 0)
+                        )
+                    ],
                     [sg.Frame(layout=
                         ([[
                             sg.Column(layout=(
@@ -58,29 +70,30 @@ class Gui:
                                 [sg.Text('Parked', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
                             )),
                             sg.Column(layout=(
-                                [sg.Text('Tendine', size=(19, 1), justification='center', font=("Helvetica", 12))], 
+                                [sg.Text('Tende', size=(19, 1), justification='center', font=("Helvetica", 12))], 
                                 [sg.Text('Chiuse', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                             ))
                         ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
-                    )],
-                    [sg.Frame(layout=
-                        ([[
-                            sg.Column(layout=(
-                                [sg.Text('Est', size=(15, 1), justification='left', font=("Helvetica", 12))],
-                                [
-                                    sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825"),
-                                    sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
-                                ]
-                            )),
-                            sg.Column(layout=(
-                                [sg.Text('Ovest', size=(15, 1), justification='left', font=("Helvetica", 12))], 
-                                [
-                                    sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825"),
-                                    sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
-                                ]
-                            ))
-                        ]]), title='Altezza Tende', relief=sg.RELIEF_GROOVE
                     )]
+                    #,
+                    # [sg.Frame(layout=
+                    #     ([[
+                    #         sg.Column(layout=(
+                    #             [sg.Text('Est', size=(15, 1), justification='left', font=("Helvetica", 12))],
+                    #             [
+                    #                 sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825"),
+                    #                 sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
+                    #             ]
+                    #         )),
+                    #         sg.Column(layout=(
+                    #             [sg.Text('Ovest', size=(15, 1), justification='left', font=("Helvetica", 12))], 
+                    #             [
+                    #                 sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825"),
+                    #                 sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
+                    #             ]
+                    #         ))
+                    #     ]]), title='Altezza Tende', relief=sg.RELIEF_GROOVE
+                    # )]
                  ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
