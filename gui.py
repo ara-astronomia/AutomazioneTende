@@ -179,23 +179,7 @@ class Gui:
             canvas.TKCanvas.delete(polygon)
 
     def __create_curtain_polygon__(self, alpha: int, orientation: Orientation) -> tuple:
-        angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda est in radianti
-        angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
-        angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
-        angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
-        angolo = (alpha + self.alpha_min_conf) * self.conv
-
-        i = 1 if orientation == Orientation.EAST else -1
-
-        y = int(self.h / 3) * 2
-        x = int((self.l / 2) + (i * self.delta_pt / 2))
-        pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
-        pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
-        pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
-        pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
-        pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
-
-        pt = (x, y)
+        pt, pt1, pt2, pt3, pt4, pt5 = self.__create_polygon_coordinates__(alpha, orientation)
 
         canvas = self.win.FindElement('canvas')
 
@@ -205,3 +189,24 @@ class Gui:
                 canvas.TKCanvas.create_line((pt, pt3), width=1, fill='#E0F8F7'),
                 canvas.TKCanvas.create_line((pt, pt4), width=1, fill='#E0F8F7')
             )
+    
+    def __create_polygon_coordinates__(self, alpha: int, orientation: Orientation) -> Tuple[Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
+            angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda est in radianti
+            angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
+            angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
+            angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
+            angolo = (alpha + self.alpha_min_conf) * self.conv
+
+            i = 1 if orientation == Orientation.EAST else -1
+
+            y = int(self.h / 3) * 2
+            x = int((self.l / 2) + (i * self.delta_pt / 2))
+            pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
+            pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
+            pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
+            pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
+            pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
+
+            pt = (x, y)
+
+            return pt, pt1, pt2, pt3, pt4, pt5
