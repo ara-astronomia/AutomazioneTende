@@ -1,10 +1,11 @@
 import time, config
 from logger import Logger
 from status import Status
+from typing import NoReturn
 
 class AutomazioneTende:
 #(Thread):
-    def __init__(self, mock=False, thesky=False):
+    def __init__(self, mock: bool = False, thesky: bool = False):
 #        Thread.__init__(self)
         self.mock = mock
         self.thesky = thesky
@@ -53,7 +54,7 @@ class AutomazioneTende:
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
-    def park_tele(self):
+    def park_tele(self) -> bool:
         """ Park the Telescope """
         try:
             self.telescopio.open_connection()
@@ -64,7 +65,7 @@ class AutomazioneTende:
         #    Logger.getLogger().error("posizione di park raggiunta")
         return True
 
-    def read_altaz_mount_coordinate(self):
+    def read_altaz_mount_coordinate(self) -> dict:
 
         """ Read Telescope Coordinates """
         try:
@@ -81,13 +82,13 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
             raise
 
-    def is_curtains_status_danger(self):
+    def is_curtains_status_danger(self) -> bool:
 
         """ Read the height of the curtains """
 
         return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
 
-    def move_curtains_height(self, coord):
+    def move_curtains_height(self, coord: dict(str, str)):
 
         """ Change the height of the curtains to based on the given Coordinates """
 
@@ -127,7 +128,7 @@ class AutomazioneTende:
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(int(step_e)) # move curtain east to step
 
-    def park_curtains(self):
+    def park_curtains(self) -> dict(str, str):
         """" Bring down both curtains """
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
@@ -139,13 +140,13 @@ class AutomazioneTende:
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
-    def diff_coordinates(self, prevCoord, coord):
+    def diff_coordinates(self, prevCoord: dict(str, str), coord: dict(str, str)) -> bool:
 
         """ Check if delta coord is enough to move the curtains """
 
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
-    def open_roof(self):
+    def open_roof(self) -> bool:
         self.telescopio.open_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().info("Lo status tetto iniziale: %s ", str(status_roof))
@@ -155,7 +156,7 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         return status_roof == Status.OPEN
 
-    def close_roof(self):
+    def close_roof(self) -> bool:
         self.telescopio.close_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto iniziale: %s", str(status_roof))
@@ -165,13 +166,13 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         return status_roof == Status.CLOSED
 
-    def exit_program(self,n=0):
+    def exit_program(self, n: int = 0) -> NoReturn:
         from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
         self.telescopio.close_connection()
         GPIOConfig().cleanup(n)
 
-    def exec(self):
+    def exec(self) -> int:
         if not self.started:
             self.coord = self.park_curtains()
             self.prevCoord = self.coord

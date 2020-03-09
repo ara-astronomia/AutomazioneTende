@@ -2,7 +2,7 @@ import PySimpleGUI as sg
 import time, config, socket, gui
 from logger import Logger
 
-def connection(error, roof, curtains):
+def connection(error: bool, roof: bool, curtains: bool) -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:

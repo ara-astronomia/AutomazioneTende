@@ -1,7 +1,9 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg # type: ignore
 import math, config
 from logger import Logger
 from tkinter import PhotoImage, NW, DISABLED
+from typing import Tuple
+from orientation import Orientation
 
 class Gui:
 
@@ -14,6 +16,7 @@ class Gui:
         self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
+        self.conv = 2 * math.pi / 360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
         self.tenda_e = None
         self.line2_e = None
         self.line3_e = None
@@ -80,7 +83,7 @@ class Gui:
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.base_draw()
 
-    def create_background_image(self):
+    def create_background_image(self) -> None:
 
         """ Create the background image for the sky when the roof is open and hides immediately it """
 
@@ -89,21 +92,21 @@ class Gui:
         self.image = canvas.TKCanvas.create_image(0, 0, image=self.img_fondo, anchor=NW)
         self.hide_background_image()
 
-    def hide_background_image(self):
+    def hide_background_image(self) -> None:
 
         """ Hide the sky when the roof is closed """
 
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='hidden')
 
-    def show_background_image(self):
+    def show_background_image(self) -> None:
 
         """ Show the sky when the roof is open """
 
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='normal')
 
-    def base_draw(self):
+    def base_draw(self) -> None:
         p1 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), self.h)
         p2 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), ((self.h / 12) * 10))
         p3 = self.l / 2, 1.2 * (self.h / 2)
@@ -119,7 +122,7 @@ class Gui:
         canvas.TKCanvas.create_polygon((p6, p7, p8, p9, p10), width=1, outline='grey', fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1, p5, p4, p3, p2), width=1, outline='grey', fill='#848484')
 
-    def roof_alert(self, mess_alert):
+    def roof_alert(self, mess_alert: str) -> None:
 
         """Avvisa che le tende non possono essere aperte"""
 
@@ -128,66 +131,64 @@ class Gui:
         self.win.FindElement('status-roof').Update(alert)
         canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
 
-    def update_status_roof(self, status, text_color='white', background_color='red'):
+    def update_status_roof(self, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Roof Status """
 
         Logger.getLogger().info('update_status_roof in gui')
         self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_status_tele(self, status, text_color='white', background_color='red'):
+    def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Tele Status """
 
         Logger.getLogger().info('update_status_tele in gui')
         self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_status_curtains(self, status, text_color='white', background_color='red'):
+    def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Curtains Status """
 
         Logger.getLogger().info('update_status_curtains in gui')
         self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_curtains_text(self, e_e, e_w):
+    def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
 
         """ Update curtains angular values """
 
-        alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
-        alpha_w = int(e_w*float("{0:.3f}".format(self.increm_w))) # COME SOPRA
+        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
+        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w))) # COME SOPRA
 
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)
         return alpha_e, alpha_w
 
-    def update_curtains_graphic(self, alpha_e, alpha_w):
+    def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
 
         """ Draw curtains position with canvas """
 
         self.__delete_polygons__(self.tenda_e, self.line2_e, self.line3_e, self.line4_e)
         self.__delete_polygons__(self.tenda_w, self.line2_w, self.line3_w, self.line4_w)
 
-        self.tenda_e, self.line2_e, self.line3_e, self.line4_e = self.__create_curtain_polygon__(alpha_e, "E")
-        self.tenda_w, self.line2_w, self.line3_w, self.line4_w = self.__create_curtain_polygon__(alpha_w, "W")
+        self.tenda_e, self.line2_e, self.line3_e, self.line4_e = self.__create_curtain_polygon__(alpha_e, Orientation.EAST)
+        self.tenda_w, self.line2_w, self.line3_w, self.line4_w = self.__create_curtain_polygon__(alpha_w, Orientation.WEST)
 
-    def __delete_polygons__(self, *polygons_and_lines):
+    def __delete_polygons__(self, *polygons_and_lines) -> None:
         canvas = self.win.FindElement('canvas')
         for polygon in polygons_and_lines:
             canvas.TKCanvas.delete(polygon)
 
-    def __create_curtain_polygon__(self, alpha, orientation):
-        conv = 2 * math.pi / 360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
-        angolo_min = self.alpha_min_conf * conv # valore dell'inclinazione della base della tenda est in radianti
-        angolo1 = ((alpha / 4) + self.alpha_min_conf) * conv
-        angolo2 = ((alpha / 2) + self.alpha_min_conf) * conv
-        angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * conv
-        angolo = (alpha + self.alpha_min_conf) * conv
+    def __create_curtain_polygon__(self, alpha: int, orientation: Orientation) -> tuple:
+        angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda est in radianti
+        angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
+        angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
+        angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
+        angolo = (alpha + self.alpha_min_conf) * self.conv
 
+        i = 1 if orientation == Orientation.EAST else -1
 
-        i = 1 if orientation == "E" else -1
-
-        y = int(self.h/3)*2
-        x = int((self.l/2)+(i*self.delta_pt / 2)) # int(l/5)*3
+        y = int(self.h / 3) * 2
+        x = int((self.l / 2) + (i * self.delta_pt / 2))
         pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
         pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
         pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
