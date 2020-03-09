@@ -1,7 +1,7 @@
 import PySimpleGUI as sg
 import math, config
 from logger import Logger
-from tkinter import PhotoImage, NW
+from tkinter import PhotoImage, NW, DISABLED
 
 class Gui:
 
@@ -21,13 +21,14 @@ class Gui:
         self.line2_w = None
         self.line3_w = None
         self.line4_w = None
+        self.img_fondo = None
+        self.image = None
 
         self.l = 390
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
-        self.h = int(self.l / 1.8) # int((l/3)*2)
+        self.h = int(self.l / 1.8)
         sg.theme('DarkBlue')
-#        menu_def = [['File', ['Exit']],['Help', 'About...']]
         layout = [
                     [sg.Menu([], tearoff=True)],
                     [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
@@ -75,30 +76,25 @@ class Gui:
                             ))
                         ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
-                    #,
-                    # [sg.Frame(layout=
-                    #     ([[
-                    #         sg.Column(layout=(
-                    #             [sg.Text('Est', size=(15, 1), justification='left', font=("Helvetica", 12))],
-                    #             [
-                    #                 sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825"),
-                    #                 sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
-                    #             ]
-                    #         )),
-                    #         sg.Column(layout=(
-                    #             [sg.Text('Ovest', size=(15, 1), justification='left', font=("Helvetica", 12))], 
-                    #             [
-                    #                 sg.Text('0', size=(5, 1), justification='left', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825"),
-                    #                 sg.Text('°', size=(1, 1), justification='right', font=("Helvetica", 12))
-                    #             ]
-                    #         ))
-                    #     ]]), title='Altezza Tende', relief=sg.RELIEF_GROOVE
-                    # )]
                  ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
-        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         self.base_draw()
+
+    def create_background_image(self):
+        canvas = self.win.FindElement('canvas')
+        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
+        self.image = canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
+    
+    def remove_background_image(self):
+        canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.itemconfigure(self.image, state='hidden')
+
+    def set_background_image(self):
+        if not self.img_fondo:
+            self.create_background_image()
+        canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.itemconfigure(self.image, state='normal')
 
     def base_draw(self):
         p1 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), self.h)
@@ -112,7 +108,7 @@ class Gui:
         p9 = self.l / 2, (self.h / 11) * 4.5
         p10 = 1, (self.h / 11) * 8
         canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
+        self.create_background_image()
         canvas.TKCanvas.create_polygon((p6, p7, p8, p9, p10), width=1, outline='grey', fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1, p5, p4, p3, p2), width=1, outline='grey', fill='#848484')
 
@@ -130,12 +126,14 @@ class Gui:
         """ avvisa sullo stato chiuso del tetto """
         
         self.win.FindElement('progbar_tetto').UpdateBar(0)
+        self.remove_background_image()
 
     def open_roof(self):
 
         """ avvisa sullo stato aperto del tetto """
         
         self.win.FindElement('progbar_tetto').UpdateBar(100)
+        self.set_background_image()
 
     def update_status_roof(self, status, text_color='white', background_color='red'):
         
