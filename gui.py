@@ -11,6 +11,7 @@ class Gui:
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
         self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
+        self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
         self.tenda_e = None
@@ -34,19 +35,18 @@ class Gui:
                     [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('Apri', key='open-roof', size=(6, 1)), 
+                            sg.Button('Apri', key='open-roof', size=(6, 1)),
                             sg.Button('Chiudi', key="close-roof", size=(6, 1))
                         ]]), title="Tetto"),
                         sg.Frame(layout=([[
                             sg.Button('Park', key="park-tele", size=(6, 1))
                         ]]), title="Telescopio"),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key='start-curtains', size=(9, 1)), 
+                            sg.Button('Attiva', key='start-curtains', size=(9, 1)),
                             sg.Button('Disattiva', key="stop-curtains", size=(9, 1)),
                             sg.Button('Calibra', key="calibrate-curtains", size=(9, 1))
                         ]]), title="Tende")
                     ],
-                    [sg.ProgressBar((100), orientation='h', size=(37, 25), key='progbar_tetto')],
                     [
                         sg.Canvas(size=(self.l,self.h), background_color='grey', key='canvas'),
                         sg.Frame(layout=
@@ -54,25 +54,25 @@ class Gui:
                                 sg.Column(layout=(
                                     [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (35, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825", pad=(0, 0))],
-                                    [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))], 
+                                    [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 35)))]
                                 ))
-                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0, 0)
+                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0,0)
                         )
                     ],
                     [sg.Frame(layout=
                         ([[
                             sg.Column(layout=(
-                                [sg.Text('Tetto', size=(19, 1), justification='center', font=("Helvetica", 12))],
-                                [sg.Text('Chiuso', size=(19, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Chiuso', size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                             )),
                             sg.Column(layout=(
-                                [sg.Text('Telescopio', size=(19, 1), justification='center', font=("Helvetica", 12))], 
-                                [sg.Text('Parked', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                                [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Parked', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
                             )),
                             sg.Column(layout=(
-                                [sg.Text('Tende', size=(19, 1), justification='center', font=("Helvetica", 12))], 
-                                [sg.Text('Chiuse', size=(19, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                             ))
                         ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
@@ -80,12 +80,13 @@ class Gui:
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.base_draw()
+        self.remove_background_image()
 
     def create_background_image(self):
         canvas = self.win.FindElement('canvas')
         self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
         self.image = canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-    
+
     def remove_background_image(self):
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='hidden')
@@ -124,35 +125,33 @@ class Gui:
     def closed_roof(self):
 
         """ avvisa sullo stato chiuso del tetto """
-        
-        self.win.FindElement('progbar_tetto').UpdateBar(0)
+
         self.remove_background_image()
 
     def open_roof(self):
 
         """ avvisa sullo stato aperto del tetto """
-        
-        self.win.FindElement('progbar_tetto').UpdateBar(100)
+
         self.set_background_image()
 
     def update_status_roof(self, status, text_color='white', background_color='red'):
-        
+
         """ Update Roof Status """
-        
+
         Logger.getLogger().info('update_status_roof in gui')
         self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
     def update_status_tele(self, status, text_color='white', background_color='red'):
-        
+
         """ Update Tele Status """
-        
+
         Logger.getLogger().info('update_status_tele in gui')
         self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
 
     def update_status_curtains(self, status, text_color='white', background_color='red'):
-        
+
         """ Update Curtains Status """
-        
+
         Logger.getLogger().info('update_status_curtains in gui')
         self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
 
@@ -181,17 +180,17 @@ class Gui:
         canvas = self.win.FindElement('canvas')
         for polygon in polygons_and_lines:
             canvas.TKCanvas.delete(polygon)
-    
+
     def __create_curtain_polygon__(self, alpha, orientation):
         conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
-        alpha_min = -12
+        alpha_min = self.alpha_min_conf
         angolo_min=alpha_min*conv # valore dell'inclinazione della base della tenda est in radianti
         angolo1 = ((alpha / 4) + alpha_min) * conv
         angolo2 = ((alpha / 2) + alpha_min) * conv
         angolo3 = (((alpha / 4) * 3) + alpha_min) * conv
         angolo = (alpha + alpha_min) * conv
 
-        
+
         i = 1 if orientation == "E" else -1
 
         y = int(self.h/3)*2
