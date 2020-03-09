@@ -58,11 +58,11 @@ def connection(error, roof, curtains):
             if data[0] == "R":
                 if data[-1] == "1":
                     roof = True
-                    g_ui.open_roof()
+                    g_ui.show_background_image()
                     g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
                 elif data[-1] == "0":
                     roof = False
-                    g_ui.closed_roof()
+                    g_ui.hide_background_image()
                     g_ui.update_status_roof('Chiuso')
                 elif data[-1] == "P":
                     Logger.getLogger().info("telescopio inviato alla posizione di park (park_tele) ")

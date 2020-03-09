@@ -22,7 +22,6 @@ class Gui:
         self.line2_w = None
         self.line3_w = None
         self.line4_w = None
-        self.img_fondo = None
         self.image = None
 
         self.l = 390
@@ -48,7 +47,7 @@ class Gui:
                         ]]), title="Tende")
                     ],
                     [
-                        sg.Canvas(size=(self.l,self.h), background_color='grey', key='canvas'),
+                        sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
                         sg.Frame(layout=
                             ([[
                                 sg.Column(layout=(
@@ -57,7 +56,7 @@ class Gui:
                                     [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 35)))]
                                 ))
-                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0,0)
+                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0, 0)
                         )
                     ],
                     [sg.Frame(layout=
@@ -80,20 +79,27 @@ class Gui:
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
         self.base_draw()
-        self.remove_background_image()
 
     def create_background_image(self):
-        canvas = self.win.FindElement('canvas')
-        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
-        self.image = canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
 
-    def remove_background_image(self):
+        """ Create the background image for the sky when the roof is open and hides immediately it """
+
+        canvas = self.win.FindElement('canvas')
+        self.img_fondo = PhotoImage(file="cielo_stellato.gif")
+        self.image = canvas.TKCanvas.create_image(0, 0, image=self.img_fondo, anchor=NW)
+        self.hide_background_image()
+
+    def hide_background_image(self):
+
+        """ Hide the sky when the roof is closed """
+
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='hidden')
 
-    def set_background_image(self):
-        if not self.img_fondo:
-            self.create_background_image()
+    def show_background_image(self):
+
+        """ Show the sky when the roof is open """
+
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='normal')
 
@@ -121,18 +127,6 @@ class Gui:
         alert = mess_alert
         self.win.FindElement('status-roof').Update(alert)
         canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
-
-    def closed_roof(self):
-
-        """ avvisa sullo stato chiuso del tetto """
-
-        self.remove_background_image()
-
-    def open_roof(self):
-
-        """ avvisa sullo stato aperto del tetto """
-
-        self.set_background_image()
 
     def update_status_roof(self, status, text_color='white', background_color='red'):
 
@@ -182,13 +176,12 @@ class Gui:
             canvas.TKCanvas.delete(polygon)
 
     def __create_curtain_polygon__(self, alpha, orientation):
-        conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
-        alpha_min = self.alpha_min_conf
-        angolo_min=alpha_min*conv # valore dell'inclinazione della base della tenda est in radianti
-        angolo1 = ((alpha / 4) + alpha_min) * conv
-        angolo2 = ((alpha / 2) + alpha_min) * conv
-        angolo3 = (((alpha / 4) * 3) + alpha_min) * conv
-        angolo = (alpha + alpha_min) * conv
+        conv = 2 * math.pi / 360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
+        angolo_min = self.alpha_min_conf * conv # valore dell'inclinazione della base della tenda est in radianti
+        angolo1 = ((alpha / 4) + self.alpha_min_conf) * conv
+        angolo2 = ((alpha / 2) + self.alpha_min_conf) * conv
+        angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * conv
+        angolo = (alpha + self.alpha_min_conf) * conv
 
 
         i = 1 if orientation == "E" else -1
