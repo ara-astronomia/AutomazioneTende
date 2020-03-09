@@ -1,6 +1,6 @@
 from enum import Enum
 from config import Config
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # type: ignore
 
 class GPIOPin(Enum):
     #impostazione gpio switch e comando tetto

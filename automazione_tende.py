@@ -1,7 +1,7 @@
 import time, config
 from logger import Logger
 from status import Status
-from typing import NoReturn
+from typing import Dict
 
 class AutomazioneTende:
 #(Thread):
@@ -88,7 +88,7 @@ class AutomazioneTende:
 
         return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
 
-    def move_curtains_height(self, coord: dict(str, str)):
+    def move_curtains_height(self, coord: Dict[str, int]):
 
         """ Change the height of the curtains to based on the given Coordinates """
 
@@ -128,7 +128,7 @@ class AutomazioneTende:
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(int(step_e)) # move curtain east to step
 
-    def park_curtains(self) -> dict(str, str):
+    def park_curtains(self) -> Dict[str, int]:
         """" Bring down both curtains """
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
@@ -140,7 +140,7 @@ class AutomazioneTende:
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
-    def diff_coordinates(self, prevCoord: dict(str, str), coord: dict(str, str)) -> bool:
+    def diff_coordinates(self, prevCoord: Dict[str, int], coord: Dict[str, int]) -> bool:
 
         """ Check if delta coord is enough to move the curtains """
 
@@ -166,7 +166,7 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         return status_roof == Status.CLOSED
 
-    def exit_program(self, n: int = 0) -> NoReturn:
+    def exit_program(self, n: int = 0) -> None:
         from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
         self.telescopio.close_connection()

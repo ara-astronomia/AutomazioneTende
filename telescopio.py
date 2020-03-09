@@ -25,7 +25,7 @@ class Telescopio(BaseTelescopio):
 
     def park_tele(self):
         Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(self.script_park)
+        self.__call_thesky__(self.script_park)
         Logger.getLogger().debug("Telescopio inviato alla posizione di park")
 
     def __call_thesky__(self, script):
@@ -56,7 +56,3 @@ class Telescopio(BaseTelescopio):
         if self.connected:
             self.s.close()
             self.connected = False
-
-if __name__ == '__main__':
-    netcat("192.168.1.3", 3030, 'MountGetAltAzi.js')
-    netcat("192.168.1.3", 3030, 'SetTelPark.js')
