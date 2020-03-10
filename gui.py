@@ -16,7 +16,7 @@ class Gui:
         self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
-        self.conv = 2 * math.pi / 360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
+        self.conv = 2 * math.pi / 360.0 # conversion from degrees to radians for applying math trigonometric algorithms
         self.tenda_e = None
         self.line2_e = None
         self.line3_e = None
@@ -156,8 +156,8 @@ class Gui:
 
         """ Update curtains angular values """
 
-        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
-        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w))) # COME SOPRA
+        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e))) # from steps to degree for east
+        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w))) # from steps to degree for west
 
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)
@@ -191,7 +191,7 @@ class Gui:
             )
     
     def __create_polygon_coordinates__(self, alpha: int, orientation: Orientation) -> Tuple[Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
-            angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda est in radianti
+            angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda in radianti
             angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
             angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
             angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
