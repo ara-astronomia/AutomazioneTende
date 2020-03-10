@@ -1,4 +1,3 @@
-import PySimpleGUI as sg
 import time, config, socket, gui
 from logger import Logger
 
