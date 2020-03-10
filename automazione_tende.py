@@ -9,10 +9,13 @@ class AutomazioneTende:
 #        Thread.__init__(self)
         self.mock = mock
         self.thesky = thesky
-        if mock:
+        if not mock:
+            from roof_control import RoofControl
+            from curtains import WestCurtain, EastCurtain
+        else:
             from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl
-            from mock.curtains import WestCurtain, EastCurtain
+            from mock.roof_control import RoofControl # type: ignore
+            from mock.curtains import WestCurtain, EastCurtain # type: ignore
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -20,14 +23,11 @@ class AutomazioneTende:
             }
             patcher = patch.dict("sys.modules", modules)
             patcher.start()
-        else:
-            from roof_control import RoofControl
-            from curtains import WestCurtain, EastCurtain
 
         if thesky:
             import telescopio
         else:
-            import mock.telescopio as telescopio
+            import mock.telescopio as telescopio # type: ignore
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
