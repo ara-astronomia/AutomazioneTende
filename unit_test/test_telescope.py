@@ -8,7 +8,7 @@ class TelescopeTest(unittest.TestCase):
 
     def setUp(self):
         Singleton._instances = {}
-        self.telescopio = Telescopio(config.Config.getValue("theskyx_server"), 3040 ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
+        self.telescopio = Telescopio(config.Config.getValue("theskyx_server") ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
 
     def test_connection(self):
         self.assertEqual(False, self.telescopio.connected)
@@ -24,11 +24,13 @@ class TelescopeTest(unittest.TestCase):
     def test_read_coords(self):
         self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"az":106.2017082212961,"alt":22.049386909452107}|No error. Error = 0.')
-        self.assertEqual({"az":106,"alt":22}, self.telescopio.coords())
+        self.assertEqual({"az":106,"alt":22}, self.telescopio.update_coords())
 
     def test_park_tele(self):
         self.telescopio.open_connection()
+        self.telescopio.s.recv = MagicMock(return_value=b'{"az":0,"alt":0}|No error. Error = 0.')
         self.telescopio.park_tele()
+        self.assertEqual(self.telescopio.coords, {"alt": 0, "az": 0})
 
     def test_parse_result_success(self):
         data = b'{"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")

@@ -31,6 +31,7 @@ try:
             conn, addr = s.accept()
             with conn:
                 while True:
+                    print(automazioneTende.crac_status)
                     data = conn.recv(1)
                     if not data or (data == b"0" or data == b'E') and automazioneTende.started:
                         automazioneTende.started = False
@@ -90,7 +91,7 @@ try:
                             automazioneTende.exit_program()
                             exit(0)
 
-                    conn.sendall(steps.encode("UTF-8"))
+                    conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
     Logger.getLogger().info("Intercettato CTRL+C")
