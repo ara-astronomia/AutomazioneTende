@@ -1,8 +1,9 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg # type: ignore
 import math, config
-from graphics import *
-from tkinter import *
 from logger import Logger
+from tkinter import PhotoImage, NW, DISABLED
+from typing import Tuple
+from orientation import Orientation
 
 class Gui:
 
@@ -12,205 +13,200 @@ class Gui:
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
         self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
+        self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
-        self.status_tele = ""
+        self.conv = 2 * math.pi / 360.0 # conversion from degrees to radians for applying math trigonometric algorithms
+        self.tenda_e = None
+        self.line2_e = None
+        self.line3_e = None
+        self.line4_e = None
+        self.tenda_w = None
+        self.line2_w = None
+        self.line3_w = None
+        self.line4_w = None
+        self.image = None
 
-        self.l=400
-        self.t=self.l/4.25
-        self.delta_pt= 1.5*self.t
-        self.h=int(self.l/1.8) # int((l/3)*2)
-        self.img_fondo = PhotoImage(file = "cielo_stellato.gif")
-        sg.ChangeLookAndFeel('GreenTan')
-
-        menu_def = [['File', ['Exit']],['Help', 'About...']]
-        layout = [[sg.Menu(menu_def, tearoff=True)],
-                 [sg.Text('monitor tende e tetto ', size=(37, 1), justification='center', font=("Helvetica", 15), relief=sg.RELIEF_RIDGE)],
-                 [sg.Button('Apri tetto', key='open-roof'),sg.Button('Apri Tende', key='start-curtains')],
-                 [sg.ProgressBar((100), orientation='h', size=(37,25), key='progbar_tetto')],
-                 [sg.InputText('Tetto Chiuso',size=(57, 1),justification='center', font=("Arial", 10), key='aperturatetto')],
-                 [sg.Canvas(size=(self.l,self.h), background_color= 'grey', key= 'canvas')],
-                 [sg.Text('posizione tenda est -- apertura  °' , size=(28,1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_e')],
-                 [sg.Text('posizione tenda west -- apertura  °', size=(28, 1), justification='right', font=("Arial", 8), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('  ' , size=(3, 1), justification='left', font=("Arial", 8),  key ='apert_w')],
-                 [sg.Text('stato del CRaC', size=(28, 1), justification='center', font=("Arial",8, "bold"), relief=sg.RELIEF_RIDGE),
-                 sg.InputText('in attesa' , size=(10, 1), justification='center', font=("Arial", 8, "bold"),  key ='status-CRaC')],
-                 [sg.Button('Chiudi tende', key="stop-curtains"),sg.Button('Park tele', key="park-tele"), sg.Button('Chiudi tetto', key="close-roof"),sg.Button('Esci', key="exit")]]
+        self.l = 390
+        self.t = self.l / 4.25
+        self.delta_pt = 1.5 * self.t
+        self.h = int(self.l / 1.8)
+        sg.theme('DarkBlue')
+        layout = [
+                    [sg.Menu([], tearoff=True)],
+                    [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
+                    [
+                        sg.Frame(layout=([[
+                            sg.Button('Apri', key='open-roof', size=(6, 1)),
+                            sg.Button('Chiudi', key="close-roof", size=(6, 1))
+                        ]]), title="Tetto"),
+                        sg.Frame(layout=([[
+                            sg.Button('Park', key="park-tele", size=(6, 1))
+                        ]]), title="Telescopio"),
+                        sg.Frame(layout=([[
+                            sg.Button('Attiva', key='start-curtains', size=(9, 1)),
+                            sg.Button('Disattiva', key="stop-curtains", size=(9, 1)),
+                            sg.Button('Calibra', key="calibrate-curtains", size=(9, 1))
+                        ]]), title="Tende")
+                    ],
+                    [
+                        sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
+                        sg.Frame(layout=
+                            ([[
+                                sg.Column(layout=(
+                                    [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (35, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825", pad=(0, 0))],
+                                    [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 35)))]
+                                ))
+                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0, 0)
+                        )
+                    ],
+                    [sg.Frame(layout=
+                        ([[
+                            sg.Column(layout=(
+                                [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Chiuso', size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                            )),
+                            sg.Column(layout=(
+                                [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Parked', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                            )),
+                            sg.Column(layout=(
+                                [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                            ))
+                        ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
+                    )]
+                 ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
+        self.base_draw()
+
+    def create_background_image(self) -> None:
+
+        """ Create the background image for the sky when the roof is open and hides immediately it """
 
         canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= "Tetto aperto")
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
+        self.img_fondo = PhotoImage(file="cielo_stellato.gif")
+        self.image = canvas.TKCanvas.create_image(0, 0, image=self.img_fondo, anchor=NW)
+        self.hide_background_image()
 
-    def base_draw(self):
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
+    def hide_background_image(self) -> None:
+
+        """ Hide the sky when the roof is closed """
+
         canvas = self.win.FindElement('canvas')
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8')
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484')
+        canvas.TKCanvas.itemconfigure(self.image, state='hidden')
 
-    def roof_alert(self,mess_alert):
+    def show_background_image(self) -> None:
+
+        """ Show the sky when the roof is open """
+
+        canvas = self.win.FindElement('canvas')
+        canvas.TKCanvas.itemconfigure(self.image, state='normal')
+
+    def base_draw(self) -> None:
+        p1 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), self.h)
+        p2 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), ((self.h / 12) * 10))
+        p3 = self.l / 2, 1.2 * (self.h / 2)
+        p4 = ((int((self.l / 2) + (self.delta_pt / 2))) + (0.9 * self.t), ((self.h / 12) * 10))
+        p5 = ((int((self.l / 2) + (self.delta_pt / 2))) + (0.9 * self.t), self.h)
+        p6 = 1, self.h
+        p7 = self.l - 1, self.h
+        p8 = self.l - 1, (self.h / 11) * 8
+        p9 = self.l / 2, (self.h / 11) * 4.5
+        p10 = 1, (self.h / 11) * 8
+        canvas = self.win.FindElement('canvas')
+        self.create_background_image()
+        canvas.TKCanvas.create_polygon((p6, p7, p8, p9, p10), width=1, outline='grey', fill='#D8D8D8')
+        canvas.TKCanvas.create_polygon((p1, p5, p4, p3, p2), width=1, outline='grey', fill='#848484')
+
+    def roof_alert(self, mess_alert: str) -> None:
 
         """Avvisa che le tende non possono essere aperte"""
 
         canvas = self.win.FindElement('canvas')
         alert = mess_alert
-        self.win.FindElement('aperturatetto').Update(alert)
-        canvas.TKCanvas.create_text(self.l/2, self.h/2, font=('Arial', 25), fill='#FE2E2E', text= alert)
+        self.win.FindElement('status-roof').Update(alert)
+        canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
 
+    def update_status_roof(self, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
 
-    def update_status_roof(self, status_roof):
-        """Avvisa sullo stato del tetto in fase chiusura o di apertura"""
-        canvas = self.win.FindElement('canvas')
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(str(status)) #'Tetto in fase di apertura')
+        """ Update Roof Status """
 
+        Logger.getLogger().info('update_status_roof in gui')
+        self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
-    def closed_roof(self, status_roof):
-        """avvisa sullo stato chiuso del tetto"""
-        self.win.FindElement('progbar_tetto').UpdateBar(0)
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status)
+    def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
+        """ Update Tele Status """
 
-    def open_roof(self, status_roof):
-        """avvisa sullo stato aperto del tetto"""
-        self.win.FindElement('progbar_tetto').UpdateBar(100)
-        status = status_roof
-        Logger.getLogger().debug(str(status) + '  questo è lo status passato alla gui')
-        self.win.FindElement('aperturatetto').Update(status)
-
-    def update_status_tele(self,status_tele):
-        """Update stato del telescopio"""
         Logger.getLogger().info('update_status_tele in gui')
-        new_status_tele = (status_tele) #legge lo status tele in automazioneTende
+        self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
 
-        if new_status_tele == "park":
-            font ="Arial, 10 ,bold, red"
-            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "red")
-        if new_status_tele == "tracking":
-            Logger.getLogger().info("cambio il format del font")
-            self.win.FindElement('status-CRaC').Update(new_status_tele, text_color = "green")
-        return
+    def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
-    def update_curtains_text(self, e_e, e_w):
+        """ Update Curtains Status """
 
-        """Update valori angolari tende"""
-        print(e_e)
-        print(e_w)
-        alpha_e = int(e_e*float("{0:.3f}".format(self.increm_e))) # trasformazione posizione step in gradi
-        alpha_w = int(e_w*float("{0:.3f}".format(self.increm_w))) # COME SOPRA
+        Logger.getLogger().info('update_status_curtains in gui')
+        self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
+
+    def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
+
+        """ Update curtains angular values """
+
+        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e))) # from steps to degree for east
+        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w))) # from steps to degree for west
 
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)
         return alpha_e, alpha_w
 
-    def update_curtains_graphic(self, alpha_e, alpha_w):
+    def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
 
-        """Disegna le tende con canvas"""
+        """ Draw curtains position with canvas """
 
-        #-------definizione settori angolari tende -----------#
+        self.__delete_polygons__(self.tenda_e, self.line2_e, self.line3_e, self.line4_e)
+        self.__delete_polygons__(self.tenda_w, self.line2_w, self.line3_w, self.line4_w)
 
-        conv=2*math.pi/360.0 # converisone gradi in radianti per potere applicare gli algoritimi trigonometrici in math
-        alpha_e_min = -12
-        alpha_w_min = -12
-        angolo_e_min=alpha_e_min*conv # valore dell'inclinazione della base della tenda est in radianti
-        angolo_w_min=alpha_w_min*conv # valore dell'inclinazione della base della tenda west in radianti
-        angolo1_e = ((alpha_e/4)+alpha_e_min) * conv
-        angolo2_e = ((alpha_e/2)+alpha_e_min) * conv
-        angolo3_e = (((alpha_e/4)*3)+alpha_e_min) * conv
-        angolo_e = (alpha_e + alpha_e_min) * conv
+        self.tenda_e, self.line2_e, self.line3_e, self.line4_e = self.__create_curtain_polygon__(alpha_e, Orientation.EAST)
+        self.tenda_w, self.line2_w, self.line3_w, self.line4_w = self.__create_curtain_polygon__(alpha_w, Orientation.WEST)
 
-        angolo1_w = ((alpha_w/4)+alpha_w_min) * conv
-        angolo2_w = ((alpha_w/2)+alpha_w_min) * conv
-        angolo3_w = (((alpha_w/4)*3)+alpha_w_min) * conv
-        angolo_w = (alpha_w + alpha_w_min)* conv
+    def __delete_polygons__(self, *polygons_and_lines) -> None:
+        canvas = self.win.FindElement('canvas')
+        for polygon in polygons_and_lines:
+            canvas.TKCanvas.delete(polygon)
 
-      #-------------parametri grafici tende--------#
-
-        #---origine tende----#
-        x_e = int((self.l/2)+(self.delta_pt/2)) # int(l/5)*3
-        y_e = int(self.h/3)*2
-
-        x_w = int((self.l/2)-(self.delta_pt/2)) # int(l/5)*2
-        y_w = int(self.h/3)*2
-
-        #-------vertici poligoni tende----------#
-        #delete = canvas.TKCanvas.delete(canvas)
+    def __create_curtain_polygon__(self, alpha: int, orientation: Orientation) -> tuple:
+        pt, pt1, pt2, pt3, pt4, pt5 = self.__create_polygon_coordinates__(alpha, orientation)
 
         canvas = self.win.FindElement('canvas')
-        p1 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),self.h)
-        p2 = ( (int((self.l/2)-(self.delta_pt/2)))-(0.9*self.t),((self.h/12)*10) )
-        p3 = self.l/2, 1.2*(self.h/2)
-        p4 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),((self.h/12)*10) )
-        p5 = ( (int((self.l/2)+(self.delta_pt/2)))+(0.9*self.t),self.h)
-        p6 = 1,self.h
-        p7 = self.l-1,self.h
-        p8 = self.l-1,(self.h/11)*8
-        p9 = self.l/2, (self.h/11)*4.5
-        p10 = 1, (self.h/11)*8
 
-        canvas.TKCanvas.create_image(0,0, image=self.img_fondo, anchor=NW)
-        canvas.TKCanvas.create_polygon((p6,p7,p8,p9,p10), width=1, outline='grey',fill='#D8D8D8') # pareti osservatorio
-        canvas.TKCanvas.create_polygon((p1,p5,p4,p3,p2), width=1, outline='grey',fill='#848484') # pareti osservatorio
+        return (
+                canvas.TKCanvas.create_polygon((pt, pt1, pt2, pt3, pt4, pt5), width=1, outline='#E0F8F7', fill='#0B4C5F'),
+                canvas.TKCanvas.create_line((pt, pt2), width=1, fill='#E0F8F7'),
+                canvas.TKCanvas.create_line((pt, pt3), width=1, fill='#E0F8F7'),
+                canvas.TKCanvas.create_line((pt, pt4), width=1, fill='#E0F8F7')
+            )
+    
+    def __create_polygon_coordinates__(self, alpha: int, orientation: Orientation) -> Tuple[Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
+            angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda in radianti
+            angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
+            angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
+            angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
+            angolo = (alpha + self.alpha_min_conf) * self.conv
 
-        pt_e = (x_e, y_e)
-        pt_w = (x_w, y_w)
+            i = 1 if orientation == Orientation.EAST else -1
 
-        pt_e0 = (x_e-self.t, y_e)
-        pt_w0 = (x_w+self.t, y_w)
+            y = int(self.h / 3) * 2
+            x = int((self.l / 2) + (i * self.delta_pt / 2))
+            pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
+            pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
+            pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
+            pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
+            pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
 
-        x_e1 = (math.cos(angolo_e_min)*self.t)+x_e
-        x_w1 = (math.cos(angolo_e_min)*self.t)+x_w
+            pt = (x, y)
 
-        pt_e1= (x_e+(int(math.cos(angolo_e_min)*self.t)),y_e-(int(math.sin(angolo_e_min)*self.t)))
-        pt_e2= (x_e+(int(math.cos(angolo1_e)*self.t)),y_e-(int(math.sin(angolo1_e)*self.t)))
-        pt_e3= (x_e+(int(math.cos(angolo2_e)*self.t)),y_e-(int(math.sin(angolo2_e)*self.t)))
-        pt_e4= (x_e+(int(math.cos(angolo3_e)*self.t)),y_e-(int(math.sin(angolo3_e)*self.t)))
-        pt_e5= (x_e+(int(math.cos(angolo_e)*self.t)),y_e-(int(math.sin(angolo_e)*self.t)))
-
-        canvas.TKCanvas.create_polygon((pt_e,pt_e1,pt_e2,pt_e3,pt_e4,pt_e5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_e
-
-        canvas.TKCanvas.create_line((pt_e,pt_e2), width=1,fill='#E0F8F7') #line2_e
-        canvas.TKCanvas.create_line((pt_e,pt_e3), width=1,fill='#E0F8F7') #line3_e
-        canvas.TKCanvas.create_line((pt_e,pt_e4), width=1,fill='#E0F8F7') #line4_e
-
-
-        pt_w1= (x_w-(int(math.cos(angolo_w_min)*self.t)),y_w-(int(math.sin(angolo_w_min)*self.t)))
-        pt_w2= (x_w-(int(math.cos(angolo1_w)*self.t)),y_w-(int(math.sin(angolo1_w)*self.t)))
-        pt_w3= (x_w-(int(math.cos(angolo2_w)*self.t)),y_w-(int(math.sin(angolo2_w)*self.t)))
-        pt_w4= (x_w-(int(math.cos(angolo3_w)*self.t)),y_w-(int(math.sin(angolo3_w)*self.t)))
-        pt_w5= (x_w-(int(math.cos(angolo_w)*self.t)),y_w-(int(math.sin(angolo_w)*self.t)))
-
-        canvas.TKCanvas.create_polygon((pt_w,pt_w1,pt_w2,pt_w3,pt_w4,pt_w5), width=1,outline='#E0F8F7',fill='#0B4C5F') # tenda_w
-
-        canvas.TKCanvas.create_line((pt_w,pt_w2), width=1,fill='#E0F8F7') #line2_w
-        canvas.TKCanvas.create_line((pt_w,pt_w3), width=1,fill='#E0F8F7') #line3_w
-        canvas.TKCanvas.create_line((pt_w,pt_w4), width=1,fill='#E0F8F7') #line4_w
-
-      #---------fine parte grafica ------#
+            return pt, pt1, pt2, pt3, pt4, pt5

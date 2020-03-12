@@ -1,17 +1,21 @@
 import time, config
 from logger import Logger
 from status import Status
+from typing import Dict
 
 class AutomazioneTende:
 #(Thread):
-    def __init__(self, mock=False, thesky=False):
+    def __init__(self, mock: bool = False, thesky: bool = False):
 #        Thread.__init__(self)
         self.mock = mock
         self.thesky = thesky
-        if mock:
+        if not mock:
+            from roof_control import RoofControl
+            from curtains import WestCurtain, EastCurtain
+        else:
             from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl
-            from mock.curtains import WestCurtain, EastCurtain
+            from mock.roof_control import RoofControl # type: ignore
+            from mock.curtains import WestCurtain, EastCurtain # type: ignore
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -19,14 +23,11 @@ class AutomazioneTende:
             }
             patcher = patch.dict("sys.modules", modules)
             patcher.start()
-        else:
-            from roof_control import RoofControl
-            from curtains import WestCurtain, EastCurtain
 
         if thesky:
             import telescopio
         else:
-            import mock.telescopio as telescopio
+            import mock.telescopio as telescopio # type: ignore
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
@@ -53,7 +54,7 @@ class AutomazioneTende:
         self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
-    def park_tele(self):
+    def park_tele(self) -> bool:
         """ Park the Telescope """
         try:
             self.telescopio.open_connection()
@@ -64,7 +65,7 @@ class AutomazioneTende:
         #    Logger.getLogger().error("posizione di park raggiunta")
         return True
 
-    def read_altaz_mount_coordinate(self):
+    def read_altaz_mount_coordinate(self) -> dict:
 
         """ Read Telescope Coordinates """
         try:
@@ -81,13 +82,13 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
             raise
 
-    def read_curtains_height(self):
+    def is_curtains_status_danger(self) -> bool:
 
         """ Read the height of the curtains """
 
-        pass
+        return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
 
-    def move_curtains_height(self, coord):
+    def move_curtains_height(self, coord: Dict[str, int]):
 
         """ Change the height of the curtains to based on the given Coordinates """
 
@@ -118,7 +119,7 @@ class AutomazioneTende:
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   move curtian west max open
             self.curtain_west.open_up()
-            #   if inferior yo est_min_height
+            #   if inferior to est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 #   move curtain east to 0 (closed)
                 self.curtain_east.bring_down()
@@ -127,7 +128,7 @@ class AutomazioneTende:
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(int(step_e)) # move curtain east to step
 
-    def park_curtains(self):
+    def park_curtains(self) -> Dict[str, int]:
         """" Bring down both curtains """
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
@@ -139,13 +140,13 @@ class AutomazioneTende:
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
-    def diff_coordinates(self, prevCoord, coord):
+    def diff_coordinates(self, prevCoord: Dict[str, int], coord: Dict[str, int]) -> bool:
 
         """ Check if delta coord is enough to move the curtains """
 
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
 
-    def open_roof(self):
+    def open_roof(self) -> bool:
         self.telescopio.open_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().info("Lo status tetto iniziale: %s ", str(status_roof))
@@ -155,7 +156,7 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         return status_roof == Status.OPEN
 
-    def close_roof(self):
+    def close_roof(self) -> bool:
         self.telescopio.close_connection()
         status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto iniziale: %s", str(status_roof))
@@ -165,13 +166,13 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         return status_roof == Status.CLOSED
 
-    def exit_program(self,n=0):
+    def exit_program(self, n: int = 0) -> None:
         from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
         self.telescopio.close_connection()
         GPIOConfig().cleanup(n)
 
-    def exec(self):
+    def exec(self) -> int:
         if not self.started:
             self.coord = self.park_curtains()
             self.prevCoord = self.coord
@@ -188,6 +189,6 @@ class AutomazioneTende:
             Logger.getLogger().debug(self.prevCoord)
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
-            # altrimenti muovendosi a piccoli movimenti le tendine non verrebbero mai spostate
+            # altrimenti muovendosi a piccoli movimenti le tende non verrebbero mai spostate
         time.sleep(config.Config.getFloat("sleep", "automazione"))
         return 1

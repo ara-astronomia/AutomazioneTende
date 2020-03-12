@@ -59,6 +59,18 @@ coverage html
 Open up the file manager and navigate to  ./htmlcov
 Double click on the html file relative to the class you want to check coverage
 
+# Run the static type checker 
+
+```
+mypy *.py
+```
+
+# Run the static type checker on a specific file
+
+```
+mypy gui.py
+```
+
 ## Run the server with the hardware mocked
 
 ```

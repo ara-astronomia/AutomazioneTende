@@ -1,12 +1,12 @@
 from enum import Enum
 from config import Config
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # type: ignore
 
 class GPIOPin(Enum):
     #impostazione gpio switch e comando tetto
     VERIFY_CLOSED = (Config.getValue("roof_verify_closed", "roof_board"), GPIO.OUT)
     VERIFY_OPEN = (Config.getValue("roof_verify_open", "roof_board"), GPIO.IN, GPIO.PUD_UP)
-    SWITCH_ROOF = (Config.getValue("switch_roof", "roof_board"), GPIO.IN, GPIO.PUD_UP)
+    SWITCH_ROOF = (Config.getValue("switch_roof", "roof_board"), GPIO.OUT, GPIO.PUD_UP)
 
     #impostazione gpio switch fine_corsa tende
     CURTAIN_W_VERIFY_OPEN = (Config.getValue("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)

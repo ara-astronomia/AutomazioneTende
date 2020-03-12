@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # type: ignore
 from logger import Logger
 from base.singleton import Singleton
 from gpio_pin import GPIOPin

@@ -2,6 +2,7 @@ import socket, config, getopt, sys
 from automazione_tende import AutomazioneTende
 from logger import Logger
 import time
+from status import Status
 
 HOST = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT = config.Config.getInt("port", "server")        # Port to listen on (non-privileged ports are > 1023)
@@ -67,6 +68,8 @@ try:
                         r = automazioneTende.exec()
                         if r == -1:
                             steps = "E0000S"
+                        elif automazioneTende.is_curtains_status_danger():
+                            steps = "D00000"
                         else:
                             steps = "{:0>3d}".format(automazioneTende.curtain_east.steps)+"{:0>3d}".format(automazioneTende.curtain_west.steps)
 
