@@ -44,37 +44,21 @@ try:
                             automazioneTende.started = False
 
                     elif data == b'R':
-                        if automazioneTende.open_roof():
-                            Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
-                            steps = "R00001"
-                        else:
-                            steps = "E00001"
+                        Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        automazioneTende.open_roof()
 
                     elif data == b'T':
-                        if automazioneTende.close_roof():
-                            Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
-                            steps = "R00000"
-                        else:
-                            steps = "E00000"
+                        Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
+                        automazioneTende.close_roof()
 
                     elif data == b'P':
                         automazioneTende.started = False
                         Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
-                        if automazioneTende.park_tele():
-                            steps = "R0000P"
-                        else:
-                            steps = "E0000P"
+                        automazioneTende.park_tele()
 
                     if data != b"R" and data != b"T" and data != b'P':
-                        r = automazioneTende.exec()
-                        if r == -1:
-                            steps = "E0000S"
-                        elif automazioneTende.is_curtains_status_danger():
-                            steps = "D00000"
-                        else:
-                            steps = "{:0>3d}".format(automazioneTende.curtain_east.steps)+"{:0>3d}".format(automazioneTende.curtain_west.steps)
-
-                    Logger.getLogger().debug("steps: "+steps)
+                        Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec)")
+                        automazioneTende.exec()
 
                     if not data or data == b'E':
                         automazioneTende.close_roof()

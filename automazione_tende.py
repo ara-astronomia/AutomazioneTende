@@ -74,7 +74,7 @@ class AutomazioneTende:
             self.telescopio.park_tele()
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
-        status = self.telescopio.read()
+        status = self.telescopio.read(update=False)
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
         self.crac_status.telescope_coords = self.telescopio.coords
         self.crac_status.telescope_status = self.telescopio.read()

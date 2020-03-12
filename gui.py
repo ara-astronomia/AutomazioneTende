@@ -128,7 +128,6 @@ class Gui:
 
         canvas = self.win.FindElement('canvas')
         alert = mess_alert
-        self.win.FindElement('status-roof').Update(alert)
         canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
 
     def update_status_roof(self, status: str, text_color: str = 'white', background_color: str = 'red') -> None:

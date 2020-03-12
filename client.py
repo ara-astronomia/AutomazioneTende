@@ -3,7 +3,8 @@ from logger import Logger
 from automazione_tende import CracStatus
 from status import Status, TelescopeStatus
 
-def connection(error: bool, roof: bool, curtains: bool) -> str:
+def connection(error: bool) -> str:
+    crac_status = CracStatus()
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
@@ -22,28 +23,28 @@ def connection(error: bool, roof: bool, curtains: bool) -> str:
                 v = "P"
                 
             elif ev1 == 'close-roof':
-                if curtains is True:
+                if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
+                    # FIXME
                     g_ui.roof_alert('Attenzione tende aperte')
+                    continue
+                if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
+                    # FIXME
+                    g_ui.roof_alert('Attenzione telescopio operativo')
                     continue
                 v = "T"
                 Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
 
             elif ev1 == 'start-curtains':
-                if roof is False:
+                if crac_status.roof_status is Status.CLOSED:
+                    # FIXME
                     g_ui.roof_alert('Attenzione tetto chiuso')
                     continue
- #               g_ui.base_draw()
                 v = "1"
-
             elif ev1 == 'stop-curtains':
                 v = "0"
-
             elif ev1 == "shutdown":
                 v = "-"
-
             else:
-                if curtains is False:
-                    continue
                 v = "c"
 
             s.sendall(v.encode("UTF-8"))
@@ -60,20 +61,23 @@ def connection(error: bool, roof: bool, curtains: bool) -> str:
             Logger.getLogger().debug("Tenda west step: %s", crac_status.curtain_west_steps)
             Logger.getLogger().debug("Data: %s", crac_status)
             if crac_status.roof_status == Status.OPEN:
-                roof = True
                 g_ui.show_background_image()
                 g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
             elif crac_status.roof_status == Status.CLOSED:
-                roof = False
                 g_ui.hide_background_image()
                 g_ui.update_status_roof('Chiuso')
-            elif crac_status.telescope_status == TelescopeStatus.PARKED:
-                    Logger.getLogger().info("telescopio in park")
-                    g_ui.update_status_tele('Parked')
+            
+            if crac_status.telescope_status == TelescopeStatus.PARKED:
+                Logger.getLogger().info("telescopio in park")
+                g_ui.update_status_tele('Parked')
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
-                    Logger.getLogger().info("telescopio in sicurezza ")
-                    g_ui.update_status_tele('In Sicurezza')
-            elif crac_status.curtain_east_status == Status.DANGER or crac_status.curtain_west_status == Status.DANGER:
+                Logger.getLogger().info("telescopio in sicurezza ")
+                g_ui.update_status_tele('In Sicurezza')
+            else:
+                Logger.getLogger().info("telescopio operativo")
+                g_ui.update_status_tele('Operativo', text_color="#2c2825", background_color="green")
+
+            if crac_status.curtain_east_status == Status.DANGER or crac_status.curtain_west_status == Status.DANGER:
                 g_ui.update_status_curtains('controllare switch tende')
             # elif data[0] == "E":
             #     # la if si potrebbe togliere, l'errore dovrebbe sempre essere bloccante
@@ -82,13 +86,9 @@ def connection(error: bool, roof: bool, curtains: bool) -> str:
             #         g_ui.roof_alert('Attenzione Errore Bloccante!')
             #         error = True
             elif crac_status.curtain_east_status == Status.CLOSED and crac_status.curtain_west_status.CLOSED:
-                curtains = False
                 g_ui.update_status_curtains('Chiuse')
-                g_ui.update_status_tele('Parked')
             else:
-                curtains = True
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
-                g_ui.update_status_tele('Unparked', text_color="#2c2825", background_color="green")
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
 
@@ -96,12 +96,10 @@ HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP add
 PORT = config.Config.getInt("port", "server")  # The port used by the server
 
 g_ui = gui.Gui()
-roof = False
-curtains = False
 error = False
 
 while True:
     Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
-    key = connection(error, roof, curtains)
+    key = connection(error)
     if key == "E":
         exit(0)
