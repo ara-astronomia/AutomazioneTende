@@ -1,6 +1,6 @@
 import time, config, socket, gui
 from logger import Logger
-from automazione_tende import CracStatus
+from crac_status import CracStatus
 from status import Status, TelescopeStatus
 
 def connection(error: bool) -> str:

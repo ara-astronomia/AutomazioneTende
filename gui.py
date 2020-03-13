@@ -14,9 +14,9 @@ class Gui:
         self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
         self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
-        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
-        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
-        self.conv = 2 * math.pi / 360.0 # conversion from degrees to radians for applying math trigonometric algorithms
+        self.increm_e = (self.alt_max_tend_e - self.alt_min_tend_e) / self.n_step_corsa
+        self.increm_w = (self.alt_max_tend_w - self.alt_min_tend_w) / self.n_step_corsa
+        self.conv = 2 * math.pi / 360 # conversion from degrees to radians for applying math trigonometric algorithms
         self.tenda_e = None
         self.line2_e = None
         self.line3_e = None
