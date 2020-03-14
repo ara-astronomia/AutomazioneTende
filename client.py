@@ -21,11 +21,12 @@ def connection(error: bool) -> str:
 
             elif ev1 == 'park-tele':
                 v = "P"
-                
+
             elif ev1 == 'close-roof':
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     # FIXME
                     g_ui.roof_alert('Attenzione tende aperte')
+
                     continue
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
                     # FIXME
@@ -40,6 +41,7 @@ def connection(error: bool) -> str:
                     g_ui.roof_alert('Attenzione tetto chiuso')
                     continue
                 v = "1"
+                #g_ui.update_enable_disable_button_close_roof()#'False')
             elif ev1 == 'stop-curtains':
                 v = "0"
             elif ev1 == "shutdown":
@@ -63,10 +65,15 @@ def connection(error: bool) -> str:
             if crac_status.roof_status == Status.OPEN:
                 g_ui.show_background_image()
                 g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
+                g_ui.update_enable_disable_button()
+                #g_ui.update_enable_disable_button_close_roof()#'False')
+
+
             elif crac_status.roof_status == Status.CLOSED:
                 g_ui.hide_background_image()
                 g_ui.update_status_roof('Chiuso')
-            
+                g_ui.update_enable_button_open_roof()
+
             if crac_status.telescope_status == TelescopeStatus.PARKED:
                 Logger.getLogger().info("telescopio in park")
                 g_ui.update_status_tele('Parked')
@@ -89,7 +96,8 @@ def connection(error: bool) -> str:
                 g_ui.update_status_curtains('Chiuse')
             else:
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
-            
+                g_ui.update_disable_button_close_roof()#'False')
+
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
             g_ui.update_tele_text(crac_status.telescope_coords)

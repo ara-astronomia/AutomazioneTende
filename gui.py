@@ -38,16 +38,16 @@ class Gui:
                     [sg.Text('Monitor Tende e Tetto ', size=(55, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('Apri', key='open-roof', size=(6, 1)),
-                            sg.Button('Chiudi', key="close-roof", size=(6, 1))
+                            sg.Button('Apri', key='open-roof', disabled=False, size=(6, 1)),
+                            sg.Button('Chiudi', key="close-roof", disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Park', key="park-tele", size=(6, 1))
+                            sg.Button('Park', key="park-tele", disabled=True, size=(6, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key='start-curtains', size=(9, 1)),
-                            sg.Button('Disattiva', key="stop-curtains", size=(9, 1)),
-                            sg.Button('Calibra', key="calibrate-curtains", size=(9, 1))
+                            sg.Button('Attiva', key='start-curtains', disabled=True, size=(9, 1), tooltip='schiacccia per attivare'),
+                            sg.Button('Disattiva', key="stop-curtains",disabled=True,  size=(9, 1)),
+                            sg.Button('Calibra', key="calibrate-curtains",disabled=True,  size=(9, 1))
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
@@ -148,6 +148,39 @@ class Gui:
         Logger.getLogger().info('update_status_roof in gui')
         self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
+    def update_enable_disable_button(self): #, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update enable-disable button """
+
+        Logger.getLogger().info('update_enable_disable_button in gui')
+        self.win.FindElement('open-roof').Update(disabled=True)
+        self.win.FindElement('close-roof').Update(disabled=False)
+        self.win.FindElement('park-tele').Update(disabled=False)
+        self.win.FindElement('start-curtains').Update(disabled=False)
+        self.win.FindElement('stop-curtains').Update(disabled=False)
+        self.win.FindElement('calibrate-curtains').Update(disabled=False)
+
+
+    def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
+
+        """ Update disable button close roof"""
+
+        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        self.win.FindElement('close-roof').Update(disabled=True)
+
+
+    def update_enable_button_open_roof(self): #, status: str, disabeld: str =''):
+
+        """ Update enable button open roof"""
+
+        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        self.win.FindElement('open-roof').Update(disabled=False)
+        self.win.FindElement('close-roof').Update(disabled=True)
+        self.win.FindElement('park-tele').Update(disabled=True)
+        self.win.FindElement('start-curtains').Update(disabled=True)
+        self.win.FindElement('stop-curtains').Update(disabled=True)
+        self.win.FindElement('calibrate-curtains').Update(disabled=True)
+
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Tele Status """
@@ -209,7 +242,7 @@ class Gui:
                 canvas.TKCanvas.create_line((pt, pt3), width=1, fill='#E0F8F7'),
                 canvas.TKCanvas.create_line((pt, pt4), width=1, fill='#E0F8F7')
             )
-    
+
     def __create_polygon_coordinates__(self, alpha: int, orientation: Orientation) -> Tuple[Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
             angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda in radianti
             angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
