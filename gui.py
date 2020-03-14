@@ -34,32 +34,42 @@ class Gui:
         sg.theme('DarkBlue')
         layout = [
                     [sg.Menu([], tearoff=True)],
-                    [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
+                    [sg.Text('Monitor Tende e Tetto ', size=(55, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
                             sg.Button('Apri', key='open-roof', size=(6, 1)),
                             sg.Button('Chiudi', key="close-roof", size=(6, 1))
-                        ]]), title="Tetto"),
+                        ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Park', key="park-tele", size=(6, 1))
-                        ]]), title="Telescopio"),
+                        ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Attiva', key='start-curtains', size=(9, 1)),
                             sg.Button('Disattiva', key="stop-curtains", size=(9, 1)),
                             sg.Button('Calibra', key="calibrate-curtains", size=(9, 1))
-                        ]]), title="Tende")
+                        ]]), title="Tende", pad=(3, 0))
                     ],
                     [
                         sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
                         sg.Frame(layout=
                             ([[
                                 sg.Column(layout=(
-                                    [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (35, 0)))],
+                                    [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (10, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825", pad=(0, 0))],
                                     [sg.Text('Ovest', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
-                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 35)))]
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_w', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 30)))]
                                 ))
-                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(0, 0)
+                            ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(2, 0)
+                        ),
+                        sg.Frame(layout=
+                            ([[
+                                sg.Column(layout=(
+                                    [sg.Text('Alt', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (10, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='alt', background_color="white", text_color="#2c2825", pad=(0, 0))],
+                                    [sg.Text('Azi', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='azi', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 30)))]
+                                ))
+                            ]]), title='Telescopio', relief=sg.RELIEF_GROOVE, pad=((6, 0), (0, 0))
                         )
                     ],
                     [sg.Frame(layout=
