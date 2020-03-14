@@ -148,17 +148,25 @@ class Gui:
         Logger.getLogger().info('update_status_roof in gui')
         self.win.FindElement('status-roof').Update(status, text_color=text_color, background_color=background_color)
 
+    def __toggle_button__(self, *args, **kwargs):
+
+        # args: list of elements keys
+        # kwargs: dictionary of elements attributes 
+
+        # for every key in args:
+        for key in args:
+
+            # update the relative element with the kwargs attributes (actually we use only update=False but we can also do something like):
+            # update=False, tooltip="whatever"...
+            self.win.FindElement(key).Update(**kwargs)
+
     def update_enable_disable_button(self): #, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update enable-disable button """
 
         Logger.getLogger().info('update_enable_disable_button in gui')
-        self.win.FindElement('open-roof').Update(disabled=True)
-        self.win.FindElement('close-roof').Update(disabled=False)
-        self.win.FindElement('park-tele').Update(disabled=False)
-        self.win.FindElement('start-curtains').Update(disabled=False)
-        self.win.FindElement('stop-curtains').Update(disabled=False)
-        self.win.FindElement('calibrate-curtains').Update(disabled=False)
+        self.__toggle_button__("open-roof", disabled=True)
+        self.__toggle_button__("close-roof", "park-tele", "start-curtains", "stop-curtains", "calibrate-curtains", disabled=False)
 
 
     def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
@@ -166,7 +174,8 @@ class Gui:
         """ Update disable button close roof"""
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
-        self.win.FindElement('close-roof').Update(disabled=True)
+        # self.win.FindElement('close-roof').Update(disabled=True)
+        self.__toggle_button__("close-roof", disabled=True)
 
 
     def update_enable_button_open_roof(self): #, status: str, disabeld: str =''):
@@ -174,12 +183,8 @@ class Gui:
         """ Update enable button open roof"""
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
-        self.win.FindElement('open-roof').Update(disabled=False)
-        self.win.FindElement('close-roof').Update(disabled=True)
-        self.win.FindElement('park-tele').Update(disabled=True)
-        self.win.FindElement('start-curtains').Update(disabled=True)
-        self.win.FindElement('stop-curtains').Update(disabled=True)
-        self.win.FindElement('calibrate-curtains').Update(disabled=True)
+        self.__toggle_button__("open-roof", disabled=False)
+        self.__toggle_button__("close-roof", "park-tele", "start-curtains", "stop-curtains", "calibrate-curtains", disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
