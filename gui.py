@@ -4,6 +4,7 @@ from logger import Logger
 from tkinter import PhotoImage, NW, DISABLED
 from typing import Tuple
 from orientation import Orientation
+from typing import Dict
 
 class Gui:
 
@@ -153,6 +154,16 @@ class Gui:
 
         Logger.getLogger().info('update_status_tele in gui')
         self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
+
+    def update_tele_text(self, coords: Dict[str, str]) -> None:
+
+        """ Update telescope altazimuth coordinates """
+
+        altitude = int(coords["alt"])
+        azimuth = int(coords["az"])
+
+        self.win.FindElement('alt').Update(altitude)
+        self.win.FindElement('azi').Update(azimuth)
 
     def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 

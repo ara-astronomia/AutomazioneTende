@@ -89,8 +89,10 @@ def connection(error: bool) -> str:
                 g_ui.update_status_curtains('Chiuse')
             else:
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
+            
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
+            g_ui.update_tele_text(crac_status.telescope_coords)
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
 PORT = config.Config.getInt("port", "server")  # The port used by the server
