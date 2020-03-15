@@ -3,6 +3,7 @@ from logger import Logger
 from status import Status, TelescopeStatus
 from typing import Dict, Any
 from crac_status import CracStatus
+from orientation import Orientation
 
 class AutomazioneTende:
 #(Thread):
@@ -37,7 +38,6 @@ class AutomazioneTende:
         self.curtain_west = WestCurtain()
 
         self.started = False
-        self.prevCoord = { 'alt': 0, 'az': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
@@ -50,8 +50,8 @@ class AutomazioneTende:
         self.azimut_nw = config.Config.getInt("azNW", "azimut")
 
         # stabilisco il valore di increm per ogni tenda, increm corrisponde al valore dell'angolo della tenda coperto da 1 step)
-        self.increm_e = (self.alt_max_tend_e-self.alt_min_tend_e)/self.n_step_corsa
-        self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
+        self.increm_e = (self.alt_max_tend_e - self.alt_min_tend_e) / self.n_step_corsa
+        self.increm_w = (self.alt_max_tend_w - self.alt_min_tend_w) / self.n_step_corsa
 
         self.crac_status = CracStatus()
 
@@ -60,8 +60,7 @@ class AutomazioneTende:
         """ Read the status of all CRaC components and update the CracStatus object """
 
         self.crac_status.roof_status = self.roof_control.read()
-        self.crac_status.telescope_coords = self.telescopio.coords
-        self.crac_status.telescope_status = self.telescopio.read()
+        self.read_altaz_mount_coordinate()
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
@@ -99,8 +98,8 @@ class AutomazioneTende:
             if "error" in self.telescopio.coords:
                 Logger.getLogger().debug("Errore Telescopio: "+str(self.telescopio.coords['error']))
             else:
-                Logger.getLogger().debug("Altezza Telescopio: "+str(self.telescopio.coords['alt']))
-                Logger.getLogger().debug("Azimut Telescopio: "+str(self.telescopio.coords['az']))
+                Logger.getLogger().debug("Altezza Telescopio: %s", str(self.telescopio.coords['alt']))
+                Logger.getLogger().debug("Azimut Telescopio: %s", str(self.telescopio.coords['az']))
             Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
             self.crac_status.telescope_coords = self.telescopio.coords
             self.crac_status.telescope_status = status
@@ -110,27 +109,48 @@ class AutomazioneTende:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
             raise
 
-    def is_curtains_status_danger(self) -> bool:
+    def __convert_altitude_in_steps__(self, alt: int, orientation: Orientation):
 
-        """ Read the height of the curtains """
+        """ Convert an altitude in steps """
 
-        return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
+        if Orientation.EAST:
+            increm = self.increm_e
+        else:
+            increm = self.increm_w
+
+        return int(alt / increm)
+    
+    def __distance_from_telescope__(self, orientation: Orientation):
+
+        return self.__convert_altitude_in_steps__(config.Config.getFloat("diff_alt", "tende") / 60, orientation)
 
     def move_curtains_height(self, coord: Dict[str, int]):
 
         """ Change the height of the curtains to based on the given Coordinates """
 
+        self.crac_status.curtain_east_steps = self.__convert_altitude_in_steps__(self.crac_status.telescope_coords["alt"], Orientation.EAST)
+        self.crac_status.curtain_west_steps = self.__convert_altitude_in_steps__(self.crac_status.telescope_coords["alt"], Orientation.WEST)
+
+        if (
+            self.__diff_steps__(self.crac_status.curtain_east_steps, self.crac_status.old_curtain_east_steps) or
+            self.__diff_steps__(self.crac_status.curtain_west_steps, self.crac_status.old_curtain_west_steps)
+        ):
+            self.crac_status.old_curtain_east_steps = self.crac_status.curtain_east_steps
+            self.crac_status.old_curtain_west_steps = self.crac_status.curtain_west_steps
+        else:
+            return
+
         # TODO verify tele height:
         # if less than east_min_height e ovest_min_height
-        if coord["alt"] <= self.alt_min_tend_e and coord["alt"] <= self.alt_min_tend_w:
+        if coord["alt"] <= self.telescopio.max_secure_alt:
             #   move both curtains to 0
             self.park_curtains()
-            #   else if higher to east_max_height e ovest_max_height
+            #   else if higher than east_max_height or higher than ovest_max_height
         elif coord["alt"] >= self.alt_max_tend_e and coord["alt"] >= self.alt_max_tend_w or self.azimut_ne > coord['az'] or coord['az'] > self.azimut_nw or self.azimut_sw > coord['az'] > self.azimut_se:
             #   move both curtains max open
             self.open_all_curtains()
 
-            #   else if higher to ovest_min_height and Az tele to west
+            #   else if higher than ovest_min_height and Az tele to west
         elif self.azimut_sw < coord["az"] <= self.azimut_nw:
             #   move curtain east max open
             self.curtain_east.open_up()
@@ -140,21 +160,19 @@ class AutomazioneTende:
                 self.curtain_west.bring_down()
             else:
                 #   move curtain west to f(Alt telescope - x)
-                step_w = (coord["alt"]-self.alt_min_tend_w)/self.increm_w
-                self.curtain_west.move(int(step_w)) # move curtain west to step
+                self.curtain_west.move(self.crac_status.curtain_west_steps - self.__distance_from_telescope__(Orientation.WEST)) # move curtain west to step
 
-            #   else if higher to ovest_min_height and Az tele to est
+            #   else if higher than ovest_min_height and Az tele to est
         elif self.azimut_ne <= coord["az"] <= self.azimut_se:
             #   move curtian west max open
             self.curtain_west.open_up()
-            #   if inferior to est_min_height
+            #   if lower than est_min_height
             if coord["alt"] <= self.alt_min_tend_e:
                 #   move curtain east to 0 (closed)
                 self.curtain_east.bring_down()
             else:
                 #   move curtain east to f(Alt tele - x)
-                step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
-                self.curtain_east.move(int(step_e)) # move curtain east to step
+                self.curtain_east.move(self.crac_status.curtain_east_steps - self.__distance_from_telescope__(Orientation.EAST)) # move curtain east to step
         
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
@@ -187,6 +205,14 @@ class AutomazioneTende:
         Logger.getLogger().debug(coord)
         Logger.getLogger().debug(prevCoord)
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
+
+    def __diff_steps__(self, prev_steps: int, steps: int) -> bool:
+
+        """ Check if delta coord is enough to move the curtains """
+
+        Logger.getLogger().debug(steps)
+        Logger.getLogger().debug(prev_steps)
+        return abs(steps - prev_steps) >= config.Config.getFloat("diff_alt", "tende") / self.increm_e * 60
 
     def open_roof(self):
 
@@ -227,14 +253,15 @@ class AutomazioneTende:
 
         if not self.started:
             return
-        current_coord = self.read_altaz_mount_coordinate()
-        if "error" not in current_coord:
-            self.coord = current_coord
-        Logger.getLogger().debug(self.coord)
-        if self.diff_coordinates(self.prevCoord, self.coord): # TODO diff between steps instead of coords
-            self.prevCoord = self.coord
-            Logger.getLogger().debug(self.prevCoord)
-            self.move_curtains_height(self.coord)
+        self.read()
+        # current_coord = self.read_altaz_mount_coordinate()
+        # if "error" not in current_coord:
+        #     self.crac_status.telescope_coords = current_coord
+        # Logger.getLogger().debug(self.crac_status.telescope_coords)
+        # if self.diff_coordinates(self.crac_status._old_telescope_coords, self.crac_status.telescope_coords): # TODO diff between steps instead of coords
+        #     self.crac_status._old_telescope_coords = self.crac_status.telescope_coords
+        #     Logger.getLogger().debug(self.crac_status._old_telescope_coords)
+        self.move_curtains_height(self.crac_status.telescope_coords)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tende non verrebbero mai spostate
         time.sleep(config.Config.getFloat("sleep", "automazione"))

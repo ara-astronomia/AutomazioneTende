@@ -193,15 +193,12 @@ class Gui:
         Logger.getLogger().info('update_status_tele in gui')
         self.win.FindElement('status-tele').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_tele_text(self, coords: Dict[str, str]) -> None:
+    def update_tele_text(self, coords: Dict[str, int]) -> None:
 
         """ Update telescope altazimuth coordinates """
-
-        altitude = int(coords["alt"])
-        azimuth = int(coords["az"])
-
-        self.win.FindElement('alt').Update(altitude)
-        self.win.FindElement('azi').Update(azimuth)
+        
+        self.win.FindElement('alt').Update(coords["alt"])
+        self.win.FindElement('azi').Update(coords["az"])
 
     def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
