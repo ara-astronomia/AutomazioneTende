@@ -2,6 +2,7 @@ import config
 from enum import IntEnum, unique
 from typing import Dict
 from status import TelescopeStatus
+from orientation import Orientation
 
 class BaseTelescopio:
 
@@ -30,3 +31,6 @@ class BaseTelescopio:
             return TelescopeStatus.SECURE
         else:
             return TelescopeStatus.OPERATIONAL
+
+    def orientation(self):
+        return Orientation.EAST if 0 >= self.coords["azi"] > 180 else Orientation.WEST
