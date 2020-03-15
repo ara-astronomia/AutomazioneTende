@@ -9,7 +9,7 @@ def connection(error: bool) -> str:
         s.connect((HOST, PORT))
         while True:
             ev1, _ = g_ui.win.Read(timeout=10000)
-
+            g_ui.status_alert('')
             if ev1 is None or ev1 == "exit":
                 v = "E"
             elif error:
@@ -25,12 +25,12 @@ def connection(error: bool) -> str:
             elif ev1 == 'close-roof':
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     # FIXME
-                    g_ui.roof_alert('Attenzione tende aperte')
+                    g_ui.status_alert('Attenzione tende aperte')
 
                     continue
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
                     # FIXME
-                    g_ui.roof_alert('Attenzione telescopio operativo')
+                    g_ui.status_alert('Attenzione telescopio operativo')
                     continue
                 v = "T"
                 Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
@@ -38,7 +38,7 @@ def connection(error: bool) -> str:
             elif ev1 == 'start-curtains':
                 if crac_status.roof_status is Status.CLOSED:
                     # FIXME
-                    g_ui.roof_alert('Attenzione tetto chiuso')
+                    g_ui.status_alert('Attenzione tetto chiuso')
                     continue
                 v = "1"
                 #g_ui.update_enable_disable_button_close_roof()#'False')

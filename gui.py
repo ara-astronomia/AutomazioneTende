@@ -74,20 +74,23 @@ class Gui:
                         )
                     ],
                     [sg.Frame(layout=
-                        ([[
-                            sg.Column(layout=(
-                                [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                [sg.Text('Chiuso', size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
-                            )),
-                            sg.Column(layout=(
-                                [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                [sg.Text('Parked', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
-                            )),
-                            sg.Column(layout=(
-                                [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
-                            ))
-                        ]]), title='Status CRaC', relief=sg.RELIEF_GROOVE
+                        ([
+                            [
+                                sg.Column(layout=(
+                                    [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text('Chiuso', size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                )),
+                                sg.Column(layout=(
+                                    [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text('Parked', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                                )),
+                                sg.Column(layout=(
+                                    [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                ))
+                            ],
+                            [sg.Text('Alert', size=(55, 1), justification='left', font=("Helvetica", 12), key="alert")]
+                        ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]
 
@@ -133,13 +136,11 @@ class Gui:
         canvas.TKCanvas.create_polygon((p6, p7, p8, p9, p10), width=1, outline='grey', fill='#D8D8D8')
         canvas.TKCanvas.create_polygon((p1, p5, p4, p3, p2), width=1, outline='grey', fill='#848484')
 
-    def roof_alert(self, mess_alert: str) -> None:
+    def status_alert(self, mess_alert: str) -> None:
 
-        """Avvisa che le tende non possono essere aperte"""
+        """ Avvisa che le tende non possono essere aperte """
 
-        canvas = self.win.FindElement('canvas')
-        alert = mess_alert
-        canvas.TKCanvas.create_text(self.l / 2, self.h / 2, font=('Helvetica', 25), fill='#FE2E2E', text=alert)
+        self.win.FindElement('alert').Update(mess_alert)
 
     def update_status_roof(self, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
 
