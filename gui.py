@@ -67,8 +67,8 @@ class Gui:
                                 sg.Column(layout=(
                                     [sg.Text('Alt', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (10, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='alt', background_color="white", text_color="#2c2825", pad=(0, 0))],
-                                    [sg.Text('Azi', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
-                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='azi', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 30)))]
+                                    [sg.Text('Az', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (50, 0)))],
+                                    [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='az', background_color="white", text_color="#2c2825", pad=((0, 0), (0, 30)))]
                                 ))
                             ]]), title='Telescopio', relief=sg.RELIEF_GROOVE, pad=((6, 0), (0, 0))
                         )
@@ -152,7 +152,7 @@ class Gui:
     def __toggle_button__(self, *args, **kwargs):
 
         # args: list of elements keys
-        # kwargs: dictionary of elements attributes 
+        # kwargs: dictionary of elements attributes
 
         # for every key in args:
         for key in args:
@@ -202,7 +202,7 @@ class Gui:
         azimuth = int(coords["az"])
 
         self.win.FindElement('alt').Update(altitude)
-        self.win.FindElement('azi').Update(azimuth)
+        self.win.FindElement('az').Update(azimuth)
 
     def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 

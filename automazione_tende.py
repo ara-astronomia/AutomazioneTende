@@ -81,7 +81,7 @@ class AutomazioneTende:
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
             status = TelescopeStatus.LOST
-        
+
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
         self.crac_status.telescope_coords = self.telescopio.coords
         self.crac_status.telescope_status = status
@@ -158,7 +158,7 @@ class AutomazioneTende:
                 #   move curtain east to f(Alt tele - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(int(step_e)) # move curtain east to step
-        
+
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
@@ -167,7 +167,7 @@ class AutomazioneTende:
     def park_curtains(self) -> None:
 
         """" Bring down both curtains """
-        
+
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
 
@@ -177,9 +177,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
 
     def open_all_curtains(self):
-        
+
         """ Open up both curtains to the max extents """
-        
+
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
@@ -189,7 +189,7 @@ class AutomazioneTende:
 
         Logger.getLogger().debug(coord)
         Logger.getLogger().debug(prevCoord)
-        return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
+        return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_az")
 
     def open_roof(self):
 
@@ -200,7 +200,7 @@ class AutomazioneTende:
         if status_roof != Status.OPEN:
             self.roof_control.open()
             status_roof = self.roof_control.read()
-        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))        
+        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
     def close_roof(self) -> None:

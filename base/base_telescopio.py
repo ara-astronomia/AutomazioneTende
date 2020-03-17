@@ -8,7 +8,7 @@ class BaseTelescopio:
     def __init__(self):
         self.max_secure_alt: int = config.Config.getInt("max_secure_alt", "telescope")
         self.park_alt: int = config.Config.getInt("park_alt", "telescope")
-        self.park_azi: int = config.Config.getInt("park_azi", "telescope")
+        self.park_az: int = config.Config.getInt("park_az", "telescope")
         self.coords: Dict[str, int] = { "alt": 0, "az": 0 }
 
     def update_coords(self):
@@ -23,7 +23,7 @@ class BaseTelescopio:
 
         if (
             self.coords["alt"] - 1 <= self.park_alt <= self.coords["alt"] + 1 and 
-            self.coords["az"] - 1 <= self.park_azi <= self.coords["az"] + 1
+            self.coords["az"] - 1 <= self.park_az <= self.coords["az"] + 1
            ):
             return TelescopeStatus.PARKED
         elif self.coords["alt"] <= self.max_secure_alt:

@@ -27,8 +27,8 @@ class Telescopio(BaseTelescopio):
         return self.coords
 
     def park_tele(self):
-        Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_azi, self.max_secure_alt)
-        return self.update_coords(alt=self.park_alt, az=self.park_azi)
+        Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_az, self.max_secure_alt)
+        return self.update_coords(alt=self.park_alt, az=self.park_az)
 
     def __is_number__(self, s):
         if s is None:

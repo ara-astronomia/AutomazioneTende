@@ -21,7 +21,8 @@ def connection(error: bool) -> str:
 
             elif ev1 == 'park-tele':
                 v = "P"
-
+                Logger.getLogger().info("e' stato premuto il tasto park ")
+                
             elif ev1 == 'close-roof':
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     g_ui.status_alert('Attenzione tende aperte')
@@ -75,7 +76,7 @@ def connection(error: bool) -> str:
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele('In Sicurezza')
-            
+
             elif crac_status.telescope_status == TelescopeStatus.LOST:
                 Logger.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele('Avviso')
