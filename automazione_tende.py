@@ -77,9 +77,11 @@ class AutomazioneTende:
             self.telescopio.open_connection()
             self.telescopio.park_tele()
             self.telescopio.close_connection()
+            status = self.telescopio.read()
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
-        status = self.telescopio.read()
+            status = TelescopeStatus.LOST
+        
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
         self.crac_status.telescope_coords = self.telescopio.coords
         self.crac_status.telescope_status = status
@@ -105,10 +107,11 @@ class AutomazioneTende:
             self.crac_status.telescope_coords = self.telescopio.coords
             self.crac_status.telescope_status = status
 
-            return self.telescopio.coords
         except ConnectionRefusedError:
             Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
-            raise
+            self.crac_status.telescope_status = TelescopeStatus.LOST
+
+        return self.telescopio.coords
 
     def is_curtains_status_danger(self) -> bool:
 

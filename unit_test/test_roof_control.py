@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock
-from transition_error import TransitionError
 from roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
@@ -24,8 +23,7 @@ class RoofControlTest(unittest.TestCase):
     def test_raises_error_when_is_open_and_closed(self):
         status = MagicMock(return_value=True)
         GPIOConfig.status = status
-        with self.assertRaises(TransitionError):
-            self.roofControl.read()
+        self.assertEqual(Status.ERROR, self.roofControl.read())
 
     def test_is_roof_closed(self):
         side_effect = lambda value: True if value == GPIOPin.VERIFY_CLOSED else False

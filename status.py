@@ -39,9 +39,6 @@ class OrderedEnum(Enum):
 @unique
 class Status(OrderedEnum):
 
-    def __init__(self, value: int, abbr: str):
-        super().__init__(value, abbr)
-
     # static statuses have lower values
     CLOSED = (1, "C")
     STOPPED = (2, "S")
@@ -54,6 +51,7 @@ class Status(OrderedEnum):
     # danger zone - threat it as a movement statuses (but we hope it has stopped)
     # user should manually reset the steps after checking visually the curtains status
     DANGER = (6, "D")
+    ERROR = (7, "E")
 
 @unique
 class TelescopeStatus(OrderedEnum):
@@ -61,3 +59,7 @@ class TelescopeStatus(OrderedEnum):
     PARKED = (0, "P")
     SECURE = (1, "S")
     OPERATIONAL = (2, "O")
+
+    # danger zone - threat it as an operational status (but we hope it has stopped)
+    # user should manually reset the steps after checking visually the curtains status
+    LOST = (3, "L")

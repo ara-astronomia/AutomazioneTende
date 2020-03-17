@@ -24,12 +24,9 @@ def connection(error: bool) -> str:
 
             elif ev1 == 'close-roof':
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
-                    # FIXME
                     g_ui.status_alert('Attenzione tende aperte')
-
                     continue
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
-                    # FIXME
                     g_ui.status_alert('Attenzione telescopio operativo')
                     continue
                 v = "T"
@@ -37,11 +34,9 @@ def connection(error: bool) -> str:
 
             elif ev1 == 'start-curtains':
                 if crac_status.roof_status is Status.CLOSED:
-                    # FIXME
                     g_ui.status_alert('Attenzione tetto chiuso')
                     continue
                 v = "1"
-                #g_ui.update_enable_disable_button_close_roof()#'False')
             elif ev1 == 'stop-curtains':
                 v = "0"
             elif ev1 == "shutdown":
@@ -62,12 +57,11 @@ def connection(error: bool) -> str:
             Logger.getLogger().debug("Tenda Est step: %s", crac_status.curtain_east_steps)
             Logger.getLogger().debug("Tenda west step: %s", crac_status.curtain_west_steps)
             Logger.getLogger().debug("Data: %s", crac_status)
+
             if crac_status.roof_status == Status.OPEN:
                 g_ui.show_background_image()
                 g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
                 g_ui.update_enable_disable_button()
-                #g_ui.update_enable_disable_button_close_roof()#'False')
-
 
             elif crac_status.roof_status == Status.CLOSED:
                 g_ui.hide_background_image()
@@ -77,26 +71,30 @@ def connection(error: bool) -> str:
             if crac_status.telescope_status == TelescopeStatus.PARKED:
                 Logger.getLogger().info("telescopio in park")
                 g_ui.update_status_tele('Parked')
+
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele('In Sicurezza')
+            
+            elif crac_status.telescope_status == TelescopeStatus.LOST:
+                Logger.getLogger().info("telescopio in sicurezza ")
+                g_ui.update_status_tele('Avviso')
+                g_ui.status_alert('Connessione con the Sky persa')
+
             else:
                 Logger.getLogger().info("telescopio operativo")
                 g_ui.update_status_tele('Operativo', text_color="#2c2825", background_color="green")
 
             if crac_status.curtain_east_status == Status.DANGER or crac_status.curtain_west_status == Status.DANGER:
-                g_ui.update_status_curtains('controllare switch tende')
-            # elif data[0] == "E":
-            #     # la if si potrebbe togliere, l'errore dovrebbe sempre essere bloccante
-            #     # ma va testato meglio
-            #     if data != "E0000S":
-            #         g_ui.roof_alert('Attenzione Errore Bloccante!')
-            #         error = True
+                g_ui.update_status_curtains('Avviso')
+                g_ui.status_alert('Controllare switch tende - ricalibrazione')
+
             elif crac_status.curtain_east_status == Status.CLOSED and crac_status.curtain_west_status.CLOSED:
                 g_ui.update_status_curtains('Chiuse')
+
             else:
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()#'False')
+                g_ui.update_disable_button_close_roof()
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
