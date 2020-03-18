@@ -89,7 +89,7 @@ class Gui:
                                     [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                                 ))
                             ],
-                            [sg.Text('Alert', size=(55, 1), justification='left', font=("Helvetica", 12), key="alert")]
+                            [sg.Text('Nessun errore riscontrato', size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]
