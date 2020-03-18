@@ -1,4 +1,4 @@
-import unittest, config
+import unittest, config, socket
 from unittest.mock import MagicMock
 from telescopio import Telescopio
 import socket
@@ -9,6 +9,8 @@ class TelescopeTest(unittest.TestCase):
     def setUp(self):
         Singleton._instances = {}
         self.telescopio = Telescopio(config.Config.getValue("theskyx_server") ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
+        socket.socket.connect = MagicMock(return_value=None)
+        socket.socket.close = MagicMock(return_value=None)
 
     def test_connection(self):
         self.assertEqual(False, self.telescopio.connected)
@@ -22,7 +24,6 @@ class TelescopeTest(unittest.TestCase):
         self.assertEqual(False, self.telescopio.connected)
 
     def test_read_coords(self):
-        self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"az":106.2017082212961,"alt":22.049386909452107}|No error. Error = 0.')
         self.assertEqual({"az":106,"alt":22}, self.telescopio.update_coords())
 

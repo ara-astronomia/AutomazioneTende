@@ -9,7 +9,7 @@ def connection(error: bool) -> str:
         s.connect((HOST, PORT))
         while True:
             ev1, _ = g_ui.win.Read(timeout=10000)
-            g_ui.status_alert('')
+            # g_ui.status_alert('')
             if ev1 is None or ev1 == "exit":
                 v = "E"
             elif error:
@@ -78,9 +78,14 @@ def connection(error: bool) -> str:
                 g_ui.update_status_tele('In Sicurezza')
 
             elif crac_status.telescope_status == TelescopeStatus.LOST:
-                Logger.getLogger().info("telescopio in sicurezza ")
-                g_ui.update_status_tele('Avviso')
+                Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
+                g_ui.update_status_tele('Anomalia')
                 g_ui.status_alert('Connessione con the Sky persa')
+            
+            elif crac_status.telescope_status == TelescopeStatus.ERROR:
+                Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
+                g_ui.update_status_tele('Errore')
+                g_ui.status_alert('Errore di TheSky')
 
             else:
                 Logger.getLogger().info("telescopio operativo")

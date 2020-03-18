@@ -63,3 +63,4 @@ class TelescopeStatus(OrderedEnum):
     # danger zone - threat it as an operational status (but we hope it has stopped)
     # user should manually reset the steps after checking visually the curtains status
     LOST = (3, "L")
+    ERROR = (4, "E")

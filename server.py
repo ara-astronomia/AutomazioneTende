@@ -54,24 +54,24 @@ try:
                     elif data == b'P':
                         Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
                         automazioneTende.park_tele()
-
-                    Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec)")
-                    automazioneTende.exec()
-
-                    if not data or data == b'E':
+                    
+                    elif not data or data == b'E' or data == b'-':
+                        automazioneTende.started = True
+                        automazioneTende.park_tele()
+                        automazioneTende.exec()
+                        automazioneTende.started = False
                         automazioneTende.close_roof()
                         try:
                             conn.close()
                         finally:
+                            if data == b'-':
+                                automazioneTende.exit_program()
+                                exit(0)
                             break
 
-                    if data == b'-':
-                        automazioneTende.close_roof()
-                        try:
-                            conn.close()
-                        finally:
-                            automazioneTende.exit_program()
-                            exit(0)
+                    else:
+                        Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
+                        automazioneTende.exec()
 
                     conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
 

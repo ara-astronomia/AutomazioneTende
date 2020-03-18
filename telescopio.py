@@ -1,4 +1,4 @@
-import socket,json
+import socket, json, re
 from base.base_telescopio import BaseTelescopio
 from logger import Logger
 from typing import Dict
@@ -15,6 +15,7 @@ class Telescopio(BaseTelescopio):
         self.connected: bool = False
 
     def open_connection(self) -> None:
+
         if not self.connected:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.s.connect((self.hostname, self.port))
@@ -24,40 +25,54 @@ class Telescopio(BaseTelescopio):
         Logger.getLogger().info("Leggo le coordinate")
         data = self.__call_thesky__(self.script)
         Logger.getLogger().debug("Coordinate lette")
-        return self.__parse_result__(data.decode("utf-8"))
+        self.__parse_result__(data.decode("utf-8"))
+        return self.coords
 
     def park_tele(self) -> Dict[str, int]:
         Logger.getLogger().info("metto in park il telescopio")
-        self.__call_thesky__(self.script_park)
-        Logger.getLogger().debug("Telescopio inviato alla posizione di park")
-        if self.read(update=True) != TelescopeStatus.PARKED:
+        data = self.__call_thesky__(self.script_park)
+        Logger.getLogger().debug("Parking %s", data)
+        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
+        # TODO
+        # parse this
+        # TypeError: Limits exceeded. Error = 218.|No error. Error = 0.
+        self.__update_status__()
+        #if self.read() != TelescopeStatus.PARKED:
             # recursive workaround in the case the park can't stop the sidereal movement.
-            return self.park_tele()
+        #    return self.park_tele()
         return self.coords
 
     def __call_thesky__(self, script: str) -> bytes:
+        self.open_connection()
         with open(script, 'r') as p:
             file = p.read().encode('utf-8')
             self.s.sendall(file)
-            Logger.getLogger().info("file inviato")
+            Logger.getLogger().debug("file inviato")
             data = self.s.recv(1024)
-            Logger.getLogger().info(data)
-            return data
+            Logger.getLogger().debug(data)
+        self.close_connection()
+        return data
 
     def __parse_result__(self, data: str) -> Dict[str, int]:
-        error = data.find("No error") == -1 or data.find('undefined') > -1
-        Logger.getLogger().debug("Errore Telescopio: "+str(error))
-        if error:
-            jsonString = '{"error": true}'
-            coords = json.loads(jsonString)
-        else:
+        
+        self.coords["error"] = self.__is_error__(data)
+        
+        if not self.coords["error"]:
             jsonStringEnd = data.find("|")
             jsonString = data[:jsonStringEnd]
             coords = json.loads(jsonString)
-            coords["alt"] = int(round(coords["alt"]))
-            coords["az"] = int(round(coords["az"]))
-        Logger.getLogger().debug("Coords Telescopio: "+str(coords))
-        return coords
+            self.coords["alt"] = int(round(coords["alt"]))
+            self.coords["az"] = int(round(coords["az"]))
+        Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
+
+    def __is_error__(self, input_str, search_reg="Error = ([1-9]{1}[^\\d]|\\d{2,})") -> bool:
+        r = re.search(search_reg, input_str)
+        error_code = 0
+        if r:
+            error_code = int(re.search('\\d+', r.group(1)).group(0))
+        elif input_str.find('undefined') > -1:
+            error_code = 1
+        return error_code
 
     def close_connection(self) -> None:
         if self.connected:
