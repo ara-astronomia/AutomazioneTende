@@ -70,8 +70,6 @@ class Telescopio(BaseTelescopio):
         error_code = 0
         if r:
             error_code = int(re.search('\\d+', r.group(1)).group(0))
-        elif input_str.find('undefined') > -1:
-            error_code = 1
         return error_code
 
     def close_connection(self) -> None:
