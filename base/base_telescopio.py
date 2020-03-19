@@ -22,8 +22,8 @@ class BaseTelescopio:
     def read(self, ):
         try:
             self.coords = self.update_coords() # is it really necessary?
-        except ConnectionRefusedError as e:
-            Logger.getLogger().error("Connessione con The Sky persa: %s", e)
+        except (ConnectionError, TimeoutError):
+            Logger.getLogger().exception("Connessione con The Sky persa: ")
             self.status = TelescopeStatus.LOST
         else:
             self.__update_status__()

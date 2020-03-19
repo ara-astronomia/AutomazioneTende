@@ -12,7 +12,7 @@ MOCK: bool = False
 try:
     opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
 except getopt.GetoptError:
-    Logger.getLogger().error("parametri errati")
+    Logger.getLogger().exception("parametri errati")
     exit(2) #esce dall'applicazione con errore
 for opt, _1 in opts:
     if opt in ('-m', '--mock'):
@@ -69,7 +69,7 @@ try:
                                 exit(0)
                             break
 
-                    else:
+                    if data in [b"1", b"c"]:
                         Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                         automazioneTende.exec()
 
@@ -78,7 +78,7 @@ try:
 except (KeyboardInterrupt, SystemExit):
     Logger.getLogger().info("Intercettato CTRL+C")
 except Exception as e:
-    Logger.getLogger().error("altro errore: %s", str(e))
+    Logger.getLogger().exception("altro errore: ")
     error_level = -1
     raise
 finally:
