@@ -3,17 +3,15 @@ from logger import Logger
 from crac_status import CracStatus
 from status import Status, TelescopeStatus
 
-def connection(error: bool) -> str:
+def connection() -> str:
     crac_status = CracStatus()
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
             ev1, _ = g_ui.win.Read(timeout=10000)
-            g_ui.status_alert('Nessun errore riscontrato')
+            # g_ui.status_alert('')
             if ev1 is None or ev1 == "exit":
                 v = "E"
-            elif error:
-                continue
 
             elif ev1 == 'open-roof':
                 v = "R"
@@ -22,7 +20,7 @@ def connection(error: bool) -> str:
             elif ev1 == 'park-tele':
                 v = "P"
                 Logger.getLogger().info("e' stato premuto il tasto park ")
-
+                
             elif ev1 == 'close-roof':
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     g_ui.status_alert('Attenzione tende aperte')
@@ -78,24 +76,32 @@ def connection(error: bool) -> str:
                 g_ui.update_status_tele('In Sicurezza')
 
             elif crac_status.telescope_status == TelescopeStatus.LOST:
-                Logger.getLogger().info("telescopio in sicurezza ")
-                g_ui.update_status_tele('Avviso')
-                g_ui.status_alert('Connessione con TheSkyX persa')
+                Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
+                g_ui.update_status_tele('Anomalia')
+                g_ui.status_alert('Connessione con the Sky persa')
+            
+            elif crac_status.telescope_status == TelescopeStatus.ERROR:
+                Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
+                g_ui.update_status_tele('Errore')
+                g_ui.status_alert('Errore di TheSky')
 
             else:
                 Logger.getLogger().info("telescopio operativo")
                 g_ui.update_status_tele('Operativo', text_color="#2c2825", background_color="green")
 
-            if crac_status.curtain_east_status == Status.DANGER or crac_status.curtain_west_status == Status.DANGER:
+            if crac_status.are_curtains_in_danger():
                 g_ui.update_status_curtains('Avviso')
                 g_ui.status_alert('Controllare switch tende - ricalibrazione')
 
-            elif crac_status.curtain_east_status == Status.CLOSED and crac_status.curtain_west_status.CLOSED:
+            elif crac_status.are_curtains_closed():
                 g_ui.update_status_curtains('Chiuse')
 
             else:
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
+
+            if crac_status.is_in_anomaly():
+                g_ui.status_alert('Anomalia CRaC: stato invalido dei componenti')
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
@@ -105,10 +111,9 @@ HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP add
 PORT = config.Config.getInt("port", "server")  # The port used by the server
 
 g_ui = gui.Gui()
-error = False
 
 while True:
     Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
-    key = connection(error)
+    key = connection()
     if key == "E":
         exit(0)

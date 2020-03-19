@@ -50,3 +50,19 @@ class CracStatus():
 
     def __convert_steps__(self, steps: int) -> str:
         return f'{steps:03}'
+
+    def are_curtains_closed(self):
+        return self.curtain_east_status is Status.CLOSED and self.curtain_west_status is Status.CLOSED
+
+    def are_curtains_in_danger(self):
+        return self.curtain_east_status is Status.DANGER or self.curtain_west_status is Status.DANGER
+
+    def is_in_anomaly(self):
+        return (
+                    self.roof_status is Status.CLOSED and 
+                    (
+                        self.curtain_east_status > Status.CLOSED or
+                        self.curtain_west_status > Status.CLOSED or
+                        self.telescope_status > TelescopeStatus.SECURE
+                    )
+                )

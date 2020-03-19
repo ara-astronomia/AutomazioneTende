@@ -53,7 +53,7 @@ class Telescopio(BaseTelescopio):
         self.close_connection()
         return data
 
-    def __parse_result__(self, data: str) -> Dict[str, int]:
+    def __parse_result__(self, data: str):
         
         self.coords["error"] = self.__is_error__(data)
         
@@ -65,11 +65,13 @@ class Telescopio(BaseTelescopio):
             self.coords["az"] = int(round(coords["az"]))
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
 
-    def __is_error__(self, input_str, search_reg="Error = ([1-9]{1}[^\\d]|\\d{2,})") -> bool:
+    def __is_error__(self, input_str, search_reg="Error = ([1-9]{1}[^\\d]|\\d{2,})") -> int:
         r = re.search(search_reg, input_str)
         error_code = 0
         if r:
-            error_code = int(re.search('\\d+', r.group(1)).group(0))
+            r2 = re.search('\\d+', r.group(1))
+            if r2:
+                error_code = int(r2.group(0))
         return error_code
 
     def close_connection(self) -> None:
