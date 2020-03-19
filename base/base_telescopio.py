@@ -27,13 +27,13 @@ class BaseTelescopio:
             self.status = TelescopeStatus.LOST
         else:
             self.__update_status__()
-    
+
     def __update_status__(self):
         if self.coords["error"]:
             self.status = TelescopeStatus.ERROR
             Logger.getLogger().debug("Errore Telescopio: "+str(self.coords['error']))
         elif (
-            self.coords["alt"] - 1 <= self.park_alt <= self.coords["alt"] + 1 and 
+            self.coords["alt"] - 1 <= self.park_alt <= self.coords["alt"] + 1 and
             self.coords["az"] - 1 <= self.park_az <= self.coords["az"] + 1
         ):
             self.status = TelescopeStatus.PARKED
@@ -41,9 +41,9 @@ class BaseTelescopio:
             self.status = TelescopeStatus.SECURE
         else:
             self.status = TelescopeStatus.OPERATIONAL
-        
+
         Logger.getLogger().debug("Altezza Telescopio: %s", str(self.coords['alt']))
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))
         Logger.getLogger().debug("Status Telescopio: %s", str(self.status))
-        
+
         return self.status
