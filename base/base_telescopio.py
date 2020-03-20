@@ -10,7 +10,7 @@ class BaseTelescopio:
         self.max_secure_alt: int = config.Config.getInt("max_secure_alt", "telescope")
         self.park_alt: int = config.Config.getInt("park_alt", "telescope")
         self.park_az: int = config.Config.getInt("park_az", "telescope")
-        self.coords: Dict[str, int] = { "alt": 0, "az": 0 }
+        self.coords: Dict[str, int] = { "alt": 0, "az": 0, "error": 0 }
         self.status: TelescopeStatus = TelescopeStatus.PARKED
 
     def update_coords(self):
@@ -20,13 +20,7 @@ class BaseTelescopio:
         raise NotImplementedError()
 
     def read(self, ):
-        try:
-            self.coords = self.update_coords() # is it really necessary?
-        except (ConnectionError, TimeoutError):
-            Logger.getLogger().exception("Connessione con The Sky persa: ")
-            self.status = TelescopeStatus.LOST
-        else:
-            self.__update_status__()
+        raise NotImplementedError()
 
     def __update_status__(self):
         if self.coords["error"]:

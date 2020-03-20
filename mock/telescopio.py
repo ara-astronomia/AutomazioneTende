@@ -22,13 +22,17 @@ class Telescopio(BaseTelescopio):
         if not self.__is_number__(az) or int(az) < 0 or int(az) > 360:
             print("Inserire un numero compreso tra 0 e 360 per l'azimut")
             return self.update_coords(alt=alt)
-        self.coords = {'alt': int(alt), 'az': int(az)}
+        self.coords = {'alt': int(alt), 'az': int(az), 'error': 0}
         Logger.getLogger().debug("In update coords")
         return self.coords
 
     def park_tele(self):
         Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_az, self.max_secure_alt)
         return self.update_coords(alt=self.park_alt, az=self.park_az)
+
+    def read(self):
+        self.coords = self.update_coords()
+        self.__update_status__()
 
     def __is_number__(self, s):
         if s is None:

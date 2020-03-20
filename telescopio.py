@@ -41,6 +41,15 @@ class Telescopio(BaseTelescopio):
             # recursive workaround in the case the park can't stop the sidereal movement.
         #    return self.park_tele()
         return self.coords
+    
+    def read(self, ):
+        try:
+            self.coords = self.update_coords() # is it really necessary?
+        except (ConnectionError, TimeoutError):
+            Logger.getLogger().exception("Connessione con The Sky persa: ")
+            self.status = TelescopeStatus.LOST
+        else:
+            self.__update_status__()
 
     def __call_thesky__(self, script: str) -> bytes:
         self.open_connection()

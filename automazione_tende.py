@@ -37,7 +37,7 @@ class AutomazioneTende:
         self.curtain_west = WestCurtain()
 
         self.started = False
-        self.prevCoord = { 'alt': 0, 'az': 0 }
+        self.prevCoord = { 'alt': 0, 'az': 0, 'error': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
