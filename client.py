@@ -25,9 +25,11 @@ def connection() -> str:
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     g_ui.status_alert('Attenzione tende aperte')
                     continue
+
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
                     g_ui.status_alert('Attenzione telescopio operativo')
                     continue
+
                 v = "T"
                 Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
 
@@ -35,16 +37,20 @@ def connection() -> str:
                 if crac_status.roof_status is Status.CLOSED:
                     g_ui.status_alert('Attenzione tetto chiuso')
                     continue
+
                 v = "1"
+
             elif ev1 == 'stop-curtains':
                 v = "0"
+
             elif ev1 == "shutdown":
                 v = "-"
+
             else:
                 v = "c"
 
+            Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("UTF-8"))
             s.sendall(v.encode("UTF-8"))
-            Logger.getLogger().info("invio paramentri con sendall")
             rcv = s.recv(16)
 
             if ev1 is None or ev1 == "exit" or ev1 == "shutdown":
@@ -53,10 +59,9 @@ def connection() -> str:
 
             data = rcv.decode("UTF-8")
             crac_status = CracStatus(data)
-            Logger.getLogger().debug("Tenda Est step: %s", crac_status.curtain_east_steps)
-            Logger.getLogger().debug("Tenda west step: %s", crac_status.curtain_west_steps)
             Logger.getLogger().debug("Data: %s", crac_status)
 
+            # ROOF
             if crac_status.roof_status == Status.OPEN:
                 g_ui.show_background_image()
                 g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
@@ -67,6 +72,7 @@ def connection() -> str:
                 g_ui.update_status_roof('Chiuso')
                 g_ui.update_enable_button_open_roof()
 
+            # TELESCOPE
             if crac_status.telescope_status == TelescopeStatus.PARKED:
                 Logger.getLogger().info("telescopio in park")
                 g_ui.update_status_tele('Parked')
@@ -89,6 +95,7 @@ def connection() -> str:
                 Logger.getLogger().info("telescopio operativo")
                 g_ui.update_status_tele('Operativo', text_color="#2c2825", background_color="green")
 
+            # CURTAINS
             if crac_status.are_curtains_in_danger():
                 g_ui.update_status_curtains('Avviso')
                 g_ui.status_alert('Controllare switch tende - ricalibrazione')
@@ -100,8 +107,21 @@ def connection() -> str:
                 g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
 
+            # ALERT
             if crac_status.is_in_anomaly():
                 g_ui.status_alert('Anomalia CRaC: stato invalido dei componenti')
+            
+            elif crac_status.telescope_in_secure_and_roof_is_closed():
+                Logger.getLogger().info("telescopio > park e tetto chiuso")
+                g_ui.status_alert('Attenzione, Telescopio vicino al tetto')
+
+            elif crac_status.telescope_in_secure_and_roof_is_closed():
+                Logger.getLogger().info("telescopio > park e tetto in chiusura")
+                g_ui.status_alert('Attenzione, Telescopio non in park e tetto in chiusura')
+
+            else:
+                Logger.getLogger().info("Nessun errore riscontrato")
+                g_ui.status_alert("Nessun errore riscontrato")
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)

@@ -1,5 +1,6 @@
 from status import Status, TelescopeStatus
 from typing import Dict
+from logger import Logger
 
 class CracStatus():
 
@@ -66,3 +67,11 @@ class CracStatus():
                         self.telescope_status > TelescopeStatus.SECURE
                     )
                 )
+    
+    def telescope_in_secure_and_roof_is_closed(self):
+        Logger.getLogger().info("telescope_in_secure %s", self.telescope_status > TelescopeStatus.PARKED)
+        Logger.getLogger().info("roof_is_closed %s", self.roof_status is Status.CLOSED)
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSED
+    
+    def telescope_in_secure_and_roof_is_closing(self):
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
