@@ -6,6 +6,11 @@ from typing import Tuple
 from orientation import Orientation
 from typing import Dict
 
+NO_ALERT = "Nessun errore riscontrato"
+CURTAIN_CLOSED = "Chiuse"
+TELESCOPE_PARKED = "Parked"
+ROOF_CLOSED = "Chiuso"
+
 class Gui:
 
     def __init__(self):
@@ -78,18 +83,18 @@ class Gui:
                             [
                                 sg.Column(layout=(
                                     [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text('Chiuso', size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                    [sg.Text(ROOF_CLOSED, size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text('Parked', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                                    [sg.Text(TELESCOPE_PARKED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text('Chiuse', size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                    [sg.Text(CURTAIN_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                                 ))
                             ],
-                            [sg.Text('Nessun errore riscontrato', size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
+                            [sg.Text(NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]

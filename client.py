@@ -120,7 +120,7 @@ def connection() -> str:
                 g_ui.status_alert('Attenzione, Telescopio non in park e tetto in chiusura')
 
             else:
-                Logger.getLogger().info("Nessun errore riscontrato")
+                Logger.getLogger().info(gui.NO_ALERT)
                 g_ui.status_alert("Nessun errore riscontrato")
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
