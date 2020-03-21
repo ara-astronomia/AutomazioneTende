@@ -33,13 +33,10 @@ class Telescopio(BaseTelescopio):
         data = self.__call_thesky__(self.script_park)
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        # TODO
-        # parse this
-        # TypeError: Limits exceeded. Error = 218.|No error. Error = 0.
         self.__update_status__()
         #if self.read() != TelescopeStatus.PARKED:
             # recursive workaround in the case the park can't stop the sidereal movement.
-        #    return self.park_tele()
+            # return self.park_tele()
         return self.coords
     
     def read(self, ):
@@ -74,7 +71,7 @@ class Telescopio(BaseTelescopio):
             self.coords["az"] = int(round(coords["az"]))
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
 
-    def __is_error__(self, input_str, search_reg="Error = ([1-9]{1}[^\\d]|\\d{2,})") -> int:
+    def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:
         r = re.search(search_reg, input_str)
         error_code = 0
         if r:

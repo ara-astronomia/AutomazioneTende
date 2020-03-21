@@ -25,7 +25,7 @@ class BaseTelescopio:
     def __update_status__(self):
         if self.coords["error"]:
             self.status = TelescopeStatus.ERROR
-            Logger.getLogger().debug("Errore Telescopio: "+str(self.coords['error']))
+            Logger.getLogger().error("Errore Telescopio: "+str(self.coords['error']))
         elif (
             self.coords["alt"] - 1 <= self.park_alt <= self.coords["alt"] + 1 and
             self.coords["az"] - 1 <= self.park_az <= self.coords["az"] + 1

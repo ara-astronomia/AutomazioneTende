@@ -1,5 +1,3 @@
-from enum import Enum
-
 class GuiLabel:
 
     NO_ALERT = "Nessun errore riscontrato"
