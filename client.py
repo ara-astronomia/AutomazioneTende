@@ -37,13 +37,13 @@ def connection() -> str:
             s.sendall(v.encode("UTF-8"))
             rcv = s.recv(16)
 
-            if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
-                s.close()
-                return GuiKey.EXIT
-
             data = rcv.decode("UTF-8")
             crac_status = CracStatus(data)
             Logger.getLogger().debug("Data: %s", crac_status)
+
+            if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
+                s.close()
+                return GuiKey.EXIT
 
             # ROOF
             if crac_status.roof_status == Status.OPEN:

@@ -71,7 +71,7 @@ try:
                                 exit(0)
                             break
                     
-                    if data == b'1' or data == b'c':
+                    if not MOCK or data == b'1' or data == b'c':
                         Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                         automazioneTende.exec()
 

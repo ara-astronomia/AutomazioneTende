@@ -144,6 +144,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
 
+        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
+        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
+
     def park_curtains(self) -> None:
 
         """" Bring down both curtains """
@@ -167,8 +170,8 @@ class AutomazioneTende:
 
         """ Check if delta coord is enough to move the curtains """
 
-        Logger.getLogger().debug(coord)
-        Logger.getLogger().debug(prevCoord)
+        Logger.getLogger().debug("Current coord: %s", coord)
+        Logger.getLogger().debug("Previous coord: %s", prevCoord)
         return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_az")
 
     def open_roof(self):
@@ -213,10 +216,11 @@ class AutomazioneTende:
         if not self.started:
             return
         
-        Logger.getLogger().debug(self.coord)
         if self.diff_coordinates(self.prevCoord, self.coord): # TODO diff between steps instead of coords
-            self.prevCoord = self.coord
-            Logger.getLogger().debug(self.prevCoord)
+            self.prevCoord["alt"] = self.coord["alt"]
+            self.prevCoord["az"] = self.coord["az"]
+            self.prevCoord["error"] = self.coord["error"]
+            Logger.getLogger().debug("Differenza coordinate sufficienti")
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tende non verrebbero mai spostate
