@@ -5,11 +5,7 @@ from tkinter import PhotoImage, NW, DISABLED
 from typing import Tuple
 from orientation import Orientation
 from typing import Dict
-
-NO_ALERT = "Nessun errore riscontrato"
-CURTAIN_CLOSED = "Chiuse"
-TELESCOPE_PARKED = "Parked"
-ROOF_CLOSED = "Chiuso"
+from gui_constants import GuiLabel, GuiKey
 
 class Gui:
 
@@ -43,16 +39,16 @@ class Gui:
                     [sg.Text('Monitor Tende e Tetto ', size=(55, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('Apri', key='open-roof', disabled=False, size=(6, 1)),
-                            sg.Button('Chiudi', key="close-roof", disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
+                            sg.Button('Apri', key=GuiKey.OPEN_ROOF, disabled=False, size=(6, 1)),
+                            sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Park', key="park-tele", disabled=True, size=(6, 1))
+                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(6, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key='start-curtains', disabled=True, size=(9, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key="stop-curtains",disabled=True,  size=(9, 1)),
-                            sg.Button('Calibra', key="calibrate-curtains",disabled=True,  size=(9, 1))
+                            sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(9, 1), tooltip='schiacccia per attivare'),
+                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS,disabled=True,  size=(9, 1)),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS,disabled=True,  size=(9, 1))
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
@@ -83,18 +79,18 @@ class Gui:
                             [
                                 sg.Column(layout=(
                                     [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(ROOF_CLOSED, size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.ROOF_CLOSED, size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(TELESCOPE_PARKED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.TELESCOPE_PARKED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(CURTAIN_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.CURTAINS_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                                 ))
                             ],
-                            [sg.Text(NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
+                            [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]
@@ -171,8 +167,8 @@ class Gui:
         """ Update enable-disable button """
 
         Logger.getLogger().info('update_enable_disable_button in gui')
-        self.__toggle_button__("open-roof", disabled=True)
-        self.__toggle_button__("close-roof", "park-tele", "start-curtains", "stop-curtains", "calibrate-curtains", disabled=False)
+        self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
 
     def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
@@ -181,7 +177,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
         # self.win.FindElement('close-roof').Update(disabled=True)
-        self.__toggle_button__("close-roof", disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, disabled=True)
 
 
     def update_enable_button_open_roof(self): #, status: str, disabeld: str =''):
@@ -189,8 +185,8 @@ class Gui:
         """ Update enable button open roof"""
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
-        self.__toggle_button__("open-roof", disabled=False)
-        self.__toggle_button__("close-roof", "park-tele", "start-curtains", "stop-curtains", "calibrate-curtains", disabled=True)
+        self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 

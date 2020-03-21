@@ -2,60 +2,44 @@ import time, config, socket, gui
 from logger import Logger
 from crac_status import CracStatus
 from status import Status, TelescopeStatus
+from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
     crac_status = CracStatus()
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            ev1, _ = g_ui.win.Read(timeout=10000)
-            # g_ui.status_alert('')
-            if ev1 is None or ev1 == "exit":
-                v = "E"
+            v, _ = g_ui.win.Read(timeout=10000)
 
-            elif ev1 == 'open-roof':
-                v = "R"
-                Logger.getLogger().info("e' stato premuto il tasto apri tetto (open_roof) ")
+            Logger.getLogger().info("e' stato premuto il tasto %s", v)
 
-            elif ev1 == 'park-tele':
-                v = "P"
-                Logger.getLogger().info("e' stato premuto il tasto park ")
-                
-            elif ev1 == 'close-roof':
+            if v is None:
+                v = GuiKey.EXIT
+            
+            elif v is GuiKey.TIMEOUT:
+                v = GuiKey.CONTINUE
+ 
+            elif v is GuiKey.CLOSE_ROOF:
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
-                    g_ui.status_alert('Attenzione tende aperte')
+                    g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
                     continue
 
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
-                    g_ui.status_alert('Attenzione telescopio operativo')
+                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE)
                     continue
 
-                v = "T"
-                Logger.getLogger().info("funzione tetto in chiusura (close_roof) ")
-
-            elif ev1 == 'start-curtains':
+            elif v is GuiKey.START_CURTAINS:
                 if crac_status.roof_status is Status.CLOSED:
-                    g_ui.status_alert('Attenzione tetto chiuso')
+                    g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
-
-                v = "1"
-
-            elif ev1 == 'stop-curtains':
-                v = "0"
-
-            elif ev1 == "shutdown":
-                v = "-"
-
-            else:
-                v = "c"
 
             Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("UTF-8"))
             s.sendall(v.encode("UTF-8"))
             rcv = s.recv(16)
 
-            if ev1 is None or ev1 == "exit" or ev1 == "shutdown":
+            if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
-                return "E"
+                return GuiKey.EXIT
 
             data = rcv.decode("UTF-8")
             crac_status = CracStatus(data)
@@ -64,64 +48,64 @@ def connection() -> str:
             # ROOF
             if crac_status.roof_status == Status.OPEN:
                 g_ui.show_background_image()
-                g_ui.update_status_roof("Aperto", text_color="#2c2825", background_color="green")
+                g_ui.update_status_roof(GuiLabel.ROOF_OPEN, text_color="#2c2825", background_color="green")
                 g_ui.update_enable_disable_button()
 
             elif crac_status.roof_status == Status.CLOSED:
                 g_ui.hide_background_image()
-                g_ui.update_status_roof('Chiuso')
+                g_ui.update_status_roof(GuiLabel.ROOF_CLOSED)
                 g_ui.update_enable_button_open_roof()
 
             # TELESCOPE
             if crac_status.telescope_status == TelescopeStatus.PARKED:
                 Logger.getLogger().info("telescopio in park")
-                g_ui.update_status_tele('Parked')
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED)
 
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
-                g_ui.update_status_tele('In Sicurezza')
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED)
 
             elif crac_status.telescope_status == TelescopeStatus.LOST:
                 Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
-                g_ui.update_status_tele('Anomalia')
-                g_ui.status_alert('Connessione con the Sky persa')
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
+                g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
             
             elif crac_status.telescope_status == TelescopeStatus.ERROR:
                 Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
-                g_ui.update_status_tele('Errore')
-                g_ui.status_alert('Errore di TheSky')
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_ERROR)
+                g_ui.status_alert(GuiLabel.ALERT_THE_SKY_ERROR)
 
             else:
                 Logger.getLogger().info("telescopio operativo")
-                g_ui.update_status_tele('Operativo', text_color="#2c2825", background_color="green")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_OPERATIVE, text_color="#2c2825", background_color="green")
 
             # CURTAINS
             if crac_status.are_curtains_in_danger():
-                g_ui.update_status_curtains('Avviso')
-                g_ui.status_alert('Controllare switch tende - ricalibrazione')
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_ANOMALY)
+                g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
 
             elif crac_status.are_curtains_closed():
-                g_ui.update_status_curtains('Chiuse')
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_CLOSED)
 
             else:
-                g_ui.update_status_curtains('Aperte', text_color="#2c2825", background_color="green")
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
 
             # ALERT
             if crac_status.is_in_anomaly():
-                g_ui.status_alert('Anomalia CRaC: stato invalido dei componenti')
+                g_ui.status_alert(GuiLabel.ALERT_CRAC_ANOMALY)
             
             elif crac_status.telescope_in_secure_and_roof_is_closed():
                 Logger.getLogger().info("telescopio > park e tetto chiuso")
-                g_ui.status_alert('Attenzione, Telescopio vicino al tetto')
+                g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF)
 
             elif crac_status.telescope_in_secure_and_roof_is_closed():
                 Logger.getLogger().info("telescopio > park e tetto in chiusura")
-                g_ui.status_alert('Attenzione, Telescopio non in park e tetto in chiusura')
+                g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF_CLOSING)
 
             else:
-                Logger.getLogger().info(gui.NO_ALERT)
-                g_ui.status_alert("Nessun errore riscontrato")
+                Logger.getLogger().info(GuiLabel.NO_ALERT)
+                g_ui.status_alert(GuiLabel.NO_ALERT)
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
