@@ -37,7 +37,7 @@ class AutomazioneTende:
         self.curtain_west = WestCurtain()
 
         self.started = False
-        self.prevCoord = { 'alt': 0, 'az': 0 }
+        self.prevCoord = { 'alt': 0, 'az': 0, 'error': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
@@ -60,8 +60,8 @@ class AutomazioneTende:
         """ Read the status of all CRaC components and update the CracStatus object """
 
         self.crac_status.roof_status = self.roof_control.read()
+        self.crac_status.telescope_status = self.telescopio.status
         self.crac_status.telescope_coords = self.telescopio.coords
-        self.crac_status.telescope_status = self.telescopio.read()
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
@@ -69,46 +69,29 @@ class AutomazioneTende:
 
         return self.crac_status
 
-    def park_tele(self) -> Dict[str, Any]:
+    def park_tele(self) -> Dict[str, int]:
 
         """ Park the Telescope """
 
-        try:
-            self.telescopio.open_connection()
-            self.telescopio.park_tele()
-            self.telescopio.close_connection()
-        except ConnectionRefusedError:
-            Logger.getLogger().error("Server non raggiungibile, non è possibile parcheggiare il telescopio")
-        status = self.telescopio.read()
-        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
+        self.telescopio.park_tele()
+        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
+
         self.crac_status.telescope_coords = self.telescopio.coords
-        self.crac_status.telescope_status = status
+        self.crac_status.telescope_status = self.telescopio.status
 
         return self.telescopio.coords
 
-    def read_altaz_mount_coordinate(self) -> dict:
+    def read_altaz_mount_coordinate(self) -> Dict[str, int]:
 
         """ Read Telescope Coordinates """
 
-        try:
-            self.telescopio.open_connection()
-            status = self.telescopio.read(update=True)
-            self.telescopio.close_connection()
-            Logger.getLogger().debug("Telescopio")
-            Logger.getLogger().debug("Telescopio: "+str(self.telescopio.coords))
-            if "error" in self.telescopio.coords:
-                Logger.getLogger().debug("Errore Telescopio: "+str(self.telescopio.coords['error']))
-            else:
-                Logger.getLogger().debug("Altezza Telescopio: "+str(self.telescopio.coords['alt']))
-                Logger.getLogger().debug("Azimut Telescopio: "+str(self.telescopio.coords['az']))
-            Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
-            self.crac_status.telescope_coords = self.telescopio.coords
-            self.crac_status.telescope_status = status
+        self.telescopio.read()
+        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
-            return self.telescopio.coords
-        except ConnectionRefusedError:
-            Logger.getLogger().error("Server non raggiungibile, per usare il mock delle coordinate telescopio NON usare il flag -s per avviare il server")
-            raise
+        self.crac_status.telescope_coords = self.telescopio.coords
+        self.crac_status.telescope_status = self.telescopio.status
+
+        return self.telescopio.coords
 
     def is_curtains_status_danger(self) -> bool:
 
@@ -155,16 +138,19 @@ class AutomazioneTende:
                 #   move curtain east to f(Alt tele - x)
                 step_e = (coord["alt"]-self.alt_min_tend_e)/self.increm_e
                 self.curtain_east.move(int(step_e)) # move curtain east to step
-        
+
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
 
+        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
+        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
+
     def park_curtains(self) -> None:
 
         """" Bring down both curtains """
-        
+
         self.curtain_east.bring_down()
         self.curtain_west.bring_down()
 
@@ -174,9 +160,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
 
     def open_all_curtains(self):
-        
+
         """ Open up both curtains to the max extents """
-        
+
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
@@ -184,9 +170,9 @@ class AutomazioneTende:
 
         """ Check if delta coord is enough to move the curtains """
 
-        Logger.getLogger().debug(coord)
-        Logger.getLogger().debug(prevCoord)
-        return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_azi")
+        Logger.getLogger().debug("Current coord: %s", coord)
+        Logger.getLogger().debug("Previous coord: %s", prevCoord)
+        return abs(coord["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(coord["az"] - prevCoord["az"]) > config.Config.getFloat("diff_az")
 
     def open_roof(self):
 
@@ -197,7 +183,7 @@ class AutomazioneTende:
         if status_roof != Status.OPEN:
             self.roof_control.open()
             status_roof = self.roof_control.read()
-        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))        
+        Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
     def close_roof(self) -> None:
@@ -223,17 +209,18 @@ class AutomazioneTende:
 
     def exec(self) -> None:
 
-        """ Move the curtains """
+        """ Move the curtains and update the telescope coordinates"""
+
+        self.coord = self.read_altaz_mount_coordinate()
 
         if not self.started:
             return
-        current_coord = self.read_altaz_mount_coordinate()
-        if "error" not in current_coord:
-            self.coord = current_coord
-        Logger.getLogger().debug(self.coord)
+        
         if self.diff_coordinates(self.prevCoord, self.coord): # TODO diff between steps instead of coords
-            self.prevCoord = self.coord
-            Logger.getLogger().debug(self.prevCoord)
+            self.prevCoord["alt"] = self.coord["alt"]
+            self.prevCoord["az"] = self.coord["az"]
+            self.prevCoord["error"] = self.coord["error"]
+            Logger.getLogger().debug("Differenza coordinate sufficienti")
             self.move_curtains_height(self.coord)
             # solo se la differenza è misurabile imposto le coordinate precedenti uguali a quelle attuali
             # altrimenti muovendosi a piccoli movimenti le tende non verrebbero mai spostate

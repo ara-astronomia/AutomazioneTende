@@ -2,7 +2,6 @@ import config
 from base.singleton import Singleton
 import threading
 from status import Status
-from transition_error import TransitionError
 
 class Curtain:
     def __init__(self):
@@ -43,8 +42,7 @@ class Curtain:
             status = Status.STOPPED
 
         if not status:
-            raise TransitionError("""Curtain state invalid - La tenda è
-            in uno stato invalido""")
+            status = Status.ERROR
 
         return status
 

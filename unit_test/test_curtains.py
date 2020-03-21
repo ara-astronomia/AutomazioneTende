@@ -7,7 +7,6 @@ from base.singleton import Singleton
 from threading import Thread
 import time
 from status import Status
-from transition_error import TransitionError
 import config
 
 def threaded_event_simulation(pin, pin_status, edge, callback, bouncetime=100):
@@ -223,11 +222,10 @@ class TestCurtain(unittest.TestCase):
         curtain.gpioconfig.status = MagicMock(return_value=False)
         self.assertEqual(Status.STOPPED, curtain.read())
 
-    def test_read_raised_exception(self):
+    def test_read_is_error(self):
         curtain = WestCurtain()
         curtain.gpioconfig.status = MagicMock(return_value=True)
-        with self.assertRaises(TransitionError):
-            curtain.read()
+        self.assertEqual(Status.ERROR, curtain.read())
 
     def test_open(self):
         curtain = EastCurtain()

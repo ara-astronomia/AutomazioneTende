@@ -1,5 +1,6 @@
 from status import Status, TelescopeStatus
 from typing import Dict
+from logger import Logger
 
 class CracStatus():
 
@@ -50,3 +51,27 @@ class CracStatus():
 
     def __convert_steps__(self, steps: int) -> str:
         return f'{steps:03}'
+
+    def are_curtains_closed(self):
+        return self.curtain_east_status is Status.CLOSED and self.curtain_west_status is Status.CLOSED
+
+    def are_curtains_in_danger(self):
+        return self.curtain_east_status is Status.DANGER or self.curtain_west_status is Status.DANGER
+
+    def is_in_anomaly(self):
+        return (
+                    self.roof_status is Status.CLOSED and 
+                    (
+                        self.curtain_east_status > Status.CLOSED or
+                        self.curtain_west_status > Status.CLOSED or
+                        self.telescope_status > TelescopeStatus.SECURE
+                    )
+                )
+    
+    def telescope_in_secure_and_roof_is_closed(self):
+        Logger.getLogger().info("telescope_in_secure %s", self.telescope_status > TelescopeStatus.PARKED)
+        Logger.getLogger().info("roof_is_closed %s", self.roof_status is Status.CLOSED)
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSED
+    
+    def telescope_in_secure_and_roof_is_closing(self):
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
