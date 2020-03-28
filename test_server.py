@@ -57,19 +57,19 @@ try:
                     #     Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
                     #     automazioneTende.park_tele()
                     
-                    # elif not data or data == b'E' or data == b'-':
-                    #     automazioneTende.started = True
-                    #     automazioneTende.park_tele()
-                    #     automazioneTende.exec()
-                    #     automazioneTende.started = False
-                    #     automazioneTende.close_roof()
-                    #     try:
-                    #         conn.close()
-                    #     finally:
-                    #         if data == b'-':
-                    #             automazioneTende.exit_program()
-                    #             exit(0)
-                    #         break
+                    if not data or data == b'E' or data == b'-':
+                        # automazioneTende.started = True
+                        # automazioneTende.park_tele()
+                        # automazioneTende.exec()
+                        # automazioneTende.started = False
+                        # automazioneTende.close_roof()
+                        try:
+                            conn.close()
+                        finally:
+                            if data == b'-':
+                                # automazioneTende.exit_program()
+                                exit(0)
+                            break
                     
                     # if not MOCK or data == b'1' or data == b'c':
                     #     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)

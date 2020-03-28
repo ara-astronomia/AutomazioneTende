@@ -47,7 +47,7 @@ def connection() -> str:
             crac_status = CracStatus(data)
             Logger.getLogger().debug("CRAC_STATUS: %s", crac_status)
 
-            if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
+            if not v or v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
                 return GuiKey.EXIT
 
