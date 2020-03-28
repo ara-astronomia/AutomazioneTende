@@ -7,22 +7,22 @@ def create_win():
         [sg.Text('Test Hardware', size=(40, 1), justification='center', font=("Helvetica", 15))],
         [
             sg.Frame(layout=([[
-                sg.Radio('Apri', "Roof"),
-                sg.Radio('Chiudi', "Roof"),
+                sg.Radio('Apri', "Roof", key="RO"),
+                sg.Radio('Chiudi', "Roof", key="RC"),
             ]]), title="Comando tetto", title_color ="Black", border_width=5, pad=(3,0)),
         ],
         [
             sg.Frame( layout=([[
                     sg.Frame(layout=([[
-                        sg.Radio('Alza',"Curtain_West"),
-                        sg.Radio('Abbassa',"Curtain_West"),
+                        sg.Radio('Alza', "Curtain_West", key="WO"),
+                        sg.Radio('Abbassa', "Curtain_West", key="WC"),
                         sg.Text('9999', key="Count_W",  size=(5, 1), justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 10), pad=((3,8),(0,0))),
                     ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 8)),
 
                     sg.Frame(layout=([[
-                        sg.Radio('Alza',"Curtain_Est"),
-                        sg.Radio('Abbassa',"Curtain_Est"),
-
+                        sg.Radio('Alza', "Curtain_Est", key="EO"),
+                        sg.Radio('Abbassa', "Curtain_Est", key="EC"),
+                        sg.Button("Ciao"),
                         sg.Text('9999', key="Count_E",  size=(5, 1), justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 10), pad=((3,8),(0,0))),
                     ]]), title="TendaEst", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
 

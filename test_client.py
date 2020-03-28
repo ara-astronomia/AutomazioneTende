@@ -6,42 +6,46 @@ from crac_status import CracStatus
 from status import Status, TelescopeStatus
 
 def connection() -> str:
-    crac_status = CracStatus()
+    # crac_status = CracStatus()
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        #s.connect((HOST, PORT))
+        s.connect((HOST, PORT))
         win = gui.create_win()
         while True:
-            v, _ = win.Read(timeout=10000)
+            v, values = win.Read(timeout=5000)
 
-            Logger.getLogger().info("e' stato premuto il tasto %s", v)
+            roof = "C"
+            curtain_west = "C"
+            curtain_east = "C"
 
-            if v is None:
-                v = GuiKey.EXIT
+            if values:
+
+                for k, value in values.items():
+                    if value:
+                        if k == "RO":
+                            roof = "O"
+                        elif k == "RC":
+                            roof = "C"
+                        elif k == "WO":
+                            curtain_west = "O"
+                        elif k == "WC":
+                            curtain_west = "C"
+                        elif k == "EO":
+                            curtain_east = "O"
+                        elif k == "EC":
+                            curtain_east = "C"
+                    
+            code = roof + curtain_west + curtain_east
+
+            Logger.getLogger().debug("Code: %s", code)
+
+            s.sendall(code.encode("UTF-8"))
             
-            elif v is GuiKey.TIMEOUT:
-                v = GuiKey.CONTINUE
- 
-            elif v is GuiKey.CLOSE_ROOF:
-                if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
-                    # g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
-                    continue
+            rcv = s.recv(16)
 
-                if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
-                    # g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE)
-                    continue
-
-            elif v is GuiKey.START_CURTAINS:
-                if crac_status.roof_status is Status.CLOSED:
-                    # g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
-                    continue
-
-            Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("UTF-8"))
-            #s.sendall(v.encode("UTF-8"))
-            #rcv = s.recv(16)
-
-            #data = rcv.decode("UTF-8")
-            # crac_status = CracStatus(data)
-            # Logger.getLogger().debug("Data: %s", crac_status)
+            data = rcv.decode("UTF-8")
+            Logger.getLogger().debug("Data: %s", data)
+            crac_status = CracStatus(data)
+            Logger.getLogger().debug("CRAC_STATUS: %s", crac_status)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
