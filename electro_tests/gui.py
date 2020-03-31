@@ -9,22 +9,24 @@ def create_win():
             sg.Frame(layout=([[
                 sg.Radio('Apri', "Roof", key="RO"),
                 sg.Radio('Chiudi', "Roof", key="RC"),
+                sg.Radio('Stop', "Roof", default=True, key="RS"),
             ]]), title="Comando tetto", title_color ="Black", border_width=5, pad=(3,0)),
         ],
         [
             sg.Frame( layout=([[
                     sg.Frame(layout=([[
-                        sg.Radio('Alza', "Curtain_West", key="WO"),
-                        sg.Radio('Abbassa', "Curtain_West", key="WC"),
+                        sg.Radio('Alza', "Curtain_West", default=False, key="WO"),
+                        sg.Radio('Abbassa', "Curtain_West", default=False, key="WC"),
+                        sg.Radio("Stop", "Curtain_West", default=True, key="WS"),
                         sg.Text('9999', key="Count_W",  size=(5, 1), justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 10), pad=((3,8),(0,0))),
                     ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 8)),
 
                     sg.Frame(layout=([[
-                        sg.Radio('Alza', "Curtain_Est", key="EO"),
-                        sg.Radio('Abbassa', "Curtain_Est", key="EC"),
-                        sg.Button("Ciao"),
+                        sg.Radio('Alza', "Curtain_Est", default=False, key="EO"),
+                        sg.Radio('Abbassa', "Curtain_Est", default=False, key="EC"),
+                        sg.Radio('Stop', "Curtain_Est", default=True, key="ES"),
                         sg.Text('9999', key="Count_E",  size=(5, 1), justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 10), pad=((3,8),(0,0))),
-                    ]]), title="TendaEst", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
+                    ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
 
             ]]), title="Controllo Tende", title_color ="Black", border_width=5, pad=(2,10) )
         ],
@@ -47,7 +49,25 @@ def create_win():
         ],
     ]
 
+
     win=sg.Window('CRaC -- Control Roof and Curtains by ARA',default_element_size=(40, 1)).Layout(layout)
     return win
-    
+'''
+def reset_w():
+    """ Azzera lo status del radio W"""
+    print('arrivato a ovest')
+
+    win.FindElement('WO').Update(False)
+    win.FindElement('WC').Update(False)
+
+def reset_e():
+
+    """ Azzera lo status del radio E"""
+    print('arrivato a est')
+
+    win=sg.Window.FindElement('EO').Update(default=False)
+    win=sg.Window.FindElement('EC').Update(default=False)
+
+    return win
+'''
 #sg.Popup(button, values)

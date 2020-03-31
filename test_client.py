@@ -10,12 +10,13 @@ def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         win = gui.create_win()
+
         while True:
             v, values = win.Read(timeout=5000)
 
-            roof = "C"
-            curtain_west = "C"
-            curtain_east = "C"
+            roof = "S"
+            curtain_west = "S"
+            curtain_east = "S"
 
             if values:
 
@@ -25,21 +26,29 @@ def connection() -> str:
                             roof = "O"
                         elif k == "RC":
                             roof = "C"
+                        elif k == "RS":
+                            roof = "S"
+
                         elif k == "WO":
                             curtain_west = "O"
                         elif k == "WC":
                             curtain_west = "C"
+                        elif k == "WS":
+                            curtain_west = "S"
+
                         elif k == "EO":
                             curtain_east = "O"
                         elif k == "EC":
                             curtain_east = "C"
-                    
+                        elif k == "ES":
+                            curtain_west = "S"
+
             code = roof + curtain_west + curtain_east
 
             Logger.getLogger().debug("Code: %s", code)
 
             s.sendall(code.encode("UTF-8"))
-            
+
             rcv = s.recv(16)
 
             data = rcv.decode("UTF-8")
@@ -77,7 +86,7 @@ def connection() -> str:
             #     Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
             #     # g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
             #     # g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
-            
+
             # elif crac_status.telescope_status == TelescopeStatus.ERROR:
             #     Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
             #     # g_ui.update_status_tele(GuiLabel.TELESCOPE_ERROR)
@@ -106,7 +115,7 @@ def connection() -> str:
             # if crac_status.is_in_anomaly():
             #     # g_ui.status_alert(GuiLabel.ALERT_CRAC_ANOMALY)
             #     pass
-            
+
             # elif crac_status.telescope_in_secure_and_roof_is_closed():
             #     # Logger.getLogger().info("telescopio > park e tetto chiuso")
             #     # g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF)
