@@ -52,22 +52,3 @@ def create_win():
 
     win=sg.Window('CRaC -- Control Roof and Curtains by ARA',default_element_size=(40, 1)).Layout(layout)
     return win
-'''
-def reset_w():
-    """ Azzera lo status del radio W"""
-    print('arrivato a ovest')
-
-    win.FindElement('WO').Update(False)
-    win.FindElement('WC').Update(False)
-
-def reset_e():
-
-    """ Azzera lo status del radio E"""
-    print('arrivato a est')
-
-    win=sg.Window.FindElement('EO').Update(default=False)
-    win=sg.Window.FindElement('EC').Update(default=False)
-
-    return win
-'''
-#sg.Popup(button, values)
