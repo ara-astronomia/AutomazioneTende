@@ -4,7 +4,7 @@ def create_win():
     sg.theme('Bluemono')
     layout = [
         [sg.Menu([], tearoff=True)],
-        [sg.Text('Test Hardware', size=(40, 1), justification='center', font=("Helvetica", 15))],
+        [sg.Text('Test Hardware', size=(54, 1), justification='center', font=("Helvetica", 15))],
         [
             sg.Frame(layout=([[
                 sg.Radio('Apri', "Roof", key="RO"),
