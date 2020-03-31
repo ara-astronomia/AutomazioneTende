@@ -33,16 +33,16 @@ def create_win():
         [
             sg.Frame(layout=([[
                     sg.Frame(layout=([[
-                        sg.Text('Aperta', key="Curtain_W_is_open",  size=(7, 1),relief=sg.RELIEF_SUNKEN,  justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
-                        sg.Text('Chiusa', key="Curtain_W_is_closed",  size=(7, 1),relief=sg.RELIEF_SUNKEN,  justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
+                        sg.Text('stand-by', key="Curtain_W_is_open",  size=(7, 1),relief=sg.RELIEF_SUNKEN,  justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
+                        sg.Text('stand-by', key="Curtain_W_is_closed",  size=(7, 1),relief=sg.RELIEF_SUNKEN,  justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
                     ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
                     sg.Frame(layout=([[
-                        sg.Text('Aperta', key="Curtain_E_is_open",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
-                        sg.Text('Chiusa', key="Curtain_E_is_closed",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
+                        sg.Text('stand-by', key="Curtain_E_is_open",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
+                        sg.Text('stand-by', key="Curtain_E_is_closed",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
                     ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
                     sg.Frame(layout=([[
-                        sg.Text('Aperta', key="Roof_open",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
-                        sg.Text('Chiusa', key="Roof_closed",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white",text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
+                        sg.Text('stand-by', key="Roof_open",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(1,5))),
+                        sg.Text('stand-by', key="Roof_closed",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white",text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
                     ]]), title="Tetto", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
 
             ]]), title="Switches", title_color ="Black", border_width=5, pad=(2,6)),
