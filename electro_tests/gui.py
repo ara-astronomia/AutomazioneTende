@@ -25,7 +25,7 @@ def create_win():
                         sg.Radio('Alza', "Curtain_Est", default=False, key="EO"),
                         sg.Radio('Abbassa', "Curtain_Est", default=False, key="EC"),
                         sg.Radio('Stop', "Curtain_Est", default=True, key="ES"),
-                        sg.Text('stan-by', key="Count_E",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
+                        sg.Text('stand-by', key="Count_E",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
                     ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
 
             ]]), title="Controllo Tende", title_color ="Black", border_width=5, pad=(2,10) )
