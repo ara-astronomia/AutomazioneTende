@@ -205,6 +205,16 @@ class Curtain:
 
         self.move(self.__min_step__)
 
+    def stop(self):
+
+        """
+            disable pin motor
+        """
+
+        self.__stop__()
+
+
+
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
         super().__init__()
