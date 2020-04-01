@@ -34,7 +34,36 @@ try:
                     Logger.getLogger().debug(automazioneTende.crac_status)
                     data: bytes = conn.recv(3)
                     Logger.getLogger().debug("Data: %s", data)
-                    
+
+                    print (data[0], data[1], data[2])
+
+                    if data[0] ==79:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        automazioneTende.open_roof()
+                    if data[1] ==79:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
+                        automazioneTende.curtain_west.open_up()
+                    if data[2] ==79:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
+                        automazioneTende.curtain_east.open_up()
+
+                    if data[0] ==67:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        automazioneTende.close_roof()
+                    if data[1] ==67:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
+                        automazioneTende.curtain_west.bring_down()
+                    if data[2] ==67:
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.bring_down) ")
+                        automazioneTende.curtain_east.bring_down()
+
+                    if data[1] ==83:
+                        Logger.getLogger().debug("metodo per apertura tenda west in stand-by ")
+                        pass
+                    if data[2] ==83:
+                        Logger.getLogger().debug("metodo per apertura tenda east in stand-by ")
+                        pass
+
                     # if not data or (data == b"0" or data == b'E') and automazioneTende.started:
                     #     automazioneTende.started = False
                     #     automazioneTende.park_curtains()
@@ -56,7 +85,7 @@ try:
                     # elif data == b'P':
                     #     Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
                     #     automazioneTende.park_tele()
-                    
+
                     if not data or data == b'E' or data == b'-':
                         # automazioneTende.started = True
                         # automazioneTende.park_tele()
@@ -70,7 +99,7 @@ try:
                                 # automazioneTende.exit_program()
                                 exit(0)
                             break
-                    
+
                     # if not MOCK or data == b'1' or data == b'c':
                     #     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     #     automazioneTende.exec()
