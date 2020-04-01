@@ -41,7 +41,7 @@ def connection() -> str:
                         elif k == "EC":
                             curtain_east = "C"
                         elif k == "ES":
-                            curtain_west = "S"
+                            curtain_east = "S"
 
             code = roof + curtain_west + curtain_east
 
