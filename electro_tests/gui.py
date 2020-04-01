@@ -9,26 +9,21 @@ def create_win():
             sg.Frame(layout=([[
                 sg.Radio('Apri', "Roof", key="RO"),
                 sg.Radio('Chiudi', "Roof", key="RC"),
-                sg.Radio('Stop', "Roof", default=True, key="RS"),
-            ]]), title="Comando tetto", title_color ="Black", border_width=5, pad=(3,0)),
+            ]]), title="Comando tetto", title_location=sg.TITLE_LOCATION_TOP, title_color ="Black", pad=(3,0)),
         ],
         [
-            sg.Frame( layout=([[
-                    sg.Frame(layout=([[
-                        sg.Radio('Alza', "Curtain_West", default=False, key="WO"),
-                        sg.Radio('Abbassa', "Curtain_West", default=False, key="WC"),
-                        sg.Radio("Stop", "Curtain_West", default=True, key="WS"),
-                        sg.Text('stand-by', key="Count_W",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
-                    ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 8)),
-
-                    sg.Frame(layout=([[
-                        sg.Radio('Alza', "Curtain_Est", default=False, key="EO"),
-                        sg.Radio('Abbassa', "Curtain_Est", default=False, key="EC"),
-                        sg.Radio('Stop', "Curtain_Est", default=True, key="ES"),
-                        sg.Text('stand-by', key="Count_E",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
-                    ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
-
-            ]]), title="Controllo Tende", title_color ="Black", border_width=5, pad=(2,10) )
+            sg.Frame(layout=([[
+                sg.Radio('Alza', "Curtain_West", default=False, key="WO"),
+                sg.Radio('Abbassa', "Curtain_West", default=False, key="WC"),
+                sg.Radio('Stop', "Curtain_West", default=True, key="WS"),
+                sg.Text('stand-by', key="Count_W",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
+            ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 5)),
+            sg.Frame(layout=([[
+                sg.Radio('Alza', "Curtain_Est", default=False, key="EO"),
+                sg.Radio('Abbassa', "Curtain_Est", default=False, key="EC"),
+                sg.Radio('Stop', "Curtain_Est", default=True, key="ES"),
+                sg.Text('stand-by', key="Count_E",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white", text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,8),(0,0))),
+            ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 8)),
         ],
         [
             sg.Frame(layout=([[
@@ -45,7 +40,7 @@ def create_win():
                         sg.Text('stand-by', key="Roof_closed",  size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center',background_color="white",text_color = 'DarkBlue', font=("Helvetica", 9), pad=((3,3),(1,5))),
                     ]]), title="Tetto", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
 
-            ]]), title="Switches", title_color ="Black", border_width=5, pad=(2,6)),
+            ]]), title="Switches", title_color ="Black", title_location=sg.TITLE_LOCATION_TOP, pad=(2,6)),
         ],
     ]
 
