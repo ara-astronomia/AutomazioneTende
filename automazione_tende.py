@@ -166,6 +166,12 @@ class AutomazioneTende:
         self.curtain_east.open_up()
         self.curtain_west.open_up()
 
+    def motor_stop(self):
+        """ Disable motor control """
+
+        self.curtain_east.stop_motor()
+        self.curtain_west.stop_motor()
+
     def diff_coordinates(self, prevCoord: Dict[str, int], coord: Dict[str, int]) -> bool:
 
         """ Check if delta coord is enough to move the curtains """
@@ -215,7 +221,7 @@ class AutomazioneTende:
 
         if not self.started:
             return
-        
+
         if self.diff_coordinates(self.prevCoord, self.coord): # TODO diff between steps instead of coords
             self.prevCoord["alt"] = self.coord["alt"]
             self.prevCoord["az"] = self.coord["az"]

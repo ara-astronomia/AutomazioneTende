@@ -1,6 +1,6 @@
 import time, config, socket
 from electro_tests import gui
-from gui_constants import GuiKey
+from gui_constants import GuiKey,GuiLabel
 from logger import Logger
 from crac_status import CracStatus
 from status import Status, TelescopeStatus
@@ -12,7 +12,7 @@ def connection() -> str:
         win = gui.create_win()
 
         while True:
-            v, values = win.Read(timeout=5000)
+            v, values = win.Read(timeout=2000)
 
             roof = "S"
             curtain_west = "S"
@@ -60,6 +60,35 @@ def connection() -> str:
                 s.close()
                 return GuiKey.EXIT
 
+            # ROOF
+            if crac_status.roof_status == Status.OPEN:
+                win.Find("Roof_open").update('Aperto', text_color='white', background_color='green')
+                Logger.getLogger().info("tetto aperto")
+
+            if crac_status.roof_status == Status.CLOSED:
+                win.Find("Roof_closed").update('Chiuso', text_color='white', background_color='green')
+                Logger.getLogger().info("tetto chiuso")
+
+            #CURTAINS
+            # GLI IF DI QUESTE CONDIIONI VANNO SOSTITUITI CON QUELLI ADATTI ALLA LETTURA DELLO STATO DEL PIN DEGLI STATUS CORRISPONDENTI
+            #if curtain_east.curtain_open():
+            #    win.Find("Curtain_E_is_open").update('Aperta', text_color='white', background_color='green')
+            #    Logger.getLogger().info("tenda est aperta")
+            #if curtain_west.curtain_open:
+            #    win.Find("Curtain_W_is_open").update('Aperta', text_color='white', background_color='green')
+            #    Logger.getLogger().info("tenda west aperta")
+
+            #if curtain_east.curtain_closed:
+            #    win.Find("Curtain_E_is_closed").update('Chiusa', text_color='white', background_color='green')
+            #    Logger.getLogger().info("tenda est chiusa")
+            #if curtain_west.curtain_closed:
+            #    win.Find("Curtain_W_is_closed").update('Chiusa', text_color='white', background_color='green')
+            #    Logger.getLogger().info("tenda west chiusa")
+
+
+
+            else:
+                pass
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
 PORT = config.Config.getInt("port", "server")  # The port used by the server

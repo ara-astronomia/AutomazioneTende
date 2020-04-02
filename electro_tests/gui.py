@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+from logger import Logger
 
 def create_win():
     sg.theme('Bluemono')

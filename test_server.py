@@ -59,9 +59,11 @@ try:
 
                     if data[1] ==83:
                         Logger.getLogger().debug("metodo per apertura tenda west in stand-by ")
+                        automazioneTende.curtain_west.stop_motor()
                         pass
                     if data[2] ==83:
                         Logger.getLogger().debug("metodo per apertura tenda east in stand-by ")
+                        automazioneTende.curtain_east.stop_motor()
                         pass
 
                     # if not data or (data == b"0" or data == b'E') and automazioneTende.started:
