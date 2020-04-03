@@ -168,9 +168,10 @@ class AutomazioneTende:
 
     def motor_stop(self):
         """ Disable motor control """
+        print ('motori stoppati in automazione')
+        self.curtain_east.motor_stop()
+        self.curtain_west.motor_stop()
 
-        self.curtain_east.stop_motor()
-        self.curtain_west.stop_motor()
 
     def diff_coordinates(self, prevCoord: Dict[str, int], coord: Dict[str, int]) -> bool:
 

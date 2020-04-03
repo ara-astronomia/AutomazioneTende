@@ -47,4 +47,5 @@ def create_win():
 
 
     win=sg.Window('CRaC -- Control Roof and Curtains by ARA',default_element_size=(40, 1)).Layout(layout)
+
     return win

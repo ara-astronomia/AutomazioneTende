@@ -70,13 +70,15 @@ class Curtain:
 
         self.steps = self.__min_step__
 
-    def stop_motor(self):
+    def motor_stop(self):
 
         """
             disable pin motor
         """
-        print ("inserire qui il metodo che mette il pin dei motori in disable")
-        pass
+        status = None
+        status = Status.STOPPED
+        print (status)
+        return status
 
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):

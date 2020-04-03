@@ -205,7 +205,7 @@ class Curtain:
 
         self.move(self.__min_step__)
 
-    def stop_motor(self):
+    def motor_stop(self):
 
         """
             disable pin motor
