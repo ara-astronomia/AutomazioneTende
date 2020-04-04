@@ -56,9 +56,9 @@ class Curtain:
         self.gpioconfig.turn_on(self.pin_enabling_motor)
 
     def __stop__(self):
+        self.gpioconfig.turn_off(self.pin_enabling_motor)
         self.gpioconfig.turn_off(self.pin_opening)
         self.gpioconfig.turn_off(self.pin_closing)
-        self.gpioconfig.turn_off(self.pin_enabling_motor)
 
     def __check_and_stop__(self, status):
         if (status != Status.CLOSING and status != Status.OPENING and
