@@ -1,9 +1,14 @@
 from enum import Enum
 from config import Config
-from collections import namedtuple
 import RPi.GPIO as GPIO # type: ignore
+from typing import NamedTuple
 
-Pin = namedtuple("Pin", ["id_pin", "pin_setup", "pull", "on_is"])
+
+class Pin(NamedTuple):
+    id_pin: int
+    pin_setup = GPIO.IN
+    pull = None
+    is_on = GPIO.HIGH
 
 class GPIOPin(Pin, Enum):
     #impostazione gpio switch e comando tetto
@@ -24,10 +29,10 @@ class GPIOPin(Pin, Enum):
     MOTORW_B = Pin(Config.getInt("motorW_B", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
     MOTORW_E = Pin(Config.getInt("motorW_E", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
-    CLK_E = Pin(Config.getInt("clk_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    DT_E = Pin(Config.getInt("dt_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    CLK_W = Pin(Config.getInt("clk_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    DT_W = Pin(Config.getInt("dt_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
+    CLK_E = Pin(Config.getInt("clk_e", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
+    DT_E = Pin(Config.getInt("dt_e", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
+    CLK_W = Pin(Config.getInt("clk_w", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
+    DT_W = Pin(Config.getInt("dt_w", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
 
     @staticmethod
     def setup(mode=GPIO.BOARD):
