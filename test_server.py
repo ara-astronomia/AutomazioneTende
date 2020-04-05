@@ -35,13 +35,20 @@ try:
                 while True:
                     data = conn.recv(3).decode("UTF-8")
                     Logger.getLogger().debug("Data: %s", data)
-                    roof = data[0]
-                    curtain_west = data[1]
-                    curtain_east = data[2]
+                    if data:
+                        roof = data[0]
+                        curtain_west = data[1]
+                        curtain_east = data[2]
+                    else:
+                        try:
+                            conn.close()
+                        finally:
+                            break
 
                     if roof == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
+                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
                     if curtain_west == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORW_A)
@@ -56,6 +63,7 @@ try:
                     if roof == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
+                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
                     if curtain_west == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
@@ -83,6 +91,9 @@ try:
                     wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
                     wb = 1 if gpioConfig.status(GPIOPin.MOTORW_B) else 0
                     we = 1 if gpioConfig.status(GPIOPin.MOTORW_E) else 0
+                    Logger.getLogger().debug("Tenda west A: %s", gpioConfig.status(GPIOPin.MOTORW_A))
+                    Logger.getLogger().debug("Tenda west B: %s", gpioConfig.status(GPIOPin.MOTORW_B))
+                    Logger.getLogger().debug("Tenda west E: %s", gpioConfig.status(GPIOPin.MOTORW_E))
 
                     if wa and not wb and we:
                         curtain_east = "O"

@@ -9,11 +9,11 @@ class GPIOConfig(metaclass=Singleton):
     def __init__(self):
         GPIOPin.setup()
 
-    def turn_on(self, switch):
-        GPIO.output(switch.id_pin, GPIO.HIGH)
+    def turn_on(self, pin):
+        GPIO.output(pin.id_pin, GPIO.HIGH)
 
-    def turn_off(self, switch):
-        GPIO.output(switch.id_pin, GPIO.LOW)
+    def turn_off(self, pin):
+        GPIO.output(pin.id_pin, GPIO.LOW)
 
     def wait_for_on(self, switch, timeout=config.Config.getInt("wait_for_timeout", "roof_board")):
         is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.FALLING, timeout=timeout)
