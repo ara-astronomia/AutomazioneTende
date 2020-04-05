@@ -1,35 +1,33 @@
 from enum import Enum
 from config import Config
+from collections import namedtuple
 import RPi.GPIO as GPIO # type: ignore
 
-class GPIOPin(Enum):
+Pin = namedtuple("Pin", ["id_pin", "pin_setup", "pull", "on_is"])
+
+class GPIOPin(Pin, Enum):
     #impostazione gpio switch e comando tetto
-    VERIFY_CLOSED = (Config.getInt("roof_verify_closed", "roof_board"), GPIO.IN, GPIO.PUD_UP)
-    VERIFY_OPEN = (Config.getInt("roof_verify_open", "roof_board"), GPIO.IN, GPIO.PUD_UP)
-    SWITCH_ROOF = (Config.getInt("switch_roof", "roof_board"), GPIO.OUT)
+    VERIFY_CLOSED = Pin(Config.getInt("roof_verify_closed", "roof_board"), GPIO.IN, pull=GPIO.PUD_UP)
+    VERIFY_OPEN = Pin(Config.getInt("roof_verify_open", "roof_board"), GPIO.IN, pull=GPIO.PUD_UP)
+    SWITCH_ROOF = Pin(Config.getInt("switch_roof", "roof_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
     #impostazione gpio switch fine_corsa tende
-    CURTAIN_W_VERIFY_OPEN = (Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_W_VERIFY_CLOSED= (Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_E_VERIFY_OPEN = (Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_E_VERIFY_CLOSED = (Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_W_VERIFY_OPEN = Pin(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_W_VERIFY_CLOSED= Pin(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_E_VERIFY_OPEN = Pin(Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_E_VERIFY_CLOSED = Pin(Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
 
-    MOTORE_A = (Config.getInt("motorE_A", "motor_board"), GPIO.OUT)
-    MOTORE_B = (Config.getInt("motorE_B", "motor_board"), GPIO.OUT)
-    MOTORE_E = (Config.getInt("motorE_E", "motor_board"), GPIO.OUT)
-    MOTORW_A = (Config.getInt("motorW_A", "motor_board"), GPIO.OUT)
-    MOTORW_B = (Config.getInt("motorW_B", "motor_board"), GPIO.OUT)
-    MOTORW_E = (Config.getInt("motorW_E", "motor_board"), GPIO.OUT)
+    MOTORE_A = Pin(Config.getInt("motorE_A", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
+    MOTORE_B = Pin(Config.getInt("motorE_B", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
+    MOTORE_E = Pin(Config.getInt("motorE_E", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
+    MOTORW_A = Pin(Config.getInt("motorW_A", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
+    MOTORW_B = Pin(Config.getInt("motorW_B", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
+    MOTORW_E = Pin(Config.getInt("motorW_E", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
-    CLK_E = (Config.getInt("clk_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    DT_E = (Config.getInt("dt_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    CLK_W = (Config.getInt("clk_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-    DT_W = (Config.getInt("dt_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
-
-    def __init__(self, id_pin, pin_setup, pull=None):
-        self.id_pin = id_pin
-        self.pin_setup = pin_setup
-        self.pull = pull
+    CLK_E = Pin(Config.getInt("clk_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
+    DT_E = Pin(Config.getInt("dt_e", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
+    CLK_W = Pin(Config.getInt("clk_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
+    DT_W = Pin(Config.getInt("dt_w", "encoder_board"), GPIO.IN, GPIO.PUD_UP)
 
     @staticmethod
     def setup(mode=GPIO.BOARD):
