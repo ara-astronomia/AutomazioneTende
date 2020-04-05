@@ -4,15 +4,15 @@ import RPi.GPIO as GPIO # type: ignore
 
 class GPIOPin(Enum):
     #impostazione gpio switch e comando tetto
-    VERIFY_CLOSED = (Config.getInt("roof_verify_closed", "roof_board"), GPIO.OUT)
+    VERIFY_CLOSED = (Config.getInt("roof_verify_closed", "roof_board"), GPIO.IN, GPIO.PUD_UP)
     VERIFY_OPEN = (Config.getInt("roof_verify_open", "roof_board"), GPIO.IN, GPIO.PUD_UP)
     SWITCH_ROOF = (Config.getInt("switch_roof", "roof_board"), GPIO.OUT)
 
     #impostazione gpio switch fine_corsa tende
     CURTAIN_W_VERIFY_OPEN = (Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_W_VERIFY_CLOSED= (Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.OUT)
+    CURTAIN_W_VERIFY_CLOSED= (Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
     CURTAIN_E_VERIFY_OPEN = (Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_E_VERIFY_CLOSED = (Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.OUT)
+    CURTAIN_E_VERIFY_CLOSED = (Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
 
     MOTORE_A = (Config.getInt("motorE_A", "motor_board"), GPIO.OUT)
     MOTORE_B = (Config.getInt("motorE_B", "motor_board"), GPIO.OUT)

@@ -2,7 +2,6 @@ import socket, config, getopt, sys
 from logger import Logger
 import time
 from status import Status
-from crac_status import CracStatus
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 
@@ -40,40 +39,40 @@ try:
                     curtain_west = data[1]
                     curtain_east = data[2]
 
-                    if roof == b'O':
+                    if roof == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
-                    if curtain_west == b'O':
+                    if curtain_west == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORW_A)
                         gpioConfig.turn_off(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
-                    if curtain_east == b'O':
+                    if curtain_east == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_on(GPIOPin.MOTORE_E)
 
-                    if roof == b'C':
+                    if roof == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
-                    if curtain_west == b'C':
+                    if curtain_west == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
                         gpioConfig.turn_on(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
-                    if curtain_east == b'C':
+                    if curtain_east == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda east (automazioneTende.open_all_curtains.curtain_east.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_on(GPIOPin.MOTORE_B)
                         gpioConfig.turn_on(GPIOPin.MOTORE_E)
 
-                    if curtain_west == b'S':
+                    if curtain_west == 'S':
                         Logger.getLogger().debug("metodo per stop tenda west in stand-by ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
                         gpioConfig.turn_off(GPIOPin.MOTORW_B)
                         gpioConfig.turn_off(GPIOPin.MOTORW_E)
-                    if curtain_east == b'S':
+                    if curtain_east == 'S':
                         Logger.getLogger().debug("metodo per stop tenda east in stand-by ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
