@@ -6,9 +6,9 @@ from typing import NamedTuple
 
 class Pin(NamedTuple):
     id_pin: int
-    pin_setup = GPIO.IN
-    pull = None
-    is_on = GPIO.HIGH
+    pin_setup: int = GPIO.IN
+    pull: int = GPIO.PUD_OFF
+    on_is: int = GPIO.LOW
 
 class GPIOPin(Pin, Enum):
     #impostazione gpio switch e comando tetto
