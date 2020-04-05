@@ -33,7 +33,7 @@ class Curtain:
         """ Read the status of the curtain based on the pin of motor, encoder and switches """
 
         status = None
-       
+
         if self.steps == self.__max_step__:
             status = Status.OPEN
         elif self.steps == self.__min_step__:
@@ -54,21 +54,31 @@ class Curtain:
 
     def open_up(self):
 
-        """ 
-            Open up the curtain completely 
-            It's a shortcut to move()    
+        """
+            Open up the curtain completely
+            It's a shortcut to move()
         """
 
         self.steps = self.__max_step__
 
     def bring_down(self):
 
-        """ 
-            Bring down the curtain completely 
-            It's a shortcut to move()    
+        """
+            Bring down the curtain completely
+            It's a shortcut to move()
         """
 
         self.steps = self.__min_step__
+
+    def motor_stop(self):
+
+        """
+            disable pin motor
+        """
+        status = None
+        status = Status.STOPPED
+        print (status)
+        return status
 
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):

@@ -9,11 +9,11 @@ class GPIOConfig(metaclass=Singleton):
     def __init__(self):
         GPIOPin.setup()
 
-    def turn_on(self, switch):
-        GPIO.output(switch.id_pin, GPIO.HIGH)
+    def turn_on(self, pin):
+        GPIO.output(pin.id_pin, pin.on_is)
 
-    def turn_off(self, switch):
-        GPIO.output(switch.id_pin, GPIO.LOW)
+    def turn_off(self, pin):
+        GPIO.output(pin.id_pin, not pin.on_is)
 
     def wait_for_on(self, switch, timeout=config.Config.getInt("wait_for_timeout", "roof_board")):
         is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.FALLING, timeout=timeout)
@@ -23,8 +23,8 @@ class GPIOConfig(metaclass=Singleton):
         is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.RAISING, timeout=timeout)
         return is_finished != None
 
-    def status(self, switch):
-        return not GPIO.input(switch.id_pin)
+    def status(self, pin):
+        return GPIO.input(pin.id_pin) is pin.on_is
 
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)

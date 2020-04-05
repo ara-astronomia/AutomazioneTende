@@ -1,8 +1,9 @@
 import socket, config, getopt, sys
-from automazione_tende import AutomazioneTende
 from logger import Logger
 import time
 from status import Status
+from gpio_config import GPIOConfig
+from gpio_pin import GPIOPin
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -20,8 +21,9 @@ for opt, _1 in opts:
     elif opt in ('-s', '--sky'):
         THESKY = True
 
-automazioneTende: AutomazioneTende = AutomazioneTende(MOCK, THESKY)
 error_level: int = 0
+gpioConfig = GPIOConfig()
+
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
@@ -31,51 +33,93 @@ try:
             conn, _ = s.accept()
             with conn:
                 while True:
-                    Logger.getLogger().debug(automazioneTende.crac_status)
-                    data: bytes = conn.recv(3)
+                    data = conn.recv(3).decode("UTF-8")
                     Logger.getLogger().debug("Data: %s", data)
-                    
-                    # if not data or (data == b"0" or data == b'E') and automazioneTende.started:
-                    #     automazioneTende.started = False
-                    #     automazioneTende.park_curtains()
-
-                    # elif data == b"1":
-                    #     automazioneTende.started = True
-
-                    # elif data == b'-':
-                    #     automazioneTende.started = False
-
-                    # elif data == b'R':
-                    #     Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
-                    #     automazioneTende.open_roof()
-
-                    # elif data == b'T':
-                    #     Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
-                    #     automazioneTende.close_roof()
-
-                    # elif data == b'P':
-                    #     Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
-                    #     automazioneTende.park_tele()
-                    
-                    if not data or data == b'E' or data == b'-':
-                        # automazioneTende.started = True
-                        # automazioneTende.park_tele()
-                        # automazioneTende.exec()
-                        # automazioneTende.started = False
-                        # automazioneTende.close_roof()
+                    if data:
+                        roof = data[0]
+                        curtain_west = data[1]
+                        curtain_east = data[2]
+                    else:
                         try:
                             conn.close()
                         finally:
-                            if data == b'-':
-                                # automazioneTende.exit_program()
-                                exit(0)
                             break
-                    
-                    # if not MOCK or data == b'1' or data == b'c':
-                    #     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
-                    #     automazioneTende.exec()
 
-                    conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
+                    if roof == 'O':
+                        Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
+                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
+                    if curtain_west == 'O':
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
+                        gpioConfig.turn_on(GPIOPin.MOTORW_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORW_B)
+                        gpioConfig.turn_on(GPIOPin.MOTORW_E)
+                    if curtain_east == 'O':
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
+                        gpioConfig.turn_on(GPIOPin.MOTORE_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORE_B)
+                        gpioConfig.turn_on(GPIOPin.MOTORE_E)
+
+                    if roof == 'C':
+                        Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
+                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
+                    if curtain_west == 'C':
+                        Logger.getLogger().debug("chiamata del metodo per chiusura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
+                        gpioConfig.turn_off(GPIOPin.MOTORW_A)
+                        gpioConfig.turn_on(GPIOPin.MOTORW_B)
+                        gpioConfig.turn_on(GPIOPin.MOTORW_E)
+                    if curtain_east == 'C':
+                        Logger.getLogger().debug("chiamata del metodo per chiusura tenda east (automazioneTende.open_all_curtains.curtain_east.bring_down) ")
+                        gpioConfig.turn_off(GPIOPin.MOTORE_A)
+                        gpioConfig.turn_on(GPIOPin.MOTORE_B)
+                        gpioConfig.turn_on(GPIOPin.MOTORE_E)
+
+                    if curtain_west == 'S':
+                        Logger.getLogger().debug("metodo per stop tenda west in stand-by ")
+                        gpioConfig.turn_off(GPIOPin.MOTORW_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORW_B)
+                        gpioConfig.turn_off(GPIOPin.MOTORW_E)
+                    if curtain_east == 'S':
+                        Logger.getLogger().debug("metodo per stop tenda east in stand-by ")
+                        gpioConfig.turn_off(GPIOPin.MOTORE_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORE_B)
+                        gpioConfig.turn_off(GPIOPin.MOTORE_E)
+                    
+                    roof = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
+
+                    wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
+                    wb = 1 if gpioConfig.status(GPIOPin.MOTORW_B) else 0
+                    we = 1 if gpioConfig.status(GPIOPin.MOTORW_E) else 0
+                    Logger.getLogger().debug("Tenda west A: %s", gpioConfig.status(GPIOPin.MOTORW_A))
+                    Logger.getLogger().debug("Tenda west B: %s", gpioConfig.status(GPIOPin.MOTORW_B))
+                    Logger.getLogger().debug("Tenda west E: %s", gpioConfig.status(GPIOPin.MOTORW_E))
+
+                    if wa and not wb and we:
+                        curtain_east = "O"
+                    elif not wa and wb and we:
+                        curtain_west = "C"
+                    elif not wa and not wb and not we:
+                        curtain_west = "S"
+                    else:
+                        Exception("ERRORRRRRREW")
+
+                    ea = 1 if gpioConfig.status(GPIOPin.MOTORE_A) else 0
+                    eb = 1 if gpioConfig.status(GPIOPin.MOTORE_B) else 0
+                    ee = 1 if gpioConfig.status(GPIOPin.MOTORE_E) else 0
+
+                    if ea and not eb and ee:
+                        curtain_east = "O"
+                    elif not ea and eb and ee:
+                        curtain_east = "C"
+                    elif not ea and not eb and not ee:
+                        curtain_east = "S"
+                    else:
+                        Exception("ERRORRRRRREW")
+
+                    test_status = roof + curtain_west + curtain_east
+                    Logger.getLogger().info("test_status: %s", test_status)
+                    conn.sendall(test_status.encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
     Logger.getLogger().info("Intercettato CTRL+C")
@@ -84,4 +128,4 @@ except Exception as e:
     error_level = -1
     raise
 finally:
-    automazioneTende.exit_program(error_level)
+    gpioConfig.cleanup(error_level)
