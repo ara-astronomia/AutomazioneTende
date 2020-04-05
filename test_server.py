@@ -34,8 +34,8 @@ try:
             conn, _ = s.accept()
             with conn:
                 while True:
-                    data: bytes = conn.recv(3)
-                    Logger.getLogger().debug("Data: %s %s %s", data[0], data[1], data[2])
+                    data = conn.recv(3).decode("UTF-8")
+                    Logger.getLogger().debug("Data: %s", data)
                     roof = data[0]
                     curtain_west = data[1]
                     curtain_east = data[2]
@@ -107,7 +107,9 @@ try:
                     else:
                         Exception("ERRORRRRRREW")
 
-                    conn.sendall((roof + curtain_west + curtain_east).encode("UTF-8"))
+                    test_status = roof + curtain_west + curtain_east
+                    Logger.getLogger().info("test_status: %s", test_status)
+                    conn.sendall(test_status.encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
     Logger.getLogger().info("Intercettato CTRL+C")
