@@ -14,7 +14,7 @@ class CracStatus():
             self.curtain_west_status: Status = Status.STOPPED
             self._curtain_west_steps: str = "000"
 
-        if len(code) == 16:
+        elif len(code) == 16:
             self.roof_status = Status.get_value(code[0])
             self.telescope_status = TelescopeStatus.get_value(code[1])
             self._telescope_coords = { "alt": code[2:5], "az": code[5:8] }
@@ -23,7 +23,7 @@ class CracStatus():
             self.curtain_west_status = Status.get_value(code[12])
             self._curtain_west_steps = code[13:16]
         
-        if len(code) == 3:
+        elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
             self.curtain_west_status = Status.get_value(code[1])
             self.curtain_east_status = Status.get_value(code[2])
