@@ -22,7 +22,6 @@ for opt, _1 in opts:
     elif opt in ('-s', '--sky'):
         THESKY = True
 
-cs = CracStatus()
 error_level: int = 0
 gpioConfig = GPIOConfig()
 
@@ -35,63 +34,63 @@ try:
             conn, _ = s.accept()
             with conn:
                 while True:
-                    Logger.getLogger().debug(cs)
                     data: bytes = conn.recv(3)
-                    Logger.getLogger().debug("Data: %s", data)
+                    Logger.getLogger().debug("Data: %s %s %s", data[0], data[1], data[2])
+                    roof = data[0]
+                    curtain_west = data[1]
+                    curtain_east = data[2]
 
-                    print (data[0], data[1], data[2])
-
-                    if data[0] == b'O':
+                    if roof == b'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
-                    if data[1] == b'O':
+                    if curtain_west == b'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORW_A)
                         gpioConfig.turn_off(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
-                    if data[2] == b'O':
+                    if curtain_east == b'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_on(GPIOPin.MOTORE_E)
 
-                    if data[0] == b'C':
+                    if roof == b'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
                         gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
-                    if data[1] == b'C':
+                    if curtain_west == b'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
                         gpioConfig.turn_on(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
-                    if data[2] == b'C':
+                    if curtain_east == b'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda east (automazioneTende.open_all_curtains.curtain_east.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_on(GPIOPin.MOTORE_B)
                         gpioConfig.turn_on(GPIOPin.MOTORE_E)
 
-                    if data[1] == b'S':
+                    if curtain_west == b'S':
                         Logger.getLogger().debug("metodo per stop tenda west in stand-by ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
                         gpioConfig.turn_off(GPIOPin.MOTORW_B)
                         gpioConfig.turn_off(GPIOPin.MOTORW_E)
-                    if data[2] == b'S':
+                    if curtain_east == b'S':
                         Logger.getLogger().debug("metodo per stop tenda east in stand-by ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_off(GPIOPin.MOTORE_E)
                     
-                    r = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
+                    roof = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
 
                     wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
                     wb = 1 if gpioConfig.status(GPIOPin.MOTORW_B) else 0
                     we = 1 if gpioConfig.status(GPIOPin.MOTORW_E) else 0
 
                     if wa and not wb and we:
-                        west = "O"
+                        curtain_east = "O"
                     elif not wa and wb and we:
-                        west = "C"
+                        curtain_west = "C"
                     elif not wa and not wb and not we:
-                        west = "S"
+                        curtain_west = "S"
                     else:
                         Exception("ERRORRRRRREW")
 
@@ -100,15 +99,15 @@ try:
                     ee = 1 if gpioConfig.status(GPIOPin.MOTORE_E) else 0
 
                     if ea and not eb and ee:
-                        east = "O"
+                        curtain_east = "O"
                     elif not ea and eb and ee:
-                        east = "C"
+                        curtain_east = "C"
                     elif not ea and not eb and not ee:
-                        east = "S"
+                        curtain_east = "S"
                     else:
                         Exception("ERRORRRRRREW")
 
-                    conn.sendall((r + west + east).encode("UTF-8"))
+                    conn.sendall((roof + curtain_west + curtain_east).encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
     Logger.getLogger().info("Intercettato CTRL+C")
