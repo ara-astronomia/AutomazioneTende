@@ -85,7 +85,7 @@ try:
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_off(GPIOPin.MOTORE_E)
-                    
+
                     roof = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
 
                     wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
@@ -117,7 +117,19 @@ try:
                     else:
                         Exception("ERRORRRRRREW")
 
-                    test_status = roof + curtain_west + curtain_east
+                    #verity roof if open or closed
+                    sor = "C" if gpioConfig.add_event_detect_on(GPIOPin.VERIFY_OPEN) else "O"
+                    scr = "C" if gpioConfig.add_event_detect_on(GPIOPin.VERIFY_CLOSED) else "O"
+
+                    #verity curtain West open or closed
+                    sow = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_W_VERIFY_OPEN) else "O"
+                    scw = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_W_VERIFY_CLOSED) else "O"
+                    #verity curtain East open or closed
+                    soe = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_E_VERIFY_OPEN) else "0"
+                    sce = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_E_VERIFY_CLOSED) else "O"
+
+                    
+                    test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce
                     Logger.getLogger().info("test_status: %s", test_status)
                     conn.sendall(test_status.encode("UTF-8"))
 

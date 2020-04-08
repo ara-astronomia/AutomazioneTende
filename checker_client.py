@@ -56,66 +56,47 @@ def connection() -> str:
             crac_status = CracStatus(data)
             Logger.getLogger().debug("CRAC_STATUS: %s", crac_status)
 
+                # # ROOF
+            if data[3] == "C":
+                win.Find("Roof_open").update('Aperto', text_color='white', background_color='green')
+            if data[3] == "O":
+                win.Find("Roof_closed").update('Chiuso', text_color='white', background_color='green')
+            elif data[3] != "C" and data[3] != "O":
+                win.Find("Roof_open").update('stand-by',background_color="white",text_color = 'DarkBlue')
+                win.Find("Roof_closed").update('stand-by',background_color="white",text_color = 'DarkBlue')
+
+                # #CURTAINS W
+            if data[4] == "C":
+                win.Find("Curtain_W_is_open").update('Aperta', text_color='white', background_color='green')
+                Logger.getLogger().info("switch curtains west open in closed")
+            if data[4] == "O":
+                win.Find("Curtain_W_is_closed").update('Chiusa', text_color='white', background_color='green')
+                Logger.getLogger().info("switch curtains west closed in closed")
+
+            elif data[4] != "C" and data[4] != "O":
+                win.Find("Curtain_W_is_open").update('stand-by',background_color="white",text_color = 'DarkBlue')
+                win.Find("Curtain_W_is_closed").update('stand-by',background_color="white",text_color = 'DarkBlue')
+                Logger.getLogger().info("switch curtains west in stand-by")
+
+            # #CURTAINS W
+            if data[5] == "C":
+                win.Find("Curtain_E_is_open").update('Aperta', text_color='white', background_color='green')
+                Logger.getLogger().info("switch curtains east open in closed")
+            if data[5] == "O":
+                win.Find("Curtain_E_is_closed").update('Chiusa', text_color='white', background_color='green')
+                Logger.getLogger().info("switch curtains east closed in closed")
+            elif data[5] != "C" and data[5] != "O":
+                win.Find("Curtain_E_is_open").update('stand-by',background_color="white",text_color = 'DarkBlue')
+                win.Find("Curtain_E_is_closed").update('stand-by',background_color="white",text_color = 'DarkBlue')
+                Logger.getLogger().info("switch curtains east in stand-by")
+
+
+
             if not v or v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
                 return GuiKey.EXIT
 
-            # # ROOF
-            # if crac_status.roof_status == Status.OPEN:
-            #     win.Find("Roof_open").update('Aperto', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tetto aperto")
-            # else:
-            #     win.Find("Roof_open").update('stand-by',background_color="white",text_color = 'DarkBlue')
-
-            # if crac_status.roof_status == Status.CLOSED:
-            #     win.Find("Roof_closed").update('Chiuso', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tetto chiuso")
-            # else:
-            #     win.Find("Roof_closed").update('stand-by',background_color="white",text_color = 'DarkBlue')
-
-            # #CURTAINS
-            # # GLI IF DI QUESTE CONDIIONI VANNO SOSTITUITI CON QUELLI ADATTI ALLA LETTURA DELLO STATO DEL PIN DEGLI STATUS CORRISPONDENTI
-            # #CURTAIN WEST
-            # if crac_status.curtain_west_status == Status.OPEN:
-            #     win.Find("Curtain_W_is_open").update('Aperta', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tenda west aperta")
-            # else:
-            #     win.Find("Curtain_W_is_open").update('stand_by', background_color="white",text_color = 'DarkBlue')
-            #     Logger.getLogger().info("tenda west in stan_by")
-
-            # if crac_status.curtain_west_status == Status.CLOSED:
-            #     win.Find("Curtain_W_is_closed").update('Chiusa', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tenda west chiusa")
-            # else:
-            #     win.Find("Curtain_W_is_closed").update('stand_by', background_color="white",text_color = 'DarkBlue')
-            #     Logger.getLogger().info("tenda west in stan_by")
-
-            # if crac_status.curtain_west_status == Status.STOPPED:
-            #     win.Find("Curtain_W_is_open").update('stand_by', background_color="white",text_color = 'DarkBlue',)
-            #     win.Find("Curtain_W_is_closed").update('stand_by', background_color="white",text_color = 'DarkBlue',)
-            #     Logger.getLogger().info("tenda est in attesa")
-
-
-            # #CURTAIN EAST
-            # if crac_status.curtain_east_status == Status.OPEN:
-            #     win.Find("Curtain_E_is_open").update('Aperta', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tenda est aperta")
-            # else:
-            #     win.Find("Curtain_E_is_open").update('stand_by', background_color="white",text_color = 'DarkBlue')
-            #     Logger.getLogger().info("tenda est in stan_by")
-
-            # if crac_status.curtain_east_status == Status.CLOSED:
-            #     win.Find("Curtain_E_is_closed").update('Chiusa', text_color='white', background_color='green')
-            #     Logger.getLogger().info("tenda est chiusa")
-            # else:
-            #     win.Find("Curtain_E_is_closed").update('stand_by', background_color="white",text_color = 'DarkBlue')
-            #     Logger.getLogger().info("tenda est in stan_by")
-
-            # if crac_status.curtain_east_status == Status.STOPPED:
-            #     win.Find("Curtain_E_is_open").update('stand_by', background_color="white",text_color = 'DarkBlue',)
-            #     win.Find("Curtain_E_is_closed").update('stand_by', background_color="white",text_color = 'DarkBlue',)
-            #     Logger.getLogger().info("tenda est in attesa")
-            
+        
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
 PORT = config.Config.getInt("port", "server")  # The port used by the server
