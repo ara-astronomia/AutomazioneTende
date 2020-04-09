@@ -118,17 +118,15 @@ try:
                         Exception("ERRORRRRRREW")
 
                     #verity roof if open or closed
-                    sor = "C" if gpioConfig.add_event_detect_on(GPIOPin.VERIFY_OPEN) else "O"
-                    scr = "C" if gpioConfig.add_event_detect_on(GPIOPin.VERIFY_CLOSED) else "O"
-
+                    sor = gpioConfig.status_test(GPIOPin.VERIFY_OPEN)
+                    scr = gpioConfig.status_test(GPIOPin.VERIFY_CLOSED)
                     #verity curtain West open or closed
-                    sow = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_W_VERIFY_OPEN) else "O"
-                    scw = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_W_VERIFY_CLOSED) else "O"
+                    sow = gpioConfig.status_test(GPIOPin.CURTAIN_W_VERIFY_OPEN)
+                    scw = gpioConfig.status_test(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
                     #verity curtain East open or closed
-                    soe = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_E_VERIFY_OPEN) else "0"
-                    sce = "C" if gpioConfig.add_event_detect_on(GPIOPin.CURTAIN_E_VERIFY_CLOSED) else "O"
+                    soe = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_OPEN)
+                    sce = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
 
-                    
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce
                     Logger.getLogger().info("test_status: %s", test_status)
                     conn.sendall(test_status.encode("UTF-8"))

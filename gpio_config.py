@@ -25,6 +25,9 @@ class GPIOConfig(metaclass=Singleton):
 
     def status(self, pin):
         return GPIO.input(pin.id_pin) is pin.on_is
+    
+    def status_test(self, pin):
+        return "1" if self.status(pin) else "0"
 
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)
