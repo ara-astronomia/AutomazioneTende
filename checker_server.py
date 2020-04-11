@@ -4,6 +4,7 @@ import time
 from status import Status
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
+from curtains import EastCurtain, WestCurtain
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -23,6 +24,8 @@ for opt, _1 in opts:
 
 error_level: int = 0
 gpioConfig = GPIOConfig()
+east_curtain = EastCurtain()
+west_curtain = WestCurtain()
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -129,6 +132,8 @@ try:
 
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce
                     Logger.getLogger().info("test_status: %s", test_status)
+                    Logger.getLogger().info("Encoder est: %s", east_curtain.steps)
+                    Logger.getLogger().info("Encoder west: %s", west_curtain.steps)
                     conn.sendall(test_status.encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
