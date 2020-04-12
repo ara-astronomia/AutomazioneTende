@@ -129,8 +129,11 @@ try:
                     #verity curtain East open or closed
                     soe = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+                    #number step west
+                    nwe = west_curtain.steps
+                    nee = east_curtain.steps
 
-                    test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce
+                    test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", east_curtain.steps)
                     Logger.getLogger().info("Encoder west: %s", west_curtain.steps)
