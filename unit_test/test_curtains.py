@@ -100,6 +100,7 @@ class TestCurtain(unittest.TestCase):
         """
 
         statusA = True
+        statusB = True
         pin = curtain.dt
 
         def side_effect(value):

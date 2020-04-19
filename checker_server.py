@@ -27,6 +27,9 @@ gpioConfig = GPIOConfig()
 east_curtain = EastCurtain()
 west_curtain = WestCurtain()
 
+def convert_steps(steps):
+    return f'{steps:03}'
+
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
@@ -130,8 +133,8 @@ try:
                     soe = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
                     #number step west
-                    nwe = west_curtain.steps
-                    nee = east_curtain.steps
+                    nwe = convert_steps(west_curtain.steps)
+                    nee = convert_steps(east_curtain.steps)
 
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)

@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from base.singleton import Singleton
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
+import configparser
 
 class GPIOConfigTest(unittest.TestCase):
     def setUp(self):
@@ -26,5 +27,7 @@ class GPIOConfigTest(unittest.TestCase):
         self.assertEqual(GPIOConfig(), self.gpioConfig)
 
     def test_timeout_value(self):
-        self.assertEqual(config.Config.getInt("wait_for_timeout", "roof_board"), 180000)
-        self.assertEqual(config.Config.getInt("event_bouncetime", "roof_board"), 0)
+        cparser = configparser.ConfigParser()
+        cparser.read('config.ini')
+        self.assertEqual(config.Config.getInt("wait_for_timeout", "roof_board"), cparser["roof_board"].getint("wait_for_timeout"))
+        self.assertEqual(config.Config.getInt("event_bouncetime", "roof_board"), cparser["roof_board"].getint("event_bouncetime"))
