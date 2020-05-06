@@ -10,7 +10,7 @@ mypy = "*"
 
 [packages]
 PySimpleGUI = "*"
-"RPi.GPIO" = {version = "*",platform_machine = "=='armv7'"}
+"RPi.GPIO" = {version = "*",platform_machine = "=='armv7l'"}
 
 [requires]
 python_version = "3.7"
