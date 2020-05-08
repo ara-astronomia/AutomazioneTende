@@ -1,6 +1,6 @@
 /* Java Script */
 /* Socket Start Packet */
-/* The target az, alt, change as needed. */
+/* Go to park tele and tracking off. */
 var TargetAz = "0.1";
 var TargetAlt = "0.2";
 var Out;
