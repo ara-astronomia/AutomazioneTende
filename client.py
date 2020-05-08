@@ -100,6 +100,10 @@ def connection() -> str:
                 Logger.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON)
 
+            if crac_status.panel_status == PanelStatus.OFF:
+                Logger.getLogger().info("pannello flat spento")
+                g_ui.update_status_panel(GuiLabel.PANEL_OFF)
+
             # ALERT
             if crac_status.is_in_anomaly():
                 g_ui.status_alert(GuiLabel.ALERT_CRAC_ANOMALY)
