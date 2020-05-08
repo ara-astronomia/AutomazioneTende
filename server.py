@@ -34,7 +34,7 @@ try:
                     Logger.getLogger().debug(automazioneTende.crac_status)
                     data: bytes = conn.recv(1)
                     Logger.getLogger().debug("Data: %s", data)
-                    
+
                     if not data or (data == b"0" or data == b'E') and automazioneTende.started:
                         automazioneTende.started = False
                         automazioneTende.park_curtains()
@@ -56,7 +56,11 @@ try:
                     elif data == b'P':
                         Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
                         automazioneTende.park_tele()
-                    
+
+                    elif data == b'F':
+                        Logger.getLogger().debug("chiamata al metodo telescopio.flat_tele")
+                        automazioneTende.flat_tele()
+
                     elif not data or data == b'E' or data == b'-':
                         automazioneTende.started = True
                         automazioneTende.park_tele()
@@ -70,7 +74,7 @@ try:
                                 automazioneTende.exit_program()
                                 exit(0)
                             break
-                    
+
                     if not MOCK or data == b'1' or data == b'c':
                         Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                         automazioneTende.exec()
