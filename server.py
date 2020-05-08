@@ -61,6 +61,14 @@ try:
                         Logger.getLogger().debug("chiamata al metodo telescopio.flat_tele")
                         automazioneTende.flat_tele()
 
+                    elif data == b'L':
+                        Logger.getLogger().debug("chiamata al metodo accensione pannello flat")
+                        automazioneTende.panel_on()
+
+                    elif data == b'D':
+                        Logger.getLogger().debug("chiamata al metodo spegnimento pannello flat")
+                        automazioneTende.panel_off()
+
                     elif not data or data == b'E' or data == b'-':
                         automazioneTende.started = True
                         automazioneTende.park_tele()
