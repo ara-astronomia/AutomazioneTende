@@ -37,3 +37,5 @@ class GuiKey:
     CONTINUE = "c"
     EXIT = "E"
     TIMEOUT = "__TIMEOUT__"
+    PANEL_ON = "L"
+    PANEL_OFF = "D"
