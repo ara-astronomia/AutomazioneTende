@@ -220,6 +220,22 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
+    def panel_on(self):
+        """ on panel flat and update the panel status in CracStatus object """
+
+        status_panel = self.crac_status.panel_control()
+        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
+        if status_roof != Status.ON:
+            self.panel_control.panel_on()
+
+    def panel_off(self):
+        """ off panel flat and update the panel status in CracStatus object """
+
+        status_panel = self.crac_status.panel_control()
+        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
+        if status_roof != Status.OFF:
+            self.panel_control.panel_off()
+
     def exit_program(self, n: int = 0) -> None:
 
         """ Shutdown the server """
