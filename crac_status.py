@@ -23,7 +23,8 @@ class CracStatus():
             self._curtain_east_steps = code[9:12]
             self.curtain_west_status = Status.get_value(code[12])
             self._curtain_west_steps = code[13:16]
-            self.panel_status = PanelStatus.get_value(code[17])
+            self.panel_status = PanelStatus.get_value(code[16:
+            ])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
