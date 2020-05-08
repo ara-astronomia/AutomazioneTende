@@ -43,7 +43,8 @@ class Gui:
                             sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(6, 1))
+                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(6, 1)),
+                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=True, size=(6, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(9, 1), tooltip='schiacccia per attivare'),
@@ -88,6 +89,10 @@ class Gui:
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
                                     [sg.Text(GuiLabel.CURTAINS_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                )),
+                                sg.Column(layout=(
+                                    [sg.Text('PanelFlat', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text(GuiLabel.PANEL_OFF, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-panel', background_color="red", text_color="white")]
                                 ))
                             ],
                             [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
@@ -168,7 +173,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
 
     def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
@@ -186,7 +191,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
@@ -211,6 +216,13 @@ class Gui:
 
         Logger.getLogger().info('update_status_curtains in gui')
         self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
+
+    def update_status_panel(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update Panel Status """
+
+        Logger.getLogger().info('update_status_panel in gui')
+        self.win.FindElement('status-panel').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
 
