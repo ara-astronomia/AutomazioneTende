@@ -43,14 +43,22 @@ class Gui:
                             sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(6, 1)),
-                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=True, size=(6, 1))
+                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(5, 1)),
+                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=True, size=(5, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(9, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS,disabled=True,  size=(9, 1)),
-                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS,disabled=True,  size=(9, 1))
+                            sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
+                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS,disabled=True,  size=(6, 1)),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS,disabled=True,  size=(6, 1))
                         ]]), title="Tende", pad=(3, 0))
+                    ],
+                    [
+                        sg.Frame(layout=([[
+                            sg.Button('On', key=GuiKey.PANEL_ON, disabled=False, size=(6, 1), tooltip="non puoi accendere il pannnello, il telescopio è in fase imaging"),
+                            sg.Button('Off', key=GuiKey.PANEL_OFF, disabled=True, size=(6, 1), tooltip="non puoi spegnere un pannello spento :-)"),
+                            sg.Text(GuiLabel.PANEL_OFF, size=(10, 1), justification='center', font=("Helvetica", 11), key='status-panel', background_color="red", text_color="white")
+                        ]]), title="Panel Flat", pad=(3,10)),
+
                     ],
                     [
                         sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
@@ -89,11 +97,8 @@ class Gui:
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
                                     [sg.Text(GuiLabel.CURTAINS_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
-                                )),
-                                sg.Column(layout=(
-                                    [sg.Text('PanelFlat', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.PANEL_OFF, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-panel', background_color="red", text_color="white")]
                                 ))
+
                             ],
                             [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
