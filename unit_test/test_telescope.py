@@ -8,7 +8,7 @@ class TelescopeTest(unittest.TestCase):
 
     def setUp(self):
         Singleton._instances = {}
-        self.telescopio = Telescopio(config.Config.getValue("theskyx_server") ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'))
+        self.telescopio = Telescopio(config.Config.getValue("theskyx_server") ,config.Config.getValue('altaz_mount_file'),config.Config.getValue('park_tele_file'),config.Config.getValue('flat_tele_file'))
         socket.socket.connect = MagicMock(return_value=None)
         socket.socket.close = MagicMock(return_value=None)
 
