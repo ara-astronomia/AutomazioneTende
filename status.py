@@ -59,8 +59,15 @@ class TelescopeStatus(OrderedEnum):
     PARKED = (0, "P")
     SECURE = (1, "S")
     OPERATIONAL = (2, "O")
+    FLATTER = (5, "F")
 
     # danger zone - threat it as an operational status (but we hope it has stopped)
     # user should manually reset the steps after checking visually the curtains status
     LOST = (3, "L")
     ERROR = (4, "E")
+
+@unique
+class PanelStatus(OrderedEnum):
+
+    OFF = (0, "S")
+    ON = (1, "A")
