@@ -1,7 +1,7 @@
 import time, config, socket, gui
 from logger import Logger
 from crac_status import CracStatus
-from status import Status, TelescopeStatus
+from status import Status, TelescopeStatus, PanelStatus
 from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
@@ -15,10 +15,10 @@ def connection() -> str:
 
             if v is None:
                 v = GuiKey.EXIT
-            
+
             elif v is GuiKey.TIMEOUT:
                 v = GuiKey.CONTINUE
- 
+
             elif v is GuiKey.CLOSE_ROOF:
                 if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
@@ -35,7 +35,7 @@ def connection() -> str:
 
             Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("UTF-8"))
             s.sendall(v.encode("UTF-8"))
-            rcv = s.recv(16)
+            rcv = s.recv(17)
 
             data = rcv.decode("UTF-8")
             crac_status = CracStatus(data)
@@ -61,6 +61,10 @@ def connection() -> str:
                 Logger.getLogger().info("telescopio in park")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED)
 
+            if crac_status.telescope_status == TelescopeStatus.FLATTER:
+                Logger.getLogger().info("telescopio in flat")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
+
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED)
@@ -69,7 +73,7 @@ def connection() -> str:
                 Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
-            
+
             elif crac_status.telescope_status == TelescopeStatus.ERROR:
                 Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ERROR)
@@ -91,10 +95,15 @@ def connection() -> str:
                 g_ui.update_status_curtains(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
 
+            #PANEL FLAT
+            if crac_status.panel_status == PanelStatus.ON:
+                Logger.getLogger().info("pannello flat acceso")
+                g_ui.update_status_panel(GuiLabel.PANEL_ON)
+
             # ALERT
             if crac_status.is_in_anomaly():
                 g_ui.status_alert(GuiLabel.ALERT_CRAC_ANOMALY)
-            
+
             elif crac_status.telescope_in_secure_and_roof_is_closed():
                 Logger.getLogger().info("telescopio > park e tetto chiuso")
                 g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF)
