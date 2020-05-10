@@ -34,7 +34,7 @@ class AutomazioneTende:
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'), config.Config.getValue('flat_tele_file'))
+        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'), config.Config.getValue('flat_tele_file'), config.Config.getValue('tracking_on_tele_file'))
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
         self.panel_control = PanelControl()
@@ -223,11 +223,11 @@ class AutomazioneTende:
     def panel_on(self):
         """ on panel flat and update the panel status in CracStatus object """
 
-
         status_panel = self.crac_status.panel_status
         Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
         if status_panel != PanelStatus.ON:
             self.panel_control.panel_on()
+            self.telescopio.tele_tracking_on()
 
     def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """
