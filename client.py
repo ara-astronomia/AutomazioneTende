@@ -98,11 +98,13 @@ def connection() -> str:
             #PANEL FLAT
             if crac_status.panel_status == PanelStatus.ON:
                 Logger.getLogger().info("pannello flat acceso")
-                g_ui.update_status_panel(GuiLabel.PANEL_ON)
+                g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_disable_button_panel_on()
 
             if crac_status.panel_status == PanelStatus.OFF:
                 Logger.getLogger().info("pannello flat spento")
                 g_ui.update_status_panel(GuiLabel.PANEL_OFF)
+                g_ui.update_disable_button_panel_off()
 
             # ALERT
             if crac_status.is_in_anomaly():
