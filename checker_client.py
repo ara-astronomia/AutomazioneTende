@@ -10,6 +10,11 @@ def change_status(status_switch, key, win):
     elif status_switch == "0":
         win.Find(key).update('Disattivo', text_color='white', background_color='red')
 
+def change_encoder(count, key, win):
+    if count:
+        win.Find(key).update(count, text_color='white', background_color='green')
+        
+
 def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
@@ -55,7 +60,7 @@ def connection() -> str:
 
             s.sendall(code.encode("UTF-8"))
 
-            rcv = s.recv(9)
+            rcv = s.recv(15)
 
             data = rcv.decode("UTF-8")
             Logger.getLogger().debug("Data: %s", data)
@@ -72,9 +77,13 @@ def connection() -> str:
             change_status(data[7], "Curtain_E_is_open", win)
             change_status(data[8], "Curtain_E_is_closed", win)
 
-            
+            change_encoder(data[9:12], "Count_W", win)
+            change_encoder(data[12:], "Count_E", win)
 
-        
+
+
+
+
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
 PORT = config.Config.getInt("port", "server")  # The port used by the server
