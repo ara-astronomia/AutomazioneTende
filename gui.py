@@ -222,12 +222,6 @@ class Gui:
         Logger.getLogger().info('update_status_curtains in gui')
         self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_status_panel(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
-
-        """ Update Panel Status """
-
-        Logger.getLogger().info('update_status_panel in gui')
-        self.win.FindElement('status-panel').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
 
@@ -240,6 +234,31 @@ class Gui:
         self.win.FindElement('apert_w').Update(alpha_w)
         return alpha_e, alpha_w
 
+    #PANEL FLAT
+    def update_status_panel(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update Panel Status """
+
+        Logger.getLogger().info('update_status_panel in gui')
+        self.win.FindElement('status-panel').Update(status, text_color=text_color, background_color=background_color)
+
+    def update_disable_button_panel_on(self): #, status: str, disabeld: str =''):
+
+        """ Update enable button on panel flat"""
+
+        Logger.getLogger().info('update_disable_button_panel_flat_on')
+        self.__toggle_button__(GuiKey.PANEL_ON, disabled=True)
+        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=False)
+
+    def update_disable_button_panel_off(self): #, status: str, disabeld: str =''):
+
+        """ Update enable button on panel flat"""
+
+        Logger.getLogger().info('update_disable_button_panel_flat_on')
+        self.__toggle_button__(GuiKey.PANEL_ON, disabled=False)
+        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=True)
+
+    #GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
 
         """ Draw curtains position with canvas """
