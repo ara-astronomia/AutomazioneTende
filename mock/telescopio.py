@@ -4,7 +4,7 @@ from logger import Logger
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname, script, script_park, port: int = 3040):
+    def __init__(self, hostname, script, script_park, script_flat, script_tracking_on, port: int = 3040):
         super().__init__()
         self.connected = False
 
@@ -30,6 +30,9 @@ class Telescopio(BaseTelescopio):
         Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_az, self.max_secure_alt)
         return self.update_coords(alt=self.park_alt, az=self.park_az)
 
+    def flat_tele(self):
+        Logger.getLogger().debug("In park tele %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt)
+        return self.update_coords(alt=self.flat_alt, az=self.flat_az)    
     def read(self):
         self.coords = self.update_coords()
         self.__update_status__()
