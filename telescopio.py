@@ -6,13 +6,14 @@ from status import TelescopeStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname: str, script: str, script_park: str, script_flat: str, port: int=3040):
+    def __init__(self, hostname: str, script: str, script_park: str, script_flat: str, script_tracking_on: str, port: int=3040):
         super().__init__()
         self.hostname = hostname
         self.port: int = port
         self.script: str = script
         self.script_park: str = script_park
         self.script_flat: str = script_flat
+        self.script_tracking_on: str = script_tracking_on
         self.connected: bool = False
 
     def open_connection(self) -> None:
@@ -51,6 +52,16 @@ class Telescopio(BaseTelescopio):
             # return self.park_tele()
         return self.coords
 
+    def tele_tracking_on(self) -> Dict[str, int]:
+        Logger.getLogger().info("metto il telescopio in tracking on")
+        data = self.__call_thesky__(self.script_tracking_on)
+        Logger.getLogger().debug("tele in tracking on")
+        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
+        self.__update_status__()
+        #if self.read() != TelescopeStatus.FLATTER:
+            # recursive workaround in the case the flatted can't stop the sidereal movement.
+            # return self.park_tele()
+        return self.coords
 
     def read(self, ):
         try:
