@@ -32,7 +32,11 @@ class Telescopio(BaseTelescopio):
 
     def flat_tele(self):
         Logger.getLogger().debug("In park tele %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt)
-        return self.update_coords(alt=self.flat_alt, az=self.flat_az)    
+        return self.update_coords(alt=self.flat_alt, az=self.flat_az)
+
+    def tele_tracking_on(self):
+        pass    
+
     def read(self):
         self.coords = self.update_coords()
         self.__update_status__()
