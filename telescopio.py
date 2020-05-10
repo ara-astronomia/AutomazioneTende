@@ -49,14 +49,14 @@ class Telescopio(BaseTelescopio):
             self.__update_status__()
 
     def __call_thesky__(self, script: str) -> bytes:
-        self.open_connection()
+#        self.open_connection()
         with open(script, 'r') as p:
-            file = p.read().encode('utf-8')
-            self.s.sendall(file)
+            file = p.read()
+            self.s.sendall(file.format(az=0.1, alt=0.1).encode('utf-8'))
             Logger.getLogger().debug("file inviato")
             data = self.s.recv(1024)
             Logger.getLogger().debug(data)
-        self.close_connection()
+#        self.close_connection()
         return data
 
     def __parse_result__(self, data: str):
