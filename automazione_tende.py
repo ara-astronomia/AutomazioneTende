@@ -224,17 +224,17 @@ class AutomazioneTende:
         """ on panel flat and update the panel status in CracStatus object """
 
 
-        status_panel = self.crac_status.panel_status()
+        status_panel = self.crac_status.panel_status
         Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        if status_panel != Status.ON:
+        if status_panel != PanelStatus.ON:
             self.panel_control.panel_on()
 
     def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """
 
-        status_panel = self.crac_status.panel_status()
+        status_panel = self.crac_status.panel_status
         Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        if status_panel != Status.OFF:
+        if status_panel != PanelStatus.OFF:
             self.panel_control.panel_off()
 
     def exit_program(self, n: int = 0) -> None:
