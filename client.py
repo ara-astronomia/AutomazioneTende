@@ -61,7 +61,7 @@ def connection() -> str:
                 Logger.getLogger().info("telescopio in park")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED)
 
-            if crac_status.telescope_status == TelescopeStatus.FLATTER:
+            elif crac_status.telescope_status == TelescopeStatus.FLATTER:
                 Logger.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
 
