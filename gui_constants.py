@@ -19,6 +19,8 @@ class GuiLabel:
     TELESCOPE_OPERATIVE = "Operativo"
     TELESCOPE_ANOMALY = "Anomalia"
     TELESCOPE_ERROR = "Errore"
+    TELESCOPE_TRACKING_ON = "Track On"
+    TELESCOPE_TRACKING_OFF = "Track Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
     PANEL_ON = "Acceso"
