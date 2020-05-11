@@ -92,7 +92,8 @@ class Gui:
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.TELESCOPE_PARKED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white"),
+                                    sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
@@ -257,6 +258,14 @@ class Gui:
         Logger.getLogger().info('update_disable_button_panel_flat_on')
         self.__toggle_button__(GuiKey.PANEL_ON, disabled=False)
         self.__toggle_button__(GuiKey.PANEL_OFF, disabled=True)
+
+    #STATUS TRACKING
+    def update_status_tracking(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update Tracking Status """
+
+        Logger.getLogger().info('update_status_tracking in gui')
+        self.win.FindElement('status-tracking').Update(status, text_color=text_color, background_color=background_color)
 
     #GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
