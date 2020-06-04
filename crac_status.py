@@ -13,7 +13,7 @@ class CracStatus():
             self._curtain_east_steps: str = "000"
             self.curtain_west_status: Status = Status.STOPPED
             self._curtain_west_steps: str = "000"
-            self.panel_status: Status = PanelStatus.OFF
+            self.panel_status: PanelStatus = PanelStatus.OFF
             self.tracking_status: TrackingStatus = TrackingStatus.OFF
 
         elif len(code) == 18:
@@ -24,8 +24,8 @@ class CracStatus():
             self._curtain_east_steps = code[9:12]
             self.curtain_west_status = Status.get_value(code[12])
             self._curtain_west_steps = code[13:16]
-            self.panel_status = PanelStatus.get_value(code[17])
-            self.tracking_status = code [18:]
+            self.panel_status = PanelStatus.get_value(code[16])
+            self.tracking_status = TrackingStatus.get_value(code[17])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
