@@ -79,8 +79,10 @@ class Telescopio(BaseTelescopio):
             self.s.sendall(file)
             Logger.getLogger().debug("file inviato")
             data = self.s.recv(1024)
+            print(str(data) + "questi sono i dati letti dal file js")
             Logger.getLogger().debug(data)
         self.close_connection()
+
         return data
 
     def __parse_result__(self, data: str):
@@ -93,7 +95,9 @@ class Telescopio(BaseTelescopio):
             coords = json.loads(jsonString)
             self.coords["alt"] = int(round(coords["alt"]))
             self.coords["az"] = int(round(coords["az"]))
+            self.coords["tr"] =  int(round(coords["tr"]))
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
+
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:
         r = re.search(search_reg, input_str)
