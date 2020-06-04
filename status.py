@@ -73,6 +73,6 @@ class PanelStatus(OrderedEnum):
     ON = (1, "A") #PANNELLO FLAT ACCESO
 
 @unique
-class Tracking(OrderedEnum):
+class TrackingStatus(OrderedEnum):
     OFF = (0, "T") #VELOCITÀ TERRESTRE
     ON = (1, "S") #VELOCITÀ SIDERALE
