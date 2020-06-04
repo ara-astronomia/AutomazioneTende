@@ -1,11 +1,12 @@
 import time, config, socket, gui
 from logger import Logger
 from crac_status import CracStatus
-from status import Status, TelescopeStatus, PanelStatus
+from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
     crac_status = CracStatus()
+    print (str(crac_status) + ' questo il print in client alla connessione')
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
@@ -33,11 +34,11 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
-            Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("UTF-8"))
-            s.sendall(v.encode("UTF-8"))
-            rcv = s.recv(17)
+            Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
+            s.sendall(v.encode("utf-8"))
+            rcv = s.recv(18)
 
-            data = rcv.decode("UTF-8")
+            data = rcv.decode("utf-8")
             crac_status = CracStatus(data)
             Logger.getLogger().debug("Data: %s", crac_status)
 
@@ -100,15 +101,18 @@ def connection() -> str:
                 Logger.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_panel_on()
-                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
+
 
             if crac_status.panel_status == PanelStatus.OFF:
                 Logger.getLogger().info("pannello flat spento")
                 g_ui.update_status_panel(GuiLabel.PANEL_OFF)
                 g_ui.update_disable_button_panel_off()
-                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF)
 
             #TRACKING
+            if crac_status.tracking_status == 'S':
+                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
+            elif crac_status.tracking_status == 'T':
+                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF)
 
             # ALERT
             if crac_status.is_in_anomaly():
@@ -129,6 +133,8 @@ def connection() -> str:
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
             g_ui.update_tele_text(crac_status.telescope_coords)
+
+
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
 PORT = config.Config.getInt("port", "server")  # The port used by the server
