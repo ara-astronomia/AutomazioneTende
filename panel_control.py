@@ -23,6 +23,6 @@ class PanelControl(metaclass=Singleton):
          #is_switched_on = self.gpioconfig.status(GPIOPin.SWITCH_ROOF)
 
          if is_panel_on:
-             return Status.ON
+             return PanelStatus.ON
          else:
-             return Status.OFF
+             return PanelStatus.OFF
