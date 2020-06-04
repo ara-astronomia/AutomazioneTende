@@ -1,6 +1,6 @@
 import time, config
 from logger import Logger
-from status import Status, TelescopeStatus
+from status import Status, TelescopeStatus, PanelStatus
 from typing import Dict, Any
 from crac_status import CracStatus
 
@@ -13,10 +13,12 @@ class AutomazioneTende:
         if not mock:
             from roof_control import RoofControl
             from curtains import WestCurtain, EastCurtain
+            from panel_control import PanelControl
         else:
             from unittest.mock import patch, MagicMock
             from mock.roof_control import RoofControl # type: ignore
             from mock.curtains import WestCurtain, EastCurtain # type: ignore
+            from mock.panel_control import PanelControl
             MockRPi = MagicMock()
             modules = {
                 "RPi": MockRPi,
@@ -32,9 +34,10 @@ class AutomazioneTende:
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'))
+        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'), config.Config.getValue('flat_tele_file'), config.Config.getValue('tracking_on_tele_file'))
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
+        self.panel_control = PanelControl()
 
         self.started = False
         self.prevCoord = { 'alt': 0, 'az': 0, 'error': 0 }
@@ -66,6 +69,7 @@ class AutomazioneTende:
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
+        self.crac_status.panel_status = self.panel_control.read()
 
         return self.crac_status
 
@@ -74,6 +78,17 @@ class AutomazioneTende:
         """ Park the Telescope """
 
         self.telescopio.park_tele()
+        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
+
+        self.crac_status.telescope_coords = self.telescopio.coords
+        self.crac_status.telescope_status = self.telescopio.status
+
+        return self.telescopio.coords
+
+    def flat_tele(self) -> Dict[str, int]:
+        """ Park the Telescope """
+
+        self.telescopio.flat_tele()
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
         self.crac_status.telescope_coords = self.telescopio.coords
@@ -204,6 +219,23 @@ class AutomazioneTende:
             status_roof = self.roof_control.read()
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
+
+    def panel_on(self):
+        """ on panel flat and update the panel status in CracStatus object """
+
+        status_panel = self.crac_status.panel_status
+        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
+        if status_panel != PanelStatus.ON:
+            self.panel_control.panel_on()
+            self.telescopio.tele_tracking_on()
+
+    def panel_off(self):
+        """ off panel flat and update the panel status in CracStatus object """
+
+        status_panel = self.crac_status.panel_status
+        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
+        if status_panel != PanelStatus.OFF:
+            self.panel_control.panel_off()
 
     def exit_program(self, n: int = 0) -> None:
 
