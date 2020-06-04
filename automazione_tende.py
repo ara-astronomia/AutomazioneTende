@@ -70,6 +70,8 @@ class AutomazioneTende:
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
+        self.crac_status.tracking_status = self.telescopio.tracking_status
+        print (str(self.crac_status) + "questo è il read si crac Status in automazione_tende")
 
         return self.crac_status
 
