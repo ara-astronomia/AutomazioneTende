@@ -10,7 +10,7 @@ def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            v, _ = g_ui.win.Read(timeout=10000)
+            v, _ = g_ui.win.Read(timeout=5000)
 
             Logger.getLogger().info("e' stato premuto il tasto %s", v)
 
@@ -36,8 +36,8 @@ def connection() -> str:
 
             Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
-            rcv = s.recv(18)
 
+            rcv = s.recv(18)
             data = rcv.decode("utf-8")
             crac_status = CracStatus(data)
             Logger.getLogger().debug("Data: %s", crac_status)
@@ -109,10 +109,10 @@ def connection() -> str:
                 g_ui.update_disable_button_panel_off()
 
             #TRACKING
-            if crac_status.tracking_status == 'S':
+            if crac_status.tracking_status == TrackingStatus.ON:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
-            elif crac_status.tracking_status == 'T':
-                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF)
+            elif crac_status.tracking_status == TrackingStatus.OFF:
+                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
 
             # ALERT
             if crac_status.is_in_anomaly():
