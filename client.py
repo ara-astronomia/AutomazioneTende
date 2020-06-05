@@ -60,15 +60,15 @@ def connection() -> str:
             # TELESCOPE
             if crac_status.telescope_status == TelescopeStatus.PARKED:
                 Logger.getLogger().info("telescopio in park")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED)
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.FLATTER:
                 Logger.getLogger().info("telescopio in flat")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED)
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.LOST:
                 Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
