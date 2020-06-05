@@ -11,7 +11,7 @@ class Telescopio(BaseTelescopio):
     def open_connection(self):
         self.connected = True
 
-    def update_coords(self, alt=None, az=None):
+    def update_coords(self, alt=None, az=None, tr=0):
         if not self.__is_number__(alt) or int(alt) < 0 or int(alt) > 90:
             alt = input("Inserisci l'altezza del telescopio: ")
         if not self.__is_number__(az) or int(az) < 0 or int(az) > 360:
@@ -22,7 +22,7 @@ class Telescopio(BaseTelescopio):
         if not self.__is_number__(az) or int(az) < 0 or int(az) > 360:
             print("Inserire un numero compreso tra 0 e 360 per l'azimut")
             return self.update_coords(alt=alt)
-        self.coords = {'alt': int(alt), 'az': int(az), 'error': 0}
+        self.coords = {'alt': int(alt), 'az': int(az), 'tr':str(tr), 'error': 0}
         Logger.getLogger().debug("In update coords")
         return self.coords
 
@@ -35,7 +35,9 @@ class Telescopio(BaseTelescopio):
         return self.update_coords(alt=self.flat_alt, az=self.flat_az)
 
     def tele_tracking_on(self):
-        pass    
+        Logger.getLogger().debug("In Tracking tele %s", self.tracking_status)
+        return self.update.coords(tr=self.tracking_status)
+        #pass
 
     def read(self):
         self.coords = self.update_coords()
