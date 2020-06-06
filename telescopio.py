@@ -39,7 +39,7 @@ class Telescopio(BaseTelescopio):
         #if self.read() != TelescopeStatus.PARKED:
             # recursive workaround in the case the park can't stop the sidereal movement.
             # return self.park_tele()
-        return self.coords
+        self.coords
 
     def flat_tele(self) -> Dict[str, int]:
         Logger.getLogger().info("metto il telescopio in posizione di flat")
@@ -50,7 +50,7 @@ class Telescopio(BaseTelescopio):
         #if self.read() != TelescopeStatus.FLATTER:
             # recursive workaround in the case the flatted can't stop the sidereal movement.
             # return self.park_tele()
-        return self.coords
+        self.coords
 
     def tele_tracking_on(self) -> Dict[str, int]:
         Logger.getLogger().info("metto il telescopio in tracking on")
@@ -61,7 +61,7 @@ class Telescopio(BaseTelescopio):
         #if self.read() != TelescopeStatus.FLATTER:
             # recursive workaround in the case the flatted can't stop the sidereal movement.
             # return self.park_tele()
-        return self.coords
+        self.coords
 
     def read(self, ):
         try:

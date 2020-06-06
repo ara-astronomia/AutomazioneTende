@@ -28,24 +28,23 @@ class Telescopio(BaseTelescopio):
         if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
             print("Inserire un numero compreso tra 1 o 0")
             return self.update_coords(alt=alt, az=az)
-        self.coords = {'alt': int(alt), 'az': int(az), 'tr': str(tr), 'error': 0}
+        self.coords = {'alt': int(alt), 'az': int(az), 'tr': int(tr), 'error': 0}
         Logger.getLogger().debug("In update coords")
         return self.coords
 
     def park_tele(self):
         Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_az, self.max_secure_alt)
-        return self.update_coords(alt=self.park_alt, az=self.park_az)
+        self.update_coords(alt=self.park_alt, az=self.park_az)
+        self.__update_status__()
 
     def flat_tele(self):
-        self.tracking_status = TrackingStatus.OFF
-        Logger.getLogger().debug("In park tele %s %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt, self.tracking_status)
-        return self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=self.tracking_status.value)
+        Logger.getLogger().debug("In park tele %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt)
+        self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=0)
+        self.__update_status__()
 
     def tele_tracking_on(self):
-        self.tracking_status = TrackingStatus.ON
-        Logger.getLogger().debug("In Tracking tele %s", self.tracking_status)
-        return self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=self.tracking_status.value)
-        #pass
+        self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=1)
+        self.__update_status__()
 
     def read(self):
         self.coords = self.update_coords()
