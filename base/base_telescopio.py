@@ -14,7 +14,7 @@ class BaseTelescopio:
         self.flat_az: int = config.Config.getInt("flat_az", "telescope")
         self.coords: Dict[str, int] = { "alt": 0, "az": 0, "tr" : 0, "error": 0 }
         self.status: TelescopeStatus = TelescopeStatus.PARKED
-        self.tracking_status : TrackingStatus = TrackingStatus.OFF
+        self.tracking_status: TrackingStatus = TrackingStatus.OFF
 
     def update_coords(self):
         raise NotImplementedError()
