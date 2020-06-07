@@ -16,6 +16,9 @@ class GPIOPin(Pin, Enum):
     VERIFY_OPEN = Pin(Config.getInt("roof_verify_open", "roof_board"), GPIO.IN, pull=GPIO.PUD_UP)
     SWITCH_ROOF = Pin(Config.getInt("switch_roof", "roof_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
+    #impostazione gpio pnel flat
+    SWITCH_PANEL = Pin(Config.getInt("switch_panel", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_panel_on", "panel_board"))
+
     #impostazione gpio switch fine_corsa tende
     CURTAIN_W_VERIFY_OPEN = Pin(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
     CURTAIN_W_VERIFY_CLOSED= Pin(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
