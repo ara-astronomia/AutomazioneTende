@@ -17,7 +17,6 @@ class Telescopio(BaseTelescopio):
         self.connected: bool = False
 
     def open_connection(self) -> None:
-
         if not self.connected:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.s.connect((self.hostname, self.port))
@@ -73,7 +72,7 @@ class Telescopio(BaseTelescopio):
             self.__update_status__()
 
     def __call_thesky__(self, script: str, alt: float = None, az: float = None, tr: int = None) -> bytes:
-#        self.open_connection()
+        self.open_connection()
         with open(script, 'r') as p:
             file = p.read()
             if az is None:
