@@ -7,11 +7,11 @@ from logger import Logger
 class BaseTelescopio:
 
     def __init__(self):
-        self.max_secure_alt: int = config.Config.getInt("max_secure_alt", "telescope")
-        self.park_alt: int = config.Config.getInt("park_alt", "telescope")
-        self.park_az: int = config.Config.getInt("park_az", "telescope")
-        self.flat_alt: int = config.Config.getInt("flat_alt", "telescope")
-        self.flat_az: int = config.Config.getInt("flat_az", "telescope")
+        self.max_secure_alt: int = config.Config.getFloat("max_secure_alt", "telescope")
+        self.park_alt: int = config.Config.getFloat("park_alt", "telescope")
+        self.park_az: int = config.Config.getFloat("park_az", "telescope")
+        self.flat_alt: int = config.Config.getFloat("flat_alt", "telescope")
+        self.flat_az: int = config.Config.getFloat("flat_az", "telescope")
         self.coords: Dict[str, int] = { "alt": 0, "az": 0, "tr" : 0, "error": 0 }
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
