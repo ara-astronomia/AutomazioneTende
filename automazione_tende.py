@@ -34,7 +34,7 @@ class AutomazioneTende:
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'), config.Config.getValue('flat_tele_file'), config.Config.getValue('tracking_on_tele_file'))
+        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('move_track_tele_file'))
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
         self.panel_control = PanelControl()
@@ -75,22 +75,11 @@ class AutomazioneTende:
 
         return self.crac_status
 
-    def park_tele(self) -> Dict[str, int]:
+    def move_tele(self, tr, alt, az) -> Dict[str, int]:
+        print(tr, alt, az)
+        """ Move the Telescope nd Tracking off """
 
-        """ Park the Telescope """
-
-        self.telescopio.park_tele()
-        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
-
-        self.crac_status.telescope_coords = self.telescopio.coords
-        self.crac_status.telescope_status = self.telescopio.status
-
-        return self.telescopio.coords
-
-    def flat_tele(self) -> Dict[str, int]:
-        """ Park the Telescope """
-
-        self.telescopio.flat_tele()
+        self.telescopio.move_tele(tr, alt, az)
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
         self.crac_status.telescope_coords = self.telescopio.coords
@@ -229,7 +218,7 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
         if status_panel != PanelStatus.ON:
             self.panel_control.panel_on()
-            self.telescopio.tele_tracking_on()
+            self.telescopio.move_tele(tr=1)
 
     def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """
