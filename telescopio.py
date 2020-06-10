@@ -6,17 +6,17 @@ from status import TelescopeStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname: str, script: str, script_park: str, script_flat: str, script_tracking_on: str, port: int=3040):
+    def __init__(self, hostname: str, script: str, script_move_track: str, port: int=3040):
         super().__init__()
         self.hostname = hostname
         self.port: int = port
         self.script: str = script
-        self.script_park: str = script_park
-        self.script_flat: str = script_flat
-        self.script_tracking_on: str = script_tracking_on
+        self.script_move_track: str = script_move_track
+        #self.script_tracking_on: str = script_tracking_on
         self.connected: bool = False
 
     def open_connection(self) -> None:
+
         if not self.connected:
             self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.s.connect((self.hostname, self.port))
@@ -29,9 +29,9 @@ class Telescopio(BaseTelescopio):
         self.__parse_result__(data.decode("utf-8"))
         return self.coords
 
-    def park_tele(self) -> Dict[str, int]:
+    def move_tele(self, tr: int, alt: float = None, az: float = None) -> Dict[str, int]:
         Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(self.script_park, self.park_alt, self.park_az, tr=0)
+        data = self.__call_thesky__(self.script_move_track, self.tr, self.alt, self.az)
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
@@ -40,20 +40,9 @@ class Telescopio(BaseTelescopio):
             # return self.park_tele()
         self.coords
 
-    def flat_tele(self) -> Dict[str, int]:
-        Logger.getLogger().info("metto il telescopio in posizione di flat")
-        data = self.__call_thesky__(self.script_park, self.flat_alt, self.flat_az, tr=0)
-        Logger.getLogger().debug("Flatter %s", data)
-        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        self.__update_status__()
-        #if self.read() != TelescopeStatus.FLATTER:
-            # recursive workaround in the case the flatted can't stop the sidereal movement.
-            # return self.park_tele()
-        self.coords
-
     def tele_tracking_on(self) -> Dict[str, int]:
         Logger.getLogger().info("metto il telescopio in tracking on")
-        data = self.__call_thesky__(self.script_park, tr=1)
+        data = self.__call_thesky__(self.script_move_track, tr=1)
         Logger.getLogger().debug("tele in tracking on")
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
@@ -76,9 +65,9 @@ class Telescopio(BaseTelescopio):
         with open(script, 'r') as p:
             file = p.read()
             if az is None:
-                az = "null"
+                az = ""
             if alt is None:
-                alt = "null"
+                alt = ""
             self.s.sendall(file.format(az=az, alt=alt, tr=tr).encode('utf-8'))
             Logger.getLogger().debug("file inviato")
             data = self.s.recv(1024)
