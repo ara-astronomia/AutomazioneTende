@@ -5,14 +5,14 @@ from status import TrackingStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname, script, script_park, script_flat, script_tracking_on, port: int = 3040):
+    def __init__(self, hostname, script, script_move_track, port: int = 3040):
         super().__init__()
         self.connected = False
 
     def open_connection(self):
         self.connected = True
 
-    def update_coords(self, alt=None, az=None, tr=None):
+    def update_coords(self, tr=None, alt=None, az=None):
         if not self.__is_number__(alt) or int(alt) < 0 or int(alt) > 90:
             alt = input("Inserisci l'altezza del telescopio: ")
         if not self.__is_number__(az) or int(az) < 0 or int(az) > 360:
@@ -28,22 +28,14 @@ class Telescopio(BaseTelescopio):
         if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
             print("Inserire un numero compreso tra 1 o 0")
             return self.update_coords(alt=alt, az=az)
-        self.coords = {'alt': int(alt), 'az': int(az), 'tr': int(tr), 'error': 0}
+        self.coords = {'tr': int(tr), 'alt': int(alt), 'az': int(az), 'error': 0}
         Logger.getLogger().debug("In update coords")
         return self.coords
 
-    def park_tele(self):
-        Logger.getLogger().debug("In park tele %s %s %s", self.park_alt, self.park_az, self.max_secure_alt)
-        self.update_coords(alt=self.park_alt, az=self.park_az)
-        self.__update_status__()
-
-    def flat_tele(self):
-        Logger.getLogger().debug("In park tele %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt)
-        self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=0)
-        self.__update_status__()
-
-    def tele_tracking_on(self):
-        self.update_coords(alt=self.flat_alt, az=self.flat_az, tr=1)
+    def move_tele(self, tr, alt, az):
+        print (tr, alt , az + "vedi un po")
+        Logger.getLogger().debug("In park tele %s %s %s %s", tr, alt, az, self.max_secure_alt)
+        self.update_coords(tr=tr, alt=float(alt), az=float(az))
         self.__update_status__()
 
     def read(self):
