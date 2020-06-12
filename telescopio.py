@@ -34,9 +34,6 @@ class Telescopio(BaseTelescopio):
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
-        #if self.read() != TelescopeStatus.PARKED:
-            # recursive workaround in the case the park can't stop the sidereal movement.
-            # return self.park_tele()
         self.coords
 
     def read(self, ):
