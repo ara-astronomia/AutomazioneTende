@@ -12,7 +12,6 @@ class Telescopio(BaseTelescopio):
         self.port: int = port
         self.script: str = script
         self.script_move_track: str = script_move_track
-        #self.script_tracking_on: str = script_tracking_on
         self.connected: bool = False
 
     def open_connection(self) -> None:
@@ -29,25 +28,14 @@ class Telescopio(BaseTelescopio):
         self.__parse_result__(data.decode("utf-8"))
         return self.coords
 
-    def move_tele(self, tr: int, alt: float = None, az: float = None) -> Dict[str, int]:
+    def move_tele(self, tr: int = None, alt: float = None, az: float = None) -> Dict[str, int]:
         Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(self.script_move_track, self.tr, self.alt, self.az)
+        data = self.__call_thesky__(self.script_move_track, tr, alt, az)
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
         #if self.read() != TelescopeStatus.PARKED:
             # recursive workaround in the case the park can't stop the sidereal movement.
-            # return self.park_tele()
-        self.coords
-
-    def tele_tracking_on(self) -> Dict[str, int]:
-        Logger.getLogger().info("metto il telescopio in tracking on")
-        data = self.__call_thesky__(self.script_move_track, tr=1)
-        Logger.getLogger().debug("tele in tracking on")
-        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        self.__update_status__()
-        #if self.read() != TelescopeStatus.FLATTER:
-            # recursive workaround in the case the flatted can't stop the sidereal movement.
             # return self.park_tele()
         self.coords
 
@@ -60,7 +48,7 @@ class Telescopio(BaseTelescopio):
         else:
             self.__update_status__()
 
-    def __call_thesky__(self, script: str, alt: float = None, az: float = None, tr: int = None) -> bytes:
+    def __call_thesky__(self, script: str, tr: int = None, alt: float = None, az: float = None) -> bytes:
         self.open_connection()
         with open(script, 'r') as p:
             file = p.read()
