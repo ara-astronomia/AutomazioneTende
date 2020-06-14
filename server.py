@@ -75,7 +75,7 @@ try:
 
                     elif not data or data == b'E' or data == b'-':
                         automazioneTende.started = True
-                        automazioneTende.park_tele()
+                        automazioneTende.move_tele(0, park_alt, park_az)
                         automazioneTende.exec()
                         automazioneTende.started = False
                         automazioneTende.close_roof()
