@@ -54,10 +54,8 @@ class Telescopio(BaseTelescopio):
             if alt is None:
                 alt = ""
             self.s.sendall(file.format(az=az, alt=alt, tr=tr).encode('utf-8'))
-            Logger.getLogger().debug("file inviato")
             data = self.s.recv(1024)
-            print(str(data) + "questi sono i dati letti dal file js")
-            Logger.getLogger().debug(data)
+            Logger.getLogger().debug("Data received from js: %s", data)
 #        self.close_connection()
         return data
 

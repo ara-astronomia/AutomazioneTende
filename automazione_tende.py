@@ -71,13 +71,12 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescopio.tracking_status
-        print (str(self.crac_status) + "questo è il read si crac Status in automazione_tende")
 
         return self.crac_status
 
     def move_tele(self, tr, alt, az) -> Dict[str, int]:
-        print(tr, alt, az)
         """ Move the Telescope nd Tracking off """
+        Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
         self.telescopio.move_tele(tr, alt, az)
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
@@ -173,8 +172,9 @@ class AutomazioneTende:
         self.curtain_west.open_up()
 
     def motor_stop(self):
+
         """ Disable motor control """
-        print ('motori stoppati in automazione')
+
         self.curtain_east.motor_stop()
         self.curtain_west.motor_stop()
 

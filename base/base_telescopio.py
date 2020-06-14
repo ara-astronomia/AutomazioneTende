@@ -46,7 +46,6 @@ class BaseTelescopio:
             self.status = TelescopeStatus.SECURE
         else:
             self.status = TelescopeStatus.OPERATIONAL
-        print (self.coords['tr'])
         if self.coords["tr"] == 0:
             self.tracking_status = TrackingStatus.OFF
         elif self.coords["tr"] == 1:

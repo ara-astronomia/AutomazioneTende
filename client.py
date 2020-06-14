@@ -6,7 +6,7 @@ from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
     crac_status = CracStatus()
-    print (str(crac_status) + ' questo il print in client alla connessione')
+    Logger.getLogger().debug("Data crac_status start connection method: %s", crac_status)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
@@ -40,7 +40,7 @@ def connection() -> str:
             rcv = s.recv(18)
             data = rcv.decode("utf-8")
             crac_status = CracStatus(data)
-            Logger.getLogger().debug("Data: %s", crac_status)
+            Logger.getLogger().debug("Data crac_status in the middle of connection methodd: %s", crac_status)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()

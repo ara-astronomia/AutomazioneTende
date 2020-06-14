@@ -33,7 +33,6 @@ class Telescopio(BaseTelescopio):
         return self.coords
 
     def move_tele(self, tr, alt, az):
-        print (tr, alt , az + "vedi un po")
         Logger.getLogger().debug("In park tele %s %s %s %s", tr, alt, az, self.max_secure_alt)
         self.update_coords(tr=tr, alt=float(alt), az=float(az))
         self.__update_status__()

@@ -72,12 +72,10 @@ class Curtain:
 
     def motor_stop(self):
 
-        """
-            disable pin motor
-        """
+        """ Disable pin motor """
+
         status = None
         status = Status.STOPPED
-        print (status)
         return status
 
 class WestCurtain(Curtain, metaclass=Singleton):
