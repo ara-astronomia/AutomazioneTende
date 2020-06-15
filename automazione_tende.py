@@ -78,7 +78,7 @@ class AutomazioneTende:
         """ Move the Telescope nd Tracking off """
         Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
-        self.telescopio.move_tele(tr, alt, az)
+        self.telescopio.move_tele(tr=tr, alt=alt, az=az)
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
         self.crac_status.telescope_coords = self.telescopio.coords

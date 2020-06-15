@@ -24,19 +24,19 @@ class Telescopio(BaseTelescopio):
     def update_coords(self) -> Dict[str, int]:
         Logger.getLogger().info("Leggo le coordinate")
         data = self.__call_thesky__(self.script)
-        Logger.getLogger().debug("Coordinate lette")
+        Logger.getLogger().debug("Coordinate lette: %s", data)
         self.__parse_result__(data.decode("utf-8"))
         return self.coords
 
-    def move_tele(self, tr: int = None, alt: float = None, az: float = None) -> Dict[str, int]:
+    def move_tele(self, **kwargs) -> Dict[str, int]:
         Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(self.script_move_track, tr, alt, az)
+        data = self.__call_thesky__(script=self.script_move_track, **kwargs)
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
         self.coords
 
-    def read(self, ):
+    def read(self):
         try:
             self.coords = self.update_coords() # is it really necessary?
         except (ConnectionError, TimeoutError):
@@ -45,15 +45,17 @@ class Telescopio(BaseTelescopio):
         else:
             self.__update_status__()
 
-    def __call_thesky__(self, script: str, tr: int = None, alt: float = None, az: float = None) -> bytes:
+    def __call_thesky__(self, script: str, **kwargs) -> bytes:
         self.open_connection()
         with open(script, 'r') as p:
             file = p.read()
-            if az is None:
-                az = ""
-            if alt is None:
-                alt = ""
-            self.s.sendall(file.format(az=az, alt=alt, tr=tr).encode('utf-8'))
+            if kwargs:
+                if kwargs.get("az") is None:
+                    kwargs["az"] = ""
+                if kwargs.get("alt") is None:
+                    kwargs["alt"] = ""
+                file = file.format(**kwargs)
+            self.s.sendall(file.encode('utf-8'))
             data = self.s.recv(1024)
             Logger.getLogger().debug("Data received from js: %s", data)
 #        self.close_connection()
