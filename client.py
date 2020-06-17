@@ -1,18 +1,18 @@
 import time, config, socket, gui
-from logger import Logger
+from logger import LoggerClient
 from crac_status import CracStatus
 from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
     crac_status = CracStatus()
-    Logger.getLogger().debug("Data crac_status start connection method: %s", crac_status)
+    LoggerClient.getLogger().debug("Data crac_status start connection method: %s", crac_status)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
             v, _ = g_ui.win.Read(timeout=5000)
 
-            Logger.getLogger().info("e' stato premuto il tasto %s", v)
+            LoggerClient.getLogger().info("e' stato premuto il tasto %s", v)
 
             if v is None:
                 v = GuiKey.EXIT
@@ -34,13 +34,13 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
-            Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
+            LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
             rcv = s.recv(18)
             data = rcv.decode("utf-8")
             crac_status = CracStatus(data)
-            Logger.getLogger().debug("Data crac_status in the middle of connection methodd: %s", crac_status)
+            LoggerClient.getLogger().debug("Data crac_status in the middle of connection methodd: %s", crac_status)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
@@ -59,33 +59,33 @@ def connection() -> str:
 
             # TELESCOPE
             if crac_status.telescope_status == TelescopeStatus.PARKED:
-                Logger.getLogger().info("telescopio in park")
+                LoggerClient.getLogger().info("telescopio in park")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_PARKED, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.FLATTER:
-                Logger.getLogger().info("telescopio in flat")
+                LoggerClient.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.FLATTER:
-                Logger.getLogger().info("telescopio in flat")
+                LoggerClient.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
 
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
-                Logger.getLogger().info("telescopio in sicurezza ")
+                LoggerClient.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
 
             elif crac_status.telescope_status == TelescopeStatus.LOST:
-                Logger.getLogger().info("telescopio ha perso la conessione con thesky ")
+                LoggerClient.getLogger().info("telescopio ha perso la conessione con thesky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
 
             elif crac_status.telescope_status == TelescopeStatus.ERROR:
-                Logger.getLogger().info("telescopio ha ricevuto un errore da the sky ")
+                LoggerClient.getLogger().info("telescopio ha ricevuto un errore da the sky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ERROR)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_ERROR)
 
             else:
-                Logger.getLogger().info("telescopio operativo")
+                LoggerClient.getLogger().info("telescopio operativo")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_OPERATIVE, text_color="#2c2825", background_color="green")
 
             # CURTAINS
@@ -102,12 +102,12 @@ def connection() -> str:
 
             #PANEL FLAT
             if crac_status.panel_status == PanelStatus.ON:
-                Logger.getLogger().info("pannello flat acceso")
+                LoggerClient.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_panel_on()
 
             if crac_status.panel_status == PanelStatus.OFF:
-                Logger.getLogger().info("pannello flat spento")
+                LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_status_panel(GuiLabel.PANEL_OFF)
                 g_ui.update_disable_button_panel_off()
 
@@ -122,15 +122,15 @@ def connection() -> str:
                 g_ui.status_alert(GuiLabel.ALERT_CRAC_ANOMALY)
 
             elif crac_status.telescope_in_secure_and_roof_is_closed():
-                Logger.getLogger().info("telescopio > park e tetto chiuso")
+                LoggerClient.getLogger().info("telescopio > park e tetto chiuso")
                 g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF)
 
             elif crac_status.telescope_in_secure_and_roof_is_closed():
-                Logger.getLogger().info("telescopio > park e tetto in chiusura")
+                LoggerClient.getLogger().info("telescopio > park e tetto in chiusura")
                 g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_ROOF_CLOSING)
 
             else:
-                Logger.getLogger().info(GuiLabel.NO_ALERT)
+                LoggerClient.getLogger().info(GuiLabel.NO_ALERT)
                 g_ui.status_alert(GuiLabel.NO_ALERT)
 
             alpha_e, alpha_w = g_ui.update_curtains_text(int(crac_status.curtain_east_steps), int(crac_status.curtain_west_steps))
@@ -145,7 +145,7 @@ PORT = config.Config.getInt("port", "server")  # The port used by the server
 g_ui = gui.Gui()
 
 while True:
-    Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
+    LoggerClient.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
     key = connection()
     if key == "E":
         exit(0)
