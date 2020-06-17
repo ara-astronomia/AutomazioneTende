@@ -34,21 +34,21 @@ class LoggerClient(metaclass=Singleton):
     def __init__(self, dir_path=os.path.dirname(os.path.realpath(__file__))+os.path.sep):
         formatter = logging.Formatter('%(levelname)s %(asctime)s file %(filename)s linea %(lineno)d %(message)s')
         # create console handler and set level to debug
-        dh = logging.StreamHandler()
-        dh.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
         if Config.getValue("loggingLevel") != None:
-            dh.setLevel(int(Config.getValue("loggingLevel")))
-        dh.setFormatter(formatter)
+            ch.setLevel(int(Config.getValue("loggingLevel")))
+        ch.setFormatter(formatter)
 
         # create file handler and set level to debug
-        gh = logging.handlers.TimedRotatingFileHandler(dir_path+'client.log', 'D')
-        gh.setLevel(int(Config.getValue("loggingLevel")))
-        gh.setFormatter(formatter)
+        fh = logging.handlers.TimedRotatingFileHandler(dir_path+'client.log', 'D')
+        fh.setLevel(int(Config.getValue("loggingLevel")))
+        fh.setFormatter(formatter)
 
         self.file_logger_client = logging.getLogger()
         self.file_logger_client.setLevel(int(Config.getValue("loggingLevel")))
-        self.file_logger_client.addHandler(dh)
-        self.file_logger_client.addHandler(gh)
+        self.file_logger_client.addHandler(ch)
+        self.file_logger_client.addHandler(fh)
 
     @staticmethod
     def getLogger():

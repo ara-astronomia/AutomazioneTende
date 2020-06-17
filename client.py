@@ -40,7 +40,7 @@ def connection() -> str:
             rcv = s.recv(18)
             data = rcv.decode("utf-8")
             crac_status = CracStatus(data)
-            LoggerClient.getLogger().debug("Data crac_status in the middle of connection methodd: %s", crac_status)
+            LoggerClient.getLogger().debug("Data crac_status in the middle of connection method: %s", crac_status)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
