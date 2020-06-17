@@ -1,6 +1,6 @@
 import time, config
 from logger import Logger
-from status import Status, TelescopeStatus, PanelStatus
+from status import Status, TelescopeStatus, PanelStatus, CurtainsStatus
 from typing import Dict, Any
 from crac_status import CracStatus
 
@@ -102,7 +102,7 @@ class AutomazioneTende:
 
         """ Read the height of the curtains """
 
-        return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
+        return self.curtain_east.read() == CurtainsStatus.DANGER or self.curtain_west.read() == CurtainsStatus.DANGER
 
     def move_curtains_height(self, coord: Dict[str, int]):
 
