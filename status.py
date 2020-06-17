@@ -74,5 +74,6 @@ class PanelStatus(OrderedEnum):
 
 @unique
 class TrackingStatus(OrderedEnum):
+    
     OFF = (0, "T") #VELOCITÀ TERRESTRE
     ON = (1, "S") #VELOCITÀ SIDERALE

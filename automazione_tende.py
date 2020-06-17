@@ -34,7 +34,7 @@ class AutomazioneTende:
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('move_track_tele_file'))
+        self.telescopio = telescopio.Telescopio()
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
         self.panel_control = PanelControl()
@@ -79,6 +79,17 @@ class AutomazioneTende:
         Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
         self.telescopio.move_tele(tr=tr, alt=alt, az=az)
+        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
+
+        self.crac_status.telescope_coords = self.telescopio.coords
+        self.crac_status.telescope_status = self.telescopio.status
+
+        return self.telescopio.coords
+
+    def flat_tele(self) -> Dict[str, int]:
+        """ Park the Telescope """
+
+        self.telescopio.flat_tele()
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
         self.crac_status.telescope_coords = self.telescopio.coords

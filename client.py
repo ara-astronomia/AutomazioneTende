@@ -66,6 +66,10 @@ def connection() -> str:
                 Logger.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER, text_color="red", background_color="white")
 
+            elif crac_status.telescope_status == TelescopeStatus.FLATTER:
+                Logger.getLogger().info("telescopio in flat")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
+
             elif crac_status.telescope_status == TelescopeStatus.SECURE:
                 Logger.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
@@ -101,7 +105,6 @@ def connection() -> str:
                 Logger.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_panel_on()
-
 
             if crac_status.panel_status == PanelStatus.OFF:
                 Logger.getLogger().info("pannello flat spento")

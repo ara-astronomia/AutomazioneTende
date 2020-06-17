@@ -5,7 +5,7 @@ from status import TrackingStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname, script, script_move_track, port: int = 3040):
+    def __init__(self):
         super().__init__()
         self.connected = False
 
@@ -39,6 +39,13 @@ class Telescopio(BaseTelescopio):
         Logger.getLogger().debug("In park tele %s %s %s %s", kwargs.get("tr"), kwargs.get("alt"), kwargs.get("az"), self.max_secure_alt)
         self.update_coords(tr=kwargs.get("tr"), alt=kwargs.get("alt"), az=kwargs.get("az"))
         self.__update_status__()
+
+    def flat_tele(self):
+        Logger.getLogger().debug("In park tele %s %s %s", self.flat_alt, self.flat_az, self.max_secure_alt)
+        return self.update_coords(alt=self.flat_alt, az=self.flat_az)
+
+    def tele_tracking_on(self):
+        pass
 
     def read(self):
         self.coords = self.update_coords()

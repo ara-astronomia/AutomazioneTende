@@ -100,7 +100,7 @@ python client.py
 # TheSkyX Api Documentation
 
 ```
-http://www.astrotrf.com/tsx-script-tutorial-1.html
+https://wwww.bisque.com/wp-content/scripttheskyx/functions_l.html
 ```
 
 For enable/disable debugger on theSkyX: open menu via Tools | Run Java Script. This brings up a window with a buffer into which you can paste the script and a checkbox to "Enable Debugger" so you can run the script and get execution feedback. Keep it disabled on production!

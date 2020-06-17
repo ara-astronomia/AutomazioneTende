@@ -1,4 +1,4 @@
-import socket, json, re
+import socket, json, re, config
 from base.base_telescopio import BaseTelescopio
 from logger import Logger
 from typing import Dict
@@ -6,12 +6,12 @@ from status import TelescopeStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname: str, script: str, script_move_track: str, port: int=3040):
+    def __init__(self):
         super().__init__()
-        self.hostname = hostname
-        self.port: int = port
-        self.script: str = script
-        self.script_move_track: str = script_move_track
+        self.hostname = config.Config.getValue("theskyx_server")
+        self.port: int = 3040
+        self.script: str = config.Config.getValue('altaz_mount_file')
+        self.script_move_track: str = config.Config.getValue('move_track_tele_file')
         self.connected: bool = False
 
     def open_connection(self) -> None:
