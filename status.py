@@ -56,10 +56,10 @@ class Status(OrderedEnum):
 @unique
 class TelescopeStatus(OrderedEnum):
 
-    PARKED = (0, "P")
-    SECURE = (1, "S")
-    OPERATIONAL = (2, "O")
-    FLATTER = (5, "F")
+    PARKED = (0, "P") #TELESCOPIO IN PARK
+    SECURE = (1, "S") #TELESCOPIO IN SICUREZZA, SOTTO IL COLMO DEL TETTO
+    OPERATIONAL = (2, "O") #TELESCOPIO IN CONDIZIONE DI OPERABILITÀ
+    FLATTER = (5, "F") #TELESCOPIO IN POSIZIONE DI RIPRESA FLAT
 
     # danger zone - threat it as an operational status (but we hope it has stopped)
     # user should manually reset the steps after checking visually the curtains status
@@ -69,5 +69,11 @@ class TelescopeStatus(OrderedEnum):
 @unique
 class PanelStatus(OrderedEnum):
 
-    OFF = (0, "S")
-    ON = (1, "A")
+    OFF = (0, "S") #PANNELLO FLAT SPENTO
+    ON = (1, "A") #PANNELLO FLAT ACCESO
+
+@unique
+class TrackingStatus(OrderedEnum):
+    
+    OFF = (0, "T") #VELOCITÀ TERRESTRE
+    ON = (1, "S") #VELOCITÀ SIDERALE

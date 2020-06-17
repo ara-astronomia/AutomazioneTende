@@ -11,13 +11,13 @@ pip3 install pipenv
 pipenv install --dev
 ```
 
-# Enter in the CRaC environment
+## Enter in the CRaC environment
 
 ```
 pipenv shell
 ```
 
-# Exit from the CRaC environment
+## Exit from the CRaC environment
 
 ```
 exit
@@ -29,7 +29,7 @@ exit
 pipenv update --dev
 ```
 
-## Run the unit test:
+# Run the unit test:
 
 ```
 python -m unittest discover -v
@@ -55,21 +55,23 @@ coverage run -m unittest unit_test/test_curtains.py
 coverage html
 ```
 
-## Check the coverage
+# Check the coverage
 Open up the file manager and navigate to  ./htmlcov
 Double click on the html file relative to the class you want to check coverage
 
-# Run the static type checker 
+## Run the static type checker 
 
 ```
 mypy *.py
 ```
 
-# Run the static type checker on a specific file
+## Run the static type checker on a specific file
 
 ```
 mypy gui.py
 ```
+
+# Run the app
 
 ## Run the server with the hardware mocked
 
@@ -89,10 +91,24 @@ python server.py -s
 python server.py -m -s
 ```
 
-## Run the client ##
+## Run the client
 
 ```
 python client.py
 ```
 
-**flag -t is to be deprecated**
+# TheSkyX Api Documentation
+
+```
+https://wwww.bisque.com/wp-content/scripttheskyx/functions_l.html
+```
+
+For enable/disable debugger on theSkyX: open menu via Tools | Run Java Script. This brings up a window with a buffer into which you can paste the script and a checkbox to "Enable Debugger" so you can run the script and get execution feedback. Keep it disabled on production!
+
+# Port forwarding
+
+```
+ssh -L 59000:localhost:5901 -L 3030:localhost:3030 -C -N remoteIP
+```
+
+this way you can connect to the server via both vnc (5901) and CRaC server (3030). Or you can decide to run CRaC client/server locally and connect remotely to theSkyX (3040)

@@ -34,13 +34,13 @@ class AutomazioneTende:
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescopio = telescopio.Telescopio(config.Config.getValue("theskyx_server"), config.Config.getValue('altaz_mount_file'), config.Config.getValue('park_tele_file'), config.Config.getValue('flat_tele_file'), config.Config.getValue('tracking_on_tele_file'))
+        self.telescopio = telescopio.Telescopio()
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
         self.panel_control = PanelControl()
 
         self.started = False
-        self.prevCoord = { 'alt': 0, 'az': 0, 'error': 0 }
+        self.prevCoord = { 'alt': 0, 'az': 0, 'tr':0, 'error': 0 }
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
@@ -70,14 +70,15 @@ class AutomazioneTende:
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
+        self.crac_status.tracking_status = self.telescopio.tracking_status
 
         return self.crac_status
 
-    def park_tele(self) -> Dict[str, int]:
+    def move_tele(self, tr, alt, az) -> Dict[str, int]:
+        """ Move the Telescope nd Tracking off """
+        Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
-        """ Park the Telescope """
-
-        self.telescopio.park_tele()
+        self.telescopio.move_tele(tr=tr, alt=alt, az=az)
         Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescopio.status, self.telescopio.coords["alt"], self.telescopio.coords["az"])
 
         self.crac_status.telescope_coords = self.telescopio.coords
@@ -182,8 +183,9 @@ class AutomazioneTende:
         self.curtain_west.open_up()
 
     def motor_stop(self):
+
         """ Disable motor control """
-        print ('motori stoppati in automazione')
+
         self.curtain_east.motor_stop()
         self.curtain_west.motor_stop()
 
@@ -227,7 +229,7 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
         if status_panel != PanelStatus.ON:
             self.panel_control.panel_on()
-            self.telescopio.tele_tracking_on()
+            self.telescopio.move_tele(tr=1)
 
     def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """

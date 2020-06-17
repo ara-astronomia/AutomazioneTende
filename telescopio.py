@@ -1,4 +1,4 @@
-import socket, json, re
+import socket, json, re, config
 from base.base_telescopio import BaseTelescopio
 from logger import Logger
 from typing import Dict
@@ -6,14 +6,12 @@ from status import TelescopeStatus
 
 class Telescopio(BaseTelescopio):
 
-    def __init__(self, hostname: str, script: str, script_park: str, script_flat: str, script_tracking_on: str, port: int=3040):
+    def __init__(self):
         super().__init__()
-        self.hostname = hostname
-        self.port: int = port
-        self.script: str = script
-        self.script_park: str = script_park
-        self.script_flat: str = script_flat
-        self.script_tracking_on: str = script_tracking_on
+        self.hostname = config.Config.getValue("theskyx_server")
+        self.port: int = 3040
+        self.script: str = config.Config.getValue('altaz_mount_file')
+        self.script_move_track: str = config.Config.getValue('move_track_tele_file')
         self.connected: bool = False
 
     def open_connection(self) -> None:
@@ -26,44 +24,19 @@ class Telescopio(BaseTelescopio):
     def update_coords(self) -> Dict[str, int]:
         Logger.getLogger().info("Leggo le coordinate")
         data = self.__call_thesky__(self.script)
-        Logger.getLogger().debug("Coordinate lette")
+        Logger.getLogger().debug("Coordinate lette: %s", data)
         self.__parse_result__(data.decode("utf-8"))
         return self.coords
 
-    def park_tele(self) -> Dict[str, int]:
+    def move_tele(self, **kwargs) -> Dict[str, int]:
         Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(self.script_park)
+        data = self.__call_thesky__(script=self.script_move_track, **kwargs)
         Logger.getLogger().debug("Parking %s", data)
         self.coords["error"] = self.__is_error__(data.decode("utf-8"))
         self.__update_status__()
-        #if self.read() != TelescopeStatus.PARKED:
-            # recursive workaround in the case the park can't stop the sidereal movement.
-            # return self.park_tele()
-        return self.coords
+        self.coords
 
-    def flat_tele(self) -> Dict[str, int]:
-        Logger.getLogger().info("metto il telescopio in posizione di flat")
-        data = self.__call_thesky__(self.script_flat)
-        Logger.getLogger().debug("Flatter %s", data)
-        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        self.__update_status__()
-        #if self.read() != TelescopeStatus.FLATTER:
-            # recursive workaround in the case the flatted can't stop the sidereal movement.
-            # return self.park_tele()
-        return self.coords
-
-    def tele_tracking_on(self) -> Dict[str, int]:
-        Logger.getLogger().info("metto il telescopio in tracking on")
-        data = self.__call_thesky__(self.script_tracking_on)
-        Logger.getLogger().debug("tele in tracking on")
-        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        self.__update_status__()
-        #if self.read() != TelescopeStatus.FLATTER:
-            # recursive workaround in the case the flatted can't stop the sidereal movement.
-            # return self.park_tele()
-        return self.coords
-
-    def read(self, ):
+    def read(self):
         try:
             self.coords = self.update_coords() # is it really necessary?
         except (ConnectionError, TimeoutError):
@@ -72,15 +45,20 @@ class Telescopio(BaseTelescopio):
         else:
             self.__update_status__()
 
-    def __call_thesky__(self, script: str) -> bytes:
+    def __call_thesky__(self, script: str, **kwargs) -> bytes:
         self.open_connection()
         with open(script, 'r') as p:
-            file = p.read().encode('utf-8')
-            self.s.sendall(file)
-            Logger.getLogger().debug("file inviato")
+            file = p.read()
+            if kwargs:
+                if kwargs.get("az") is None:
+                    kwargs["az"] = ""
+                if kwargs.get("alt") is None:
+                    kwargs["alt"] = ""
+                file = file.format(**kwargs)
+            self.s.sendall(file.encode('utf-8'))
             data = self.s.recv(1024)
-            Logger.getLogger().debug(data)
-        self.close_connection()
+            Logger.getLogger().debug("Data received from js: %s", data)
+#        self.close_connection()
         return data
 
     def __parse_result__(self, data: str):
@@ -93,7 +71,9 @@ class Telescopio(BaseTelescopio):
             coords = json.loads(jsonString)
             self.coords["alt"] = int(round(coords["alt"]))
             self.coords["az"] = int(round(coords["az"]))
+            self.coords["tr"] =  int(round(coords["tr"]))
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
+
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:
         r = re.search(search_reg, input_str)

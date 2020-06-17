@@ -8,6 +8,10 @@ HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
 THESKY: bool = False
 MOCK: bool = False
+park_alt = config.Config.getValue("park_alt", "telescope")
+park_az = config.Config.getValue("park_az", "telescope")
+flat_alt = config.Config.getValue("flat_alt", "telescope")
+flat_az = config.Config.getValue("flat_az", "telescope")
 
 try:
     opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
@@ -55,23 +59,23 @@ try:
 
                     elif data == b'P':
                         Logger.getLogger().debug("chiamata al metodo telescopio.park_tele")
-                        automazioneTende.park_tele()
+                        automazioneTende.move_tele(0, park_alt, park_az)
 
                     elif data == b'F':
                         Logger.getLogger().debug("chiamata al metodo telescopio.flat_tele")
-                        automazioneTende.flat_tele()
+                        automazioneTende.move_tele(0, flat_alt, flat_az)
 
                     elif data == b'L':
                         Logger.getLogger().debug("chiamata al metodo accensione pannello flat")
                         automazioneTende.panel_on()
-                        
+
                     elif data == b'D':
                         Logger.getLogger().debug("chiamata al metodo spegnimento pannello flat")
                         automazioneTende.panel_off()
 
                     elif not data or data == b'E' or data == b'-':
                         automazioneTende.started = True
-                        automazioneTende.park_tele()
+                        automazioneTende.move_tele(0, park_alt, park_az)
                         automazioneTende.exec()
                         automazioneTende.started = False
                         automazioneTende.close_roof()

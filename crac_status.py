@@ -1,4 +1,4 @@
-from status import Status, TelescopeStatus, PanelStatus
+from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from typing import Dict
 from logger import Logger
 
@@ -13,9 +13,10 @@ class CracStatus():
             self._curtain_east_steps: str = "000"
             self.curtain_west_status: Status = Status.STOPPED
             self._curtain_west_steps: str = "000"
-            self.panel_status: Status = PanelStatus.OFF
+            self.panel_status: PanelStatus = PanelStatus.OFF
+            self.tracking_status: TrackingStatus = TrackingStatus.OFF
 
-        elif len(code) == 17:
+        elif len(code) == 18:
             self.roof_status = Status.get_value(code[0])
             self.telescope_status = TelescopeStatus.get_value(code[1])
             self._telescope_coords = { "alt": code[2:5], "az": code[5:8] }
@@ -23,7 +24,8 @@ class CracStatus():
             self._curtain_east_steps = code[9:12]
             self.curtain_west_status = Status.get_value(code[12])
             self._curtain_west_steps = code[13:16]
-            self.panel_status = PanelStatus.get_value(code[16:])
+            self.panel_status = PanelStatus.get_value(code[16])
+            self.tracking_status = TrackingStatus.get_value(code[17])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
@@ -35,7 +37,7 @@ class CracStatus():
             self._curtain_west_steps: str = "000"
 
     def __repr__(self):
-        return f'{repr(self.roof_status)}{repr(self.telescope_status)}{self.telescope_coords["alt"]}{self.telescope_coords["az"]}{repr(self.curtain_east_status)}{self.curtain_east_steps}{repr(self.curtain_west_status)}{self.curtain_west_steps}{repr(self.panel_status)}'
+        return f'{repr(self.roof_status)}{repr(self.telescope_status)}{self.telescope_coords["alt"]}{self.telescope_coords["az"]}{repr(self.curtain_east_status)}{self.curtain_east_steps}{repr(self.curtain_west_status)}{self.curtain_west_steps}{repr(self.panel_status)}{repr(self.tracking_status)}'
 
     @property
     def telescope_coords(self):
