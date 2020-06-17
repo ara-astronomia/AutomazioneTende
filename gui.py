@@ -47,9 +47,9 @@ class Gui:
                             sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=True, size=(5, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS,disabled=True,  size=(6, 1)),
-                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS,disabled=True,  size=(6, 1))
+                            sg.Button('Attiva', key=GuiKey.ACTIVED_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
+                            sg.Button('Disattiva', key=GuiKey.DEACTIVED_CURTAINS, disabled=True,  size=(6, 1)),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1))
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
@@ -97,7 +97,7 @@ class Gui:
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.CURTAINS_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.CURTAINS_DEACTIVED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                                 ))
 
                             ],
@@ -179,7 +179,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ACTIVED_CURTAINS, GuiKey.DEACTIVED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
 
     def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
@@ -197,7 +197,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ACTIVED_CURTAINS, GuiKey.DEACTIVED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
@@ -216,6 +216,7 @@ class Gui:
         self.win.FindElement('alt').Update(altitude)
         self.win.FindElement('az').Update(azimuth)
 
+    #CURTAINS
     def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Curtains Status """
@@ -234,6 +235,18 @@ class Gui:
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)
         return alpha_e, alpha_w
+
+    def update_disable_button_deactive_curtains(self):
+        """ Update enable button curtains"""
+
+        Logger.getLogger().info('update_enable_disable_button_curtains in gui')
+        self.__toggle_button__(GuiKey.DEACTIVED_CURTAINS, disabled=True)
+
+    def update_disable_button_active_curtains(self):
+        """ Update enable button curtains"""
+
+        Logger.getLogger().info('update_enable_disable_button_curtains in gui')
+        self.__toggle_button__(GuiKey.ACTIVED_CURTAINS, disabled=True)
 
     #PANEL FLAT
     def update_status_panel(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
