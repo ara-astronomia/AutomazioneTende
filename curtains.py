@@ -3,7 +3,7 @@ from base.singleton import Singleton
 from gpio_pin import GPIOPin
 from gpio_config import GPIOConfig
 import threading
-from status import Status
+from status import CurtainsStatus
 
 class Curtain:
     def __init__(self):
@@ -61,7 +61,7 @@ class Curtain:
         self.gpioconfig.turn_off(self.pin_closing)
 
     def __check_and_stop__(self, status):
-        if (status != Status.CLOSING and status != Status.OPENING and
+        if (status != CurtainsStatus.CLOSING and status != CurtainsStatus.OPENING and
           (self.steps == self.target and self.__min_step__ < self.target < self.__max_step__) or
           self.target == None or
           self.steps >= self.__security_step__ or
@@ -76,9 +76,9 @@ class Curtain:
             self.lockRotary.acquire()
             try:
                 status = self.read()
-                if dt_or_clk == self.clk and status == Status.CLOSING:
+                if dt_or_clk == self.clk and status == CurtainsStatus.CLOSING:
                     self.steps -= 1
-                elif dt_or_clk == self.dt and status == Status.OPENING:
+                elif dt_or_clk == self.dt and status == CurtainsStatus.OPENING:
                     self.steps += 1
                 self.__check_and_stop__(status)
             finally:
@@ -88,9 +88,9 @@ class Curtain:
         self.lockRotary.acquire()
         try:
             status = self.read()
-            if status == Status.CLOSING:
+            if status == CurtainsStatus.CLOSING:
                 self.steps -= 1
-            elif status == Status.OPENING:
+            elif status == CurtainsStatus.OPENING:
                 self.steps += 1
             self.__check_and_stop__(status)
         finally:
@@ -112,7 +112,7 @@ class Curtain:
         """ Reset the steps counter with the help of the edge switchers """
 
         status = self.read()
-        if status != Status.STOPPED and status != Status.DANGER:
+        if status != CurtainsStatus.STOPPED and status != CurtainsStatus.DANGER:
             return
         self.__remove_event_detect__()
 
@@ -154,20 +154,20 @@ class Curtain:
             (self.steps == self.__max_step__ and not self.is_open and not self.is_closing) or
             (self.steps == self.__min_step__ and not self.is_closed and not self.is_opening)
         ):
-            status = Status.DANGER
+            status = CurtainsStatus.DANGER
         elif self.is_opening and self.is_enable and not self.is_closing and not self.is_open and not self.is_closed:
-            status = Status.OPENING
+            status = CurtainsStatus.OPENING
         elif self.is_enable and self.is_closing and not self.is_opening and not self.is_open and not self.is_closed:
-            status = Status.CLOSING
+            status = CurtainsStatus.CLOSING
         elif self.is_open and not self.is_enable:
-            status = Status.OPEN
+            status = CurtainsStatus.ACTIVED
         elif self.is_closed and not self.is_enable:
-            status = Status.CLOSED
+            status = CurtainsStatus.DEACTIVED
         elif not self.is_enable:
-            status = Status.STOPPED
+            status = CurtainsStatus.STOPPED
 
         if not status:
-            status = Status.ERROR
+            status = CurtainsStatus.ERROR
 
         return status
 
@@ -176,7 +176,7 @@ class Curtain:
         """ Move the motor in a direction based on the starting and target steps """
 
         # while the motors are moving we don't want to start another movement
-        if (self.read() > Status.OPEN):
+        if (self.read() > CurtainsStatus.ACTIVED):
             return
 
         self.target = int(step)
