@@ -1,7 +1,7 @@
 import time, config, socket, gui
 from logger import Logger
 from crac_status import CracStatus
-from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
+from status import Status, TelescopeStatus, PanelStatus, TrackingStatus, CurtainsStatus
 from gui_constants import GuiLabel, GuiKey
 
 def connection() -> str:
@@ -21,15 +21,15 @@ def connection() -> str:
                 v = GuiKey.CONTINUE
 
             elif v is GuiKey.CLOSE_ROOF:
-                if crac_status.curtain_east_status > Status.CLOSED or crac_status.curtain_west_status > Status.CLOSED:
-                    g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
+                if crac_status.curtain_east_status > CurtainsStatus.DEACTIVED or crac_status.curtain_east_status > CurtainsStatus.CLOSED or crac_status.curtain_west_status > CurtainsStatus.DEACTIVED or crac_status.curtain_west_status > CurtainsStatus.CLOSED:
+                    g_ui.status_alert(GuiLabel.ALERT_CURTAINS_ACTIVED)
                     continue
 
                 if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
                     g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE)
                     continue
 
-            elif v is GuiKey.START_CURTAINS:
+            elif v is GuiKey.ACTIVED_CURTAINS:
                 if crac_status.roof_status is Status.CLOSED:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
@@ -90,12 +90,13 @@ def connection() -> str:
                 g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
 
             elif crac_status.are_curtains_closed():
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_CLOSED)
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_DEACTIVED)
+                g_ui.update_disable_button_deactive_curtains()
 
             else:
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_ACTIVED, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
-
+                g_ui.update_disable_button_active_curtains()
             #PANEL FLAT
             if crac_status.panel_status == PanelStatus.ON:
                 Logger.getLogger().info("pannello flat acceso")
