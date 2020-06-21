@@ -7,7 +7,7 @@ class GuiLabel:
     ALERT_CRAC_ANOMALY = "Anomalia CRaC: stato invalido dei componenti"
     ALERT_TELESCOPE_ROOF = "Attenzione, Telescopio vicino al tetto"
     ALERT_TELESCOPE_ROOF_CLOSING = "Attenzione, Telescopio non in park e tetto in chiusura"
-    ALERT_TELESCOPE_OPERATIVE = "Attenzione telescopio operativo"
+    ALERT_TELESCOPE_OPERATIVE = "Attenzione telescopio operativo: {status}"
     ALERT_CURTAINS_OPEN = "Attenzione tende aperte"
     ALERT_ROOF_CLOSED = "Attenzione tetto chiuso"
     CURTAINS_CLOSED = "Disattive"
@@ -25,6 +25,7 @@ class GuiLabel:
     ROOF_OPEN = "Aperto"
     PANEL_ON = "Acceso"
     PANEL_OFF = "Spento"
+
 
 class GuiKey:
 

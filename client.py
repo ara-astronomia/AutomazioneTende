@@ -1,8 +1,12 @@
-import time, config, socket, gui
-from logger import Logger
+import socket
+import time
+import config
+import gui
 from crac_status import CracStatus
-from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from gui_constants import GuiLabel, GuiKey
+from logger import Logger
+from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
+
 
 def connection() -> str:
     crac_status = CracStatus()
@@ -25,8 +29,8 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
                     continue
 
-                if crac_status.telescope_status is TelescopeStatus.OPERATIONAL:
-                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE)
+                if TelescopeStatus.NORTHEAST <= crac_status.telescope_status <= TelescopeStatus.NORTHWEST:
+                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=crac_status.telescope_status))
                     continue
 
             elif v is GuiKey.START_CURTAINS:
@@ -37,10 +41,11 @@ def connection() -> str:
             Logger.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
-            rcv = s.recv(18)
+            rcv = s.recv(crac_status.lenght())
             data = rcv.decode("utf-8")
+            Logger.getLogger().debug("Data from server: %s", data)
             crac_status = CracStatus(data)
-            Logger.getLogger().debug("Data crac_status in the middle of connection methodd: %s", crac_status)
+            Logger.getLogger().debug("Data crac_status in the middle of connection method: %s", crac_status)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
@@ -100,7 +105,7 @@ def connection() -> str:
                 g_ui.update_status_curtains(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
 
-            #PANEL FLAT
+            # PANEL FLAT
             if crac_status.panel_status == PanelStatus.ON:
                 Logger.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
@@ -111,7 +116,7 @@ def connection() -> str:
                 g_ui.update_status_panel(GuiLabel.PANEL_OFF)
                 g_ui.update_disable_button_panel_off()
 
-            #TRACKING
+            # TRACKING
             if crac_status.tracking_status == TrackingStatus.ON:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
             elif crac_status.tracking_status == TrackingStatus.OFF:
@@ -138,9 +143,10 @@ def connection() -> str:
             g_ui.update_tele_text(crac_status.telescope_coords)
 
 
-
-HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
-PORT = config.Config.getInt("port", "server")  # The port used by the server
+# The server's hostname or IP address
+HOST = config.Config.getValue("ip", "server")
+# The server's hostname or IP address
+PORT = config.Config.getInt("port", "server")
 
 g_ui = gui.Gui()
 

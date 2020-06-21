@@ -1,9 +1,11 @@
-import socket, json
-from base.base_telescopio import BaseTelescopio
+import json
+import socket
+from base import telescope
 from logger import Logger
 from status import TrackingStatus
 
-class Telescopio(BaseTelescopio):
+
+class Telescope(telescope.BaseTelescope):
 
     def __init__(self):
         super().__init__()

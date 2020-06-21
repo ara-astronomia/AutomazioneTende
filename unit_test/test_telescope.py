@@ -1,14 +1,17 @@
-import unittest, config, socket
+import unittest
+import config
+import socket
 from unittest.mock import MagicMock
-from telescopio import Telescopio
+from theskyx.telescope import Telescope
 import socket
 from base.singleton import Singleton
+
 
 class TelescopeTest(unittest.TestCase):
 
     def setUp(self):
         Singleton._instances = {}
-        self.telescopio = Telescopio()
+        self.telescopio = Telescope()
         socket.socket.connect = MagicMock(return_value=None)
         socket.socket.close = MagicMock(return_value=None)
 
@@ -27,18 +30,18 @@ class TelescopeTest(unittest.TestCase):
         self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"tr":1,"az":106.2017082212961,"alt":22.049386909452107}|No error. Error = 0.')
         self.telescopio.update_coords()
-        self.assertEqual({"az":106, "alt":22, "tr":1, "error":0}, self.telescopio.coords)
+        self.assertEqual({"az": 106, "alt": 22, "tr": 1, "error": 0}, self.telescopio.coords)
 
     def test_move_tele(self):
         self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"tr":0,"az":0,"alt":0}|No error. Error = 0.')
         self.telescopio.move_tele()
-        self.assertEqual(self.telescopio.coords, {"tr":0, "alt":0, "az":0, "error":0})
+        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
 
     def test_parse_result_success(self):
         data = b'{"tr":1,"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")
         self.telescopio.__parse_result__(data)
-        self.assertEqual({"tr":1, "az":95, "alt":62,"error":0}, self.telescopio.coords)
+        self.assertEqual({"tr": 1, "az": 95, "alt": 62, "error": 0}, self.telescopio.coords)
 
     def test_parse_result_error(self):
         data = b'{Error = 234.|No error. Error = 0.'.decode("utf-8")

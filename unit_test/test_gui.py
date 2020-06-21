@@ -1,8 +1,9 @@
 from gui import Gui
 import unittest
 from unittest.mock import MagicMock, patch
-from orientation import Orientation
+from status import Orientation
 import config
+
 
 class TestGui(unittest.TestCase):
 
@@ -10,7 +11,7 @@ class TestGui(unittest.TestCase):
         self.gui = Gui()
 
     def test_create_polygon_coordinates_with_est_low(self):
-        
+
         pt, pt1, pt2, pt3, pt4, pt5 = self.gui.__create_polygon_coordinates__(0, Orientation.EAST)
 
         self.assertEqual((263, 144), pt)
@@ -54,7 +55,7 @@ class TestGui(unittest.TestCase):
         self.assertEqual((348, 178), pt5)
 
     def test_create_polygon_coordinates_with_west_low(self):
-        
+
         pt, pt1, pt2, pt3, pt4, pt5 = self.gui.__create_polygon_coordinates__(0, Orientation.WEST)
 
         self.assertEqual((126, 144), pt)
@@ -96,11 +97,3 @@ class TestGui(unittest.TestCase):
         self.assertEqual((213, 118), pt3)
         self.assertEqual((156, 230), pt4)
         self.assertEqual((41, 178), pt5)
-
-        
-
-
-
-        
-
-
