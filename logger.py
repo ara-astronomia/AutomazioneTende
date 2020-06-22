@@ -1,11 +1,9 @@
-import logging.handlers, logging
-from config import Config
+import logging.handlers
+import logging
 import os
+from config import Config
 from base.singleton import Singleton
 
-class InfoFilter(logging.Filter):
-    def filter(self, rec):
-        return rec.levelno == logging.DEBUG
 
 class Logger(metaclass=Singleton):
 
@@ -14,7 +12,7 @@ class Logger(metaclass=Singleton):
         # create console handler and set level to debug
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-        if Config.getValue("loggingLevel") != None:
+        if Config.getValue("loggingLevel") is not None:
             ch.setLevel(int(Config.getValue("loggingLevel")))
         ch.setFormatter(formatter)
 
@@ -33,6 +31,7 @@ class Logger(metaclass=Singleton):
         logger = Logger()
         return logger.file_logger
 
+
 class LoggerClient(metaclass=Singleton):
 
     def __init__(self, dir_path=os.path.dirname(os.path.realpath(__file__))+os.path.sep):
@@ -41,14 +40,13 @@ class LoggerClient(metaclass=Singleton):
         # create console handler and set level to debug
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-        if Config.getValue("loggingLevel") != None:
+        if Config.getValue("loggingLevel") is not None:
             ch.setLevel(int(Config.getValue("loggingLevel")))
         ch.setFormatter(formatter)
 
         # create file handler and set level to debug
         fh = logging.handlers.TimedRotatingFileHandler(dir_path+'client.log', 'D')
-        fh.addFilter(InfoFilter())
-        #fh.setLevel(int(Config.getValue("loggingLevel")))
+        fh.setLevel(int(Config.getValue("loggingLevel")))
         fh.setFormatter(formatter)
 
         self.file_logger_client = logging.getLogger()
