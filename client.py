@@ -29,8 +29,8 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
                     continue
 
-                if TelescopeStatus.NORTHEAST <= crac_status.telescope_status <= TelescopeStatus.NORTHWEST:
-                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=crac_status.telescope_status))
+                if TelescopeStatus.NORTHEAST <= cs.telescope_status <= TelescopeStatus.NORTHWEST:
+                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=cs.telescope_status))
                     continue
 
             elif v is GuiKey.START_CURTAINS:
@@ -41,7 +41,7 @@ def connection() -> str:
             LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
-            rcv = s.recv(crac_status.lenght())
+            rcv = s.recv(cs.lenght())
             data = rcv.decode("utf-8")
             cs = crac_status.CracStatus(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
