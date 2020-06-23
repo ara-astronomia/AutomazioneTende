@@ -69,17 +69,16 @@ class Status(OrderedEnum):
 class TelescopeStatus(OrderedEnum):
 
     PARKED = (0, "PP")  # TELESCOPIO IN PARK
-    SECURE = (1, "SS")  # TELESCOPIO IN SICUREZZA, SOTTO IL COLMO DEL TETTO
+    FLATTER = (1, "FF")  # TELESCOPIO IN POSIZIONE DI RIPRESA FLAT
+    SECURE = (2, "SS")  # TELESCOPIO IN SICUREZZA, SOTTO IL COLMO DEL TETTO
 
     # TELESCOPIO IN CONDIZIONE DI OPERABILITÀ
-    NORTHEAST = (2, "NE")
-    EAST = (3, "EE")
-    SOUTHEAST = (4, "SE")
-    SOUTHWEST = (5, "SW")
-    WEST = (6, "WW")
-    NORTHWEST = (7, "NW")
-
-    FLATTER = (8, "FF")  # TELESCOPIO IN POSIZIONE DI RIPRESA FLAT
+    NORTHEAST = (3, "NE")
+    EAST = (4, "EE")
+    SOUTHEAST = (5, "SE")
+    SOUTHWEST = (6, "SW")
+    WEST = (7, "WW")
+    NORTHWEST = (8, "NW")
 
     # danger zone - threat it as an operational status
     # (but we hope it has stopped)

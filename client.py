@@ -29,7 +29,7 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
                     continue
 
-                if TelescopeStatus.NORTHEAST <= cs.telescope_status <= TelescopeStatus.NORTHWEST:
+                if cs.telescope_status >= TelescopeStatus.NORTHEAST:
                     g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=cs.telescope_status))
                     continue
 
@@ -89,8 +89,9 @@ def connection() -> str:
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_ERROR)
 
             else:
-                LoggerClient.getLogger().info("telescopio operativo")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_OPERATIVE, text_color="#2c2825", background_color="green")
+                cardinal = vars(GuiLabel).get(f"TELESCOPE_{cs.telescope_status.abbr}")
+                LoggerClient.getLogger().info("telescopio operativo: %s", cardinal)
+                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
 
             # CURTAINS
             if cs.are_curtains_in_danger():
@@ -140,6 +141,7 @@ def connection() -> str:
             alpha_e, alpha_w = g_ui.update_curtains_text(int(cs.curtain_east_steps), int(cs.curtain_west_steps))
             g_ui.update_curtains_graphic(alpha_e, alpha_w)
             g_ui.update_tele_text(cs.telescope_coords)
+
 
 crac_status.APP = "CLIENT"
 # The server's hostname or IP address
