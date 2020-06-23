@@ -1,7 +1,7 @@
 import time, config, socket
 from electro_tests import gui
 from gui_constants import GuiKey,GuiLabel
-from logger import Logger
+from logger import LoggerClient
 from status import Status, TelescopeStatus
 
 def change_status(status_switch, key, win):
@@ -13,7 +13,7 @@ def change_status(status_switch, key, win):
 def change_encoder(count, key, win):
     if count:
         win.Find(key).update(count, text_color='white', background_color='green')
-        
+
 
 def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -56,14 +56,14 @@ def connection() -> str:
 
             code = roof + curtain_west + curtain_east
 
-            Logger.getLogger().debug("Code: %s", code)
+            LoggerClient.getLogger().debug("Code: %s", code)
 
             s.sendall(code.encode("UTF-8"))
 
             rcv = s.recv(15)
 
             data = rcv.decode("UTF-8")
-            Logger.getLogger().debug("Data: %s", data)
+            LoggerClient.getLogger().debug("Data: %s", data)
 
             # # ROOF
             change_status(data[3], "Roof_open", win)
@@ -89,7 +89,7 @@ HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP add
 PORT = config.Config.getInt("port", "server")  # The port used by the server
 
 while True:
-    Logger.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
+    LoggerClient.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
     key = connection()
     if key == "E":
         exit(0)

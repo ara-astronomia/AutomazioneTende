@@ -1,6 +1,6 @@
 import PySimpleGUI as sg # type: ignore
 import math, config
-from logger import Logger
+from logger import LoggerClient as Logger
 from tkinter import PhotoImage, NW, DISABLED
 from typing import Tuple
 from orientation import Orientation
