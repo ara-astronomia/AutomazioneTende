@@ -1,11 +1,23 @@
 from typing import Dict
 from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from logger import Logger
+APP = "SERVER"
+
+
+def init():
+    global APP
 
 
 class CracStatus():
 
     def __init__(self, code: str = None):
+        if APP == "SERVER":
+            from logger import Logger
+        else:
+            from logger import LoggerClient as Logger
+
+        self.logger = Logger.getLogger()
+
         if not code:
             self.roof_status: Status = Status.CLOSED
             self.telescope_status: TelescopeStatus = TelescopeStatus.PARKED
@@ -68,12 +80,19 @@ class CracStatus():
         return f'{steps:03}'
 
     def are_curtains_closed(self):
+        self.logger.debug("curtain east status %s", self.curtain_east_status)
+        self.logger.debug("curtain west status %s", self.curtain_west_status)
         return self.curtain_east_status is Status.CLOSED and self.curtain_west_status is Status.CLOSED
 
     def are_curtains_in_danger(self):
+        self.logger.debug("curtain east status %s", self.curtain_east_status)
+        self.logger.debug("curtain west status %s", self.curtain_west_status)
         return self.curtain_east_status is Status.DANGER or self.curtain_west_status is Status.DANGER
 
     def is_in_anomaly(self):
+        self.logger.debug("telescope status %s", self.telescope_status)
+        self.logger.debug("curtain east status %s", self.curtain_east_status)
+        self.logger.debug("curtain west status %s", self.curtain_west_status)
         return (
                     self.roof_status is Status.CLOSED and
                     (
@@ -84,11 +103,13 @@ class CracStatus():
                 )
 
     def telescope_in_secure_and_roof_is_closed(self):
-        Logger.getLogger().info("telescope_in_secure %s", self.telescope_status > TelescopeStatus.PARKED)
-        Logger.getLogger().info("roof_is_closed %s", self.roof_status is Status.CLOSED)
+        self.logger.debug("telescope status %s", self.telescope_status)
+        self.logger.debug("roof status %s", self.roof_status)
         return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSED
 
     def telescope_in_secure_and_roof_is_closing(self):
+        self.logger.debug("telescope status %s", self.telescope_status)
+        self.logger.debug("roof status %s", self.roof_status)
         return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
 
     def lenght(self):
