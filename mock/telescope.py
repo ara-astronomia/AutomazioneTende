@@ -1,4 +1,6 @@
+import configparser
 import json
+import os
 import socket
 from base import telescope
 from logger import Logger
@@ -10,6 +12,7 @@ class Telescope(telescope.BaseTelescope):
     def __init__(self):
         super().__init__()
         self.connected = False
+        self.configparser = configparser.ConfigParser()
 
     def open_connection(self):
         self.connected = True
@@ -18,6 +21,20 @@ class Telescope(telescope.BaseTelescope):
         alt = kwargs.get("alt")
         az = kwargs.get("az")
         tr = kwargs.get("tr")
+
+        configpath = os.path.join(os.path.dirname(__file__), 'telescope.ini')
+        self.configparser.read(configpath)
+
+        if "coords" in self.configparser:
+            if not self.__is_number__(alt) or float(alt) < 0 or float(alt) > 90:
+                alt = self.configparser.getfloat("coords", "alt", fallback=0)
+
+            if not self.__is_number__(az) or float(az) < 0 or float(az) > 360:
+                az = self.configparser.getfloat("coords", "az", fallback=0)
+
+            if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
+                tr = self.configparser.getint("coords", "tr", fallback=0)
+
         if not self.__is_number__(alt) or float(alt) < 0 or float(alt) > 90:
             alt = input("Inserisci l'altezza del telescopio: ")
         if not self.__is_number__(az) or float(az) < 0 or float(az) > 360:
@@ -34,6 +51,15 @@ class Telescope(telescope.BaseTelescope):
             print("Inserire un numero compreso tra 1 o 0")
             return self.update_coords(alt=alt, az=az)
         self.coords = {'tr': int(tr), 'alt': round(float(alt)), 'az': round(float(az)), 'error': 0}
+
+        config = configparser.ConfigParser()
+        config["coords"] = {}
+        config["coords"]["alt"] = str(alt)
+        config["coords"]["az"] = str(az)
+        config["coords"]["tr"] = str(tr)
+        with open(configpath, 'w') as configfile:
+            config.write(configfile)
+
         Logger.getLogger().debug("In update coords")
         return self.coords
 
