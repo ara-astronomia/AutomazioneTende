@@ -1,6 +1,6 @@
-import config
-from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
 from typing import Dict
+from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
+from logger import Logger
 APP = "SERVER"
 
 
@@ -21,7 +21,7 @@ class CracStatus():
         if not code:
             self.roof_status: Status = Status.CLOSED
             self.telescope_status: TelescopeStatus = TelescopeStatus.PARKED
-            self._telescope_coords: Dict[str, str] = { "alt": "000", "az": "000" }
+            self._telescope_coords: Dict[str, str] = {"alt": "000", "az": "000"}
             self.curtain_east_status: Status = Status.STOPPED
             self._curtain_east_steps: str = "000"
             self.curtain_west_status: Status = Status.STOPPED
@@ -29,23 +29,23 @@ class CracStatus():
             self.panel_status: PanelStatus = PanelStatus.OFF
             self.tracking_status: TrackingStatus = TrackingStatus.OFF
 
-        elif len(code) == 18:
+        elif len(code) == 19:
             self.roof_status = Status.get_value(code[0])
-            self.telescope_status = TelescopeStatus.get_value(code[1])
-            self._telescope_coords = { "alt": code[2:5], "az": code[5:8] }
-            self.curtain_east_status = Status.get_value(code[8])
-            self._curtain_east_steps = code[9:12]
-            self.curtain_west_status = Status.get_value(code[12])
-            self._curtain_west_steps = code[13:16]
-            self.panel_status = PanelStatus.get_value(code[16])
-            self.tracking_status = TrackingStatus.get_value(code[17])
+            self.telescope_status = TelescopeStatus.get_value(code[1:3])
+            self._telescope_coords = {"alt": code[3:6], "az": code[6:9]}
+            self.curtain_east_status = Status.get_value(code[9])
+            self._curtain_east_steps = code[10:13]
+            self.curtain_west_status = Status.get_value(code[13])
+            self._curtain_west_steps = code[14:17]
+            self.panel_status = PanelStatus.get_value(code[17])
+            self.tracking_status = TrackingStatus.get_value(code[18])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
             self.curtain_west_status = Status.get_value(code[1])
             self.curtain_east_status = Status.get_value(code[2])
             self.telescope_status: TelescopeStatus = TelescopeStatus.PARKED
-            self._telescope_coords: Dict[str, str] = { "alt": "000", "az": "000" }
+            self._telescope_coords: Dict[str, str] = {"alt": "000", "az": "000"}
             self._curtain_east_steps: str = "000"
             self._curtain_west_steps: str = "000"
 
@@ -58,7 +58,7 @@ class CracStatus():
 
     @telescope_coords.setter
     def telescope_coords(self, coords: Dict[str, int]) -> None:
-        self._telescope_coords = { "alt": self.__convert_steps__(coords["alt"]), "az": self.__convert_steps__(coords["az"]) }
+        self._telescope_coords = {"alt": self.__convert_steps__(coords["alt"]), "az": self.__convert_steps__(coords["az"])}
 
     @property
     def curtain_east_steps(self) -> str:
@@ -111,3 +111,6 @@ class CracStatus():
         self.logger.debug("telescope status %s", self.telescope_status)
         self.logger.debug("roof status %s", self.roof_status)
         return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
+
+    def lenght(self):
+        return len(repr(self))

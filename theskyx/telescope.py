@@ -1,10 +1,14 @@
-import socket, json, re, config
-from base.base_telescopio import BaseTelescopio
+import json
+import re
+import socket
+import config
+from base.telescope import BaseTelescope
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
 
-class Telescopio(BaseTelescopio):
+
+class Telescope(BaseTelescope):
 
     def __init__(self):
         super().__init__()
@@ -38,7 +42,7 @@ class Telescopio(BaseTelescopio):
 
     def read(self):
         try:
-            self.coords = self.update_coords() # is it really necessary?
+            self.update_coords()
         except (ConnectionError, TimeoutError):
             Logger.getLogger().exception("Connessione con The Sky persa: ")
             self.status = TelescopeStatus.LOST
@@ -71,9 +75,8 @@ class Telescopio(BaseTelescopio):
             coords = json.loads(jsonString)
             self.coords["alt"] = int(round(coords["alt"]))
             self.coords["az"] = int(round(coords["az"]))
-            self.coords["tr"] =  int(round(coords["tr"]))
+            self.coords["tr"] = int(round(coords["tr"]))
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
-
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:
         r = re.search(search_reg, input_str)

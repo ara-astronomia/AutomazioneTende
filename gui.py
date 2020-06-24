@@ -1,11 +1,13 @@
-import PySimpleGUI as sg # type: ignore
-import math, config
+import PySimpleGUI as sg  # type: ignore
+import math
+import config
 from logger import LoggerClient as Logger
 from tkinter import PhotoImage, NW, DISABLED
 from typing import Tuple
-from orientation import Orientation
+from status import Orientation
 from typing import Dict
 from gui_constants import GuiLabel, GuiKey
+
 
 class Gui:
 
@@ -18,7 +20,7 @@ class Gui:
         self.alpha_min_conf = config.Config.getInt("alpha_min", "tende")
         self.increm_e = (self.alt_max_tend_e - self.alt_min_tend_e) / self.n_step_corsa
         self.increm_w = (self.alt_max_tend_w - self.alt_min_tend_w) / self.n_step_corsa
-        self.conv = 2 * math.pi / 360 # conversion from degrees to radians for applying math trigonometric algorithms
+        self.conv = 2 * math.pi / 360  # conversion from degrees to radians for applying math trigonometric algorithms
         self.tenda_e = None
         self.line2_e = None
         self.line3_e = None
@@ -48,8 +50,8 @@ class Gui:
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Attiva', key=GuiKey.START_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS,disabled=True,  size=(6, 1)),
-                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS,disabled=True,  size=(6, 1))
+                            sg.Button('Disattiva', key=GuiKey.STOP_CURTAINS, disabled=True,  size=(6, 1)),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1))
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
@@ -57,13 +59,12 @@ class Gui:
                             sg.Button('On', key=GuiKey.PANEL_ON, disabled=False, size=(6, 1), tooltip="non puoi accendere il pannnello, il telescopio è in fase imaging"),
                             sg.Button('Off', key=GuiKey.PANEL_OFF, disabled=True, size=(6, 1), tooltip="non puoi spegnere un pannello spento :-)"),
                             sg.Text(GuiLabel.PANEL_OFF, size=(10, 1), justification='center', font=("Helvetica", 11), key='status-panel', background_color="red", text_color="white")
-                        ]]), title="Panel Flat", pad=(3,10)),
+                        ]]), title="Panel Flat", pad=(3, 10)),
 
                     ],
                     [
                         sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
-                        sg.Frame(layout=
-                            ([[
+                        sg.Frame(layout=([[
                                 sg.Column(layout=(
                                     [sg.Text('Est', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (10, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='apert_e', background_color="white", text_color="#2c2825", pad=(0, 0))],
@@ -72,8 +73,7 @@ class Gui:
                                 ))
                             ]]), title='Tende', relief=sg.RELIEF_GROOVE, pad=(2, 0)
                         ),
-                        sg.Frame(layout=
-                            ([[
+                        sg.Frame(layout=([[
                                 sg.Column(layout=(
                                     [sg.Text('Alt', size=(5, 1), justification='left', font=("Helvetica", 12), pad=((0, 0), (10, 0)))],
                                     [sg.Text('0', size=(5, 1), justification='right', font=("Helvetica", 12), key='alt', background_color="white", text_color="#2c2825", pad=(0, 0))],
@@ -83,17 +83,18 @@ class Gui:
                             ]]), title='Telescopio', relief=sg.RELIEF_GROOVE, pad=((6, 0), (0, 0))
                         )
                     ],
-                    [sg.Frame(layout=
-                        ([
+                    [sg.Frame(layout=([
                             [
                                 sg.Column(layout=(
                                     [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.ROOF_CLOSED, size=(17, 1),justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.ROOF_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white"),
-                                    sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red")]
+                                    [
+                                        sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white"),
+                                        sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red")
+                                    ]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
@@ -101,7 +102,7 @@ class Gui:
                                 ))
 
                             ],
-                            [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center',background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert",relief=sg.RELIEF_RIDGE)]
+                            [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center', background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert", relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]
@@ -169,11 +170,12 @@ class Gui:
         # for every key in args:
         for key in args:
 
-            # update the relative element with the kwargs attributes (actually we use only update=False but we can also do something like):
+            # update the relative element with the kwargs attributes (actually
+            # we use only update=False but we can also do something like):
             # update=False, tooltip="whatever"...
             self.win.FindElement(key).Update(**kwargs)
 
-    def update_enable_disable_button(self): #, status: str, text_color: str = 'white', background_color: str = 'red') -> None:
+    def update_enable_disable_button(self):  # status: str, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update enable-disable button """
 
@@ -181,8 +183,7 @@ class Gui:
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.START_CURTAINS, GuiKey.STOP_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
-
-    def update_disable_button_close_roof(self): #, status: str, disabeld: str =''):
+    def update_disable_button_close_roof(self):  # status: str, disabeld: str =''):
 
         """ Update disable button close roof"""
 
@@ -190,8 +191,7 @@ class Gui:
         # self.win.FindElement('close-roof').Update(disabled=True)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, disabled=True)
 
-
-    def update_enable_button_open_roof(self): #, status: str, disabeld: str =''):
+    def update_enable_button_open_roof(self):  # status: str, disabeld: str =''):
 
         """ Update enable button open roof"""
 
@@ -223,19 +223,18 @@ class Gui:
         Logger.getLogger().info('update_status_curtains in gui')
         self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
 
-
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
 
         """ Update curtains angular values """
 
-        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e))) # from steps to degree for east
-        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w))) # from steps to degree for west
+        alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e)))  # from steps to degree for east
+        alpha_w = int(e_w * float("{0:.3f}".format(self.increm_w)))  # from steps to degree for west
 
         self.win.FindElement('apert_e').Update(alpha_e)
         self.win.FindElement('apert_w').Update(alpha_w)
         return alpha_e, alpha_w
 
-    #PANEL FLAT
+    # PANEL FLAT
     def update_status_panel(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Panel Status """
@@ -243,7 +242,7 @@ class Gui:
         Logger.getLogger().info('update_status_panel in gui')
         self.win.FindElement('status-panel').Update(status, text_color=text_color, background_color=background_color)
 
-    def update_disable_button_panel_on(self): #, status: str, disabeld: str =''):
+    def update_disable_button_panel_on(self):  # status: str, disabeld: str =''):
 
         """ Update enable button on panel flat"""
 
@@ -251,7 +250,7 @@ class Gui:
         self.__toggle_button__(GuiKey.PANEL_ON, disabled=True)
         self.__toggle_button__(GuiKey.PANEL_OFF, disabled=False)
 
-    def update_disable_button_panel_off(self): #, status: str, disabeld: str =''):
+    def update_disable_button_panel_off(self):  # status: str, disabeld: str =''):
 
         """ Update enable button on panel flat"""
 
@@ -259,7 +258,7 @@ class Gui:
         self.__toggle_button__(GuiKey.PANEL_ON, disabled=False)
         self.__toggle_button__(GuiKey.PANEL_OFF, disabled=True)
 
-    #STATUS TRACKING
+    # STATUS TRACKING
     def update_status_tracking(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
         """ Update Tracking Status """
@@ -267,7 +266,7 @@ class Gui:
         Logger.getLogger().info('update_status_tracking in gui')
         self.win.FindElement('status-tracking').Update(status, text_color=text_color, background_color=background_color)
 
-    #GRAPHIC
+    # GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
 
         """ Draw curtains position with canvas """
@@ -296,22 +295,22 @@ class Gui:
             )
 
     def __create_polygon_coordinates__(self, alpha: int, orientation: Orientation) -> Tuple[Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int], Tuple[int, int]]:
-            angolo_min = self.alpha_min_conf * self.conv # valore dell'inclinazione della base della tenda in radianti
-            angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
-            angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
-            angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
-            angolo = (alpha + self.alpha_min_conf) * self.conv
+        angolo_min = self.alpha_min_conf * self.conv  # valore dell'inclinazione della base della tenda in radianti
+        angolo1 = ((alpha / 4) + self.alpha_min_conf) * self.conv
+        angolo2 = ((alpha / 2) + self.alpha_min_conf) * self.conv
+        angolo3 = (((alpha / 4) * 3) + self.alpha_min_conf) * self.conv
+        angolo = (alpha + self.alpha_min_conf) * self.conv
 
-            i = 1 if orientation == Orientation.EAST else -1
+        i = 1 if orientation == Orientation.EAST else -1
 
-            y = int(self.h / 3) * 2
-            x = int((self.l / 2) + (i * self.delta_pt / 2))
-            pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
-            pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
-            pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
-            pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
-            pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
+        y = int(self.h / 3) * 2
+        x = int((self.l / 2) + (i * self.delta_pt / 2))
+        pt1 = (x + (i * (int(math.cos(angolo_min) * self.t))), y - (int(math.sin(angolo_min) * self.t)))
+        pt2 = (x + (i * (int(math.cos(angolo1) * self.t))), y - (int(math.sin(angolo1) * self.t)))
+        pt3 = (x + (i * (int(math.cos(angolo2) * self.t))), y - (int(math.sin(angolo2) * self.t)))
+        pt4 = (x + (i * (int(math.cos(angolo3) * self.t))), y - (int(math.sin(angolo3) * self.t)))
+        pt5 = (x + (i * (int(math.cos(angolo) * self.t))), y - (int(math.sin(angolo) * self.t)))
 
-            pt = (x, y)
+        pt = (x, y)
 
-            return pt, pt1, pt2, pt3, pt4, pt5
+        return pt, pt1, pt2, pt3, pt4, pt5

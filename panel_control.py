@@ -16,5 +16,5 @@ class PanelControl(metaclass=Singleton):
     def panel_off(self):
         self.gpioconfig.turn_off(GPIOPin.SWITCH_PANEL)
 
-     def read(read):
-         return self.gpioconfig.status(GPIOPin.SWITCH_PANEL)
+    def read(self):
+        return self.gpioconfig.status(GPIOPin.SWITCH_PANEL)

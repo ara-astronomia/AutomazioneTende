@@ -7,7 +7,7 @@ class GuiLabel:
     ALERT_CRAC_ANOMALY = "Anomalia CRaC: stato invalido dei componenti"
     ALERT_TELESCOPE_ROOF = "Attenzione, Telescopio vicino al tetto"
     ALERT_TELESCOPE_ROOF_CLOSING = "Attenzione, Telescopio non in park e tetto in chiusura"
-    ALERT_TELESCOPE_OPERATIVE = "Attenzione telescopio operativo"
+    ALERT_TELESCOPE_OPERATIVE = "Attenzione telescopio operativo: {status}"
     ALERT_CURTAINS_OPEN = "Attenzione tende aperte"
     ALERT_ROOF_CLOSED = "Attenzione tetto chiuso"
     CURTAINS_CLOSED = "Disattive"
@@ -16,7 +16,12 @@ class GuiLabel:
     TELESCOPE_PARKED = "Parked"
     TELESCOPE_FLATTER = "Flatter"
     TELESCOPE_SECURED = "In Sicurezza"
-    TELESCOPE_OPERATIVE = "Operativo"
+    TELESCOPE_NE = "NordEst"
+    TELESCOPE_EE = "Est"
+    TELESCOPE_SE = "SudEst"
+    TELESCOPE_SW = "SudOvest"
+    TELESCOPE_WW = "Ovest"
+    TELESCOPE_NW = "NordOvest"
     TELESCOPE_ANOMALY = "Anomalia"
     TELESCOPE_ERROR = "Errore"
     TELESCOPE_TRACKING_ON = "Track On"
@@ -25,6 +30,7 @@ class GuiLabel:
     ROOF_OPEN = "Aperto"
     PANEL_ON = "Acceso"
     PANEL_OFF = "Spento"
+
 
 class GuiKey:
 

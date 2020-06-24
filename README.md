@@ -71,6 +71,12 @@ mypy *.py
 mypy gui.py
 ```
 
+## Run the linter
+
+```
+pycodestyle *.py
+```
+
 # Run the app
 
 ## Run the server with the hardware mocked

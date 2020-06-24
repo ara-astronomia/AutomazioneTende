@@ -1,11 +1,11 @@
-import time
-import config
-import socket
 import gui
+import time
+import socket
+import config
 import crac_status
+from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
 from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
-from gui_constants import GuiLabel, GuiKey
 
 
 def connection() -> str:
@@ -29,8 +29,8 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
                     continue
 
-                if cs.telescope_status is TelescopeStatus.OPERATIONAL:
-                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE)
+                if cs.telescope_status >= TelescopeStatus.NORTHEAST:
+                    g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=cs.telescope_status))
                     continue
 
             elif v is GuiKey.START_CURTAINS:
@@ -41,7 +41,7 @@ def connection() -> str:
             LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
-            rcv = s.recv(18)
+            rcv = s.recv(cs.lenght())
             data = rcv.decode("utf-8")
             cs = crac_status.CracStatus(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
@@ -89,8 +89,9 @@ def connection() -> str:
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_ERROR)
 
             else:
-                LoggerClient.getLogger().info("telescopio operativo")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_OPERATIVE, text_color="#2c2825", background_color="green")
+                cardinal = vars(GuiLabel).get(f"TELESCOPE_{cs.telescope_status.abbr}")
+                LoggerClient.getLogger().info("telescopio operativo: %s", cardinal)
+                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
 
             # CURTAINS
             if cs.are_curtains_in_danger():
@@ -143,8 +144,10 @@ def connection() -> str:
 
 
 crac_status.APP = "CLIENT"
-HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
-PORT = config.Config.getInt("port", "server")  # The port used by the server
+# The server's hostname or IP address
+HOST = config.Config.getValue("ip", "server")
+# The server's hostname or IP address
+PORT = config.Config.getInt("port", "server")
 
 g_ui = gui.Gui()
 
