@@ -26,30 +26,30 @@ class Telescope(telescope.BaseTelescope):
         self.configparser.read(configpath)
 
         if "coords" in self.configparser:
-            if not self.__is_number__(alt) or float(alt) < 0 or float(alt) > 90:
+            if not self.__is_number__(alt, float, -90, 90):
                 alt = self.configparser.getfloat("coords", "alt", fallback=0)
-
-            if not self.__is_number__(az) or float(az) < 0 or float(az) > 360:
+            if not self.__is_number__(az, float, 0, 360):
                 az = self.configparser.getfloat("coords", "az", fallback=0)
-
-            if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
+            if not self.__is_number__(tr, int, 0, 1):
                 tr = self.configparser.getint("coords", "tr", fallback=0)
 
-        if not self.__is_number__(alt) or float(alt) < 0 or float(alt) > 90:
+        if not self.__is_number__(alt, float, -90, 90):
             alt = input("Inserisci l'altezza del telescopio: ")
-        if not self.__is_number__(az) or float(az) < 0 or float(az) > 360:
+        if not self.__is_number__(az, float, 0, 360):
             az = input("Inserisci l'azimut del telescopio: ")
-        if not self.__is_number__(alt) or float(alt) < 0 or float(alt) > 90:
+        if not self.__is_number__(tr, int, 0, 1):
+            tr = input("inserisci la situazione del tracking (1 o 0):")
+
+        if not self.__is_number__(alt, float, -90, 90):
             print("Inserire un numero compreso tra 0 e 90 per l'altezza")
             return self.update_coords(az=kwargs.get("az"))
-        if not self.__is_number__(az) or float(az) < 0 or float(az) > 360:
+        if not self.__is_number__(az, float, 0, 360):
             print("Inserire un numero compreso tra 0 e 360 per l'azimut")
             return self.update_coords(alt=kwargs.get("alt"))
-        if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
-            tr = input("inserisci la situazione del tracking (1 o 0):")
-        if not self.__is_number__(tr) or int(tr) < 0 or int(tr) > 1:
+        if not self.__is_number__(tr, int, 0, 1):
             print("Inserire un numero compreso tra 1 o 0")
             return self.update_coords(alt=alt, az=az)
+
         self.coords = {'tr': int(tr), 'alt': round(float(alt)), 'az': round(float(az)), 'error': 0}
 
         config = configparser.ConfigParser()
@@ -57,6 +57,7 @@ class Telescope(telescope.BaseTelescope):
         config["coords"]["alt"] = str(alt)
         config["coords"]["az"] = str(az)
         config["coords"]["tr"] = str(tr)
+
         with open(configpath, 'w') as configfile:
             config.write(configfile)
 
@@ -79,11 +80,11 @@ class Telescope(telescope.BaseTelescope):
         self.coords = self.update_coords()
         self.__update_status__()
 
-    def __is_number__(self, s):
+    def __is_number__(self, s, kind=float, *args):
         if s is None:
             return False
         try:
-            float(s)
+            s = kind(s)
             return True
         except ValueError:
             pass
@@ -91,11 +92,14 @@ class Telescope(telescope.BaseTelescope):
         try:
             import unicodedata
             unicodedata.numeric(s)
-            return True
         except (TypeError, ValueError):
-            pass
+            return False
 
-        return False
+        if args is not None:
+            if len(args) == 2:
+                return args[0] <= s <= args[1]
+
+        return True
 
     def close_connection(self):
         self.connected = False
