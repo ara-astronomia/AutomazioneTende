@@ -1,7 +1,17 @@
 from enum import Enum
 from config import Config
-import RPi.GPIO as GPIO # type: ignore
 from typing import NamedTuple
+from enum import IntEnum
+
+
+class GPIO(IntEnum):
+    OUT = 0
+    IN = 1
+    LOW = 0
+    HIGH = 1
+    PUD_OFF = 20
+    PUD_UP = 22
+    BOARD = 10
 
 
 class Pin(NamedTuple):
@@ -10,24 +20,25 @@ class Pin(NamedTuple):
     pull: int = GPIO.PUD_OFF
     on_is: int = GPIO.LOW
 
+
 class GPIOPin(Pin, Enum):
-    #impostazione gpio switch e comando tetto
+    # impostazione gpio switch e comando tetto
     VERIFY_CLOSED = Pin(Config.getInt("roof_verify_closed", "roof_board"), GPIO.IN, pull=GPIO.PUD_UP)
     VERIFY_OPEN = Pin(Config.getInt("roof_verify_open", "roof_board"), GPIO.IN, pull=GPIO.PUD_UP)
     SWITCH_ROOF = Pin(Config.getInt("switch_roof", "roof_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
-    #impostazione gpio panel flat
+    # impostazione gpio panel flat
     SWITCH_PANEL = Pin(Config.getInt("switch_panel", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_on", "panel_board"))
-    #impostazione gpio alimentatore
+    # impostazione gpio alimentatore
     SWITCH_POWER = Pin(Config.getInt("switch_power", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on", "panel_board"))
-    #impostazione gpio luci cupola
+    # impostazione gpio luci cupola
     SWITCH_LIGHT = Pin(Config.getInt("switch_light", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_light_on", "panel_board"))
-    #impostazione gpio auxiliary
+    # impostazione gpio auxiliary
     SWITCH_AUX = Pin(Config.getInt("switch_aux", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_aux_on", "panel_board"))
 
-    #impostazione gpio switch fine_corsa tende
+    # impostazione gpio switch fine_corsa tende
     CURTAIN_W_VERIFY_OPEN = Pin(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
-    CURTAIN_W_VERIFY_CLOSED= Pin(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
+    CURTAIN_W_VERIFY_CLOSED = Pin(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
     CURTAIN_E_VERIFY_OPEN = Pin(Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
     CURTAIN_E_VERIFY_CLOSED = Pin(Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), GPIO.IN, GPIO.PUD_UP)
 
