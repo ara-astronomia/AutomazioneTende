@@ -21,22 +21,14 @@ class AutomazioneTende:
 
         else:
             from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl  # type: ignore
-            from mock.curtains import WestCurtain, EastCurtain  # type: ignore
+            from mock.roof_control import RoofControl
+            from mock.curtains import WestCurtain, EastCurtain
             from mock.button_control import ButtonControl
-
-            MockRPi = MagicMock()
-            modules = {
-                "RPi": MockRPi,
-                "RPi.GPIO": MockRPi.GPIO,
-            }
-            patcher = patch.dict("sys.modules", modules)
-            patcher.start()
 
         if thesky:
             import theskyx.telescope as telescopio
         else:
-            import mock.telescope as telescopio  # type: ignore
+            import mock.telescope as telescopio
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
@@ -47,7 +39,6 @@ class AutomazioneTende:
         self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
         self.aux_control = ButtonControl(GPIOPin.SWITCH_AUX)
-
 
         self.started = False
         self.prevCoord = {'alt': 0, 'az': 0, 'tr': 0, 'error': 0}
@@ -287,10 +278,12 @@ class AutomazioneTende:
 
         """ Shutdown the server """
 
-        from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
         self.telescope.close_connection()
-        GPIOConfig().cleanup(n)
+        if not self.mock:
+            Logger.getLogger().debug("Mock: %s", self.mock)
+            from gpio_config import GPIOConfig
+            GPIOConfig().cleanup(n)
 
     def exec(self) -> None:
 
