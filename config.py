@@ -1,4 +1,5 @@
 import configparser
+import os
 from base.singleton import Singleton
 
 
@@ -6,7 +7,8 @@ class Config(metaclass=Singleton):
 
     def __init__(self):
         self.configparser = configparser.ConfigParser()
-        self.configparser.read('config.ini')
+        configpath = os.path.join(os.path.dirname(__file__), 'config.ini')
+        self.configparser.read(configpath)
 
     @staticmethod
     def getValue(key, section='automazione'):
