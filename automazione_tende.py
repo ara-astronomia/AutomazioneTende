@@ -242,62 +242,46 @@ class AutomazioneTende:
     def on(self):
         """ on panel flat and update the panel status in CracStatus object """
 
-        status_panel = self.crac_status.panel_status
-        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        self.button_control.on()
+        self.panel_control.on()
         self.telescope.move_tele(tr=1)
 
     def off(self):
         """ off panel flat and update the panel status in CracStatus object """
 
-        status_panel = self.crac_status.panel_status
-        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        self.button_control.off()
+        self.panel_control.off()
 
     # POWER SWITCH
-    def power_switch_on(self):
+    def power_on(self):
         """ on power switch and update the power switch status in CracStatus object """
 
-        status_power_switch = self.crac_status.power_status
-        Logger.getLogger().debug("Stato degli alimentatori: %s", str(status_power_switch))
-        self.button_control.power_switch_on()
+        self.power_control.on()
 
-    def power_switch_off(self):
+    def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
 
-        status_power_switch = self.crac_status.power_status
-        Logger.getLogger().debug("Stato degli alimentatori: %s", str(status_power_switch))
-        self.button_control.power_switch_off()
+        self.power_control.off()
 
     # LIGHT DOME
     def light_on(self):
         """ on light dome and update the light status in CracStatus object """
 
-        status_light = self.crac_status.light_status
-        Logger.getLogger().debug("Stato delle luci: %s", str(status_light))
-        self.button_control.light_on()
+        self.light_control.on()
 
     def light_off(self):
-            """ off light dome and update the light status in CracStatus object """
+        """ off light dome and update the light status in CracStatus object """
 
-            status_light = self.crac_status.light_status
-            Logger.getLogger().debug("Stato delle luci: %s", str(status_light))
-            self.button_control.light_off()
+        self.light_control.off()
 
     # AUXILIARY
     def aux_on(self):
         """ on auxiliary and update the auxiliary status in CracStatus object """
 
-        status_aux = self.crac_status.aux_status
-        Logger.getLogger().debug("Stato dell'ausiliare: %s", str(status_aux))
-        self.button_control.aux_on()
+        self.aux_control.on()
 
     def aux_off(self):
         """ off auxiliary and update the auxiliary status in CracStatus object """
 
-        status_aux = self.crac_status.aux_status
-        Logger.getLogger().debug("Stato dell'ausiliare: %s", str(status_aux))
-        self.button_control.aux_off()
+        self.aux_control.off()
 
     def exit_program(self, n: int = 0) -> None:
 
