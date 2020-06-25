@@ -17,9 +17,9 @@ class GPIOPin(Pin, Enum):
     SWITCH_ROOF = Pin(Config.getInt("switch_roof", "roof_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
     #impostazione gpio panel flat
-    SWITCH_PANEL = Pin(Config.getInt("switch_panel", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_panel_on", "panel_board"))
+    SWITCH_PANEL = Pin(Config.getInt("switch_panel", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_on", "panel_board"))
     #impostazione gpio alimentatore
-    SWITCH_POWERSWITCH = Pin(Config.getInt("switch_powerswitch", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_powerswitch_on", "panel_board"))
+    SWITCH_POWER = Pin(Config.getInt("switch_power", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on", "panel_board"))
     #impostazione gpio luci cupola
     SWITCH_LIGHT = Pin(Config.getInt("switch_light", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_light_on", "panel_board"))
     #impostazione gpio auxiliary

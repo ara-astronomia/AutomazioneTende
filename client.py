@@ -109,12 +109,46 @@ def connection() -> str:
             if cs.panel_status == PanelStatus.ON:
                 LoggerClient.getLogger().info("pannello flat acceso")
                 g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_panel_on()
+                g_ui.update_disable_button_on()
 
             if cs.panel_status == PanelStatus.OFF:
                 LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_status_panel(GuiLabel.PANEL_OFF)
-                g_ui.update_disable_button_panel_off()
+                g_ui.update_disable_button_off()
+
+            # POWER SWITCH
+            if cs.power_status == PowerSwitchStatus.ON:
+                LoggerClient.getLogger().info("Alimentari accesi")
+                g_ui.update_status_power_switch(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_disable_button_power_switch_on()
+
+            if cs.power_status == PowerSwitchStatus.OFF:
+                LoggerClient.getLogger().info("Alimentatori spenti")
+                g_ui.update_status_power_switch(GuiLabel.PANEL_OFF)
+                g_ui.update_disable_button_power_switch_off()
+
+            # LIGHT DOME
+            if cs.light_status == LightStatus.ON:
+                LoggerClient.getLogger().info("Luci cupola acccese")
+                g_ui.update_status_light(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_disable_button_light_on()
+
+            if cs.light_status == LightStatus.OFF:
+                LoggerClient.getLogger().info("Luci cupola spente")
+                g_ui.update_status_light(GuiLabel.PANEL_OFF)
+                g_ui.update_disable_button_light_off()
+
+            # AUXILIARY
+            if cs.aux_status == AuxStatus.ON:
+                LoggerClient.getLogger().info("ausiliare acceso")
+                g_ui.update_status_aux(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_disable_button_aux_on()
+
+            if cs.aux_status == AuxStatus.OFF:
+                LoggerClient.getLogger().info("ausiliare spento")
+                g_ui.update_status_aux(GuiLabel.PANEL_OFF)
+                g_ui.update_disable_button_aux_off()
+
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:

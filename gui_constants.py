@@ -28,8 +28,8 @@ class GuiLabel:
     TELESCOPE_TRACKING_OFF = "Track Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
-    BUTTON_ON = "Acceso"
-    BUTTON_OFF = "Spento"
+    PANEL_ON = "Acceso"
+    PANEL_OFF = "Spento"
 
 
 class GuiKey:

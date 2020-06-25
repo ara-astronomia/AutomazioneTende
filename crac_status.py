@@ -1,5 +1,9 @@
 from typing import Dict
-from status import Status, TelescopeStatus, PanelStatus, TrackingStatus
+from status import Status
+from status import TelescopeStatus
+from status import SwitchStatus
+from status import TrackingStatus
+
 from logger import Logger
 APP = "SERVER"
 
@@ -26,10 +30,13 @@ class CracStatus():
             self._curtain_east_steps: str = "000"
             self.curtain_west_status: Status = Status.STOPPED
             self._curtain_west_steps: str = "000"
-            self.panel_status: PanelStatus = PanelStatus.OFF
             self.tracking_status: TrackingStatus = TrackingStatus.OFF
+            self.panel_status: SwitchStatus = SwitchStatus.OFF
+            self.power_status: SwitchStatus = SwitchStatus.OFF
+            self.light_status: SwitchStatus = SwitchStatus.OFF
+            self.aux_status: SwitchStatus = SwitchStatus.OFF
 
-        elif len(code) == 19:
+        elif len(code) == 22:
             self.roof_status = Status.get_value(code[0])
             self.telescope_status = TelescopeStatus.get_value(code[1:3])
             self._telescope_coords = {"alt": code[3:6], "az": code[6:9]}
@@ -37,8 +44,11 @@ class CracStatus():
             self._curtain_east_steps = code[10:13]
             self.curtain_west_status = Status.get_value(code[13])
             self._curtain_west_steps = code[14:17]
-            self.panel_status = PanelStatus.get_value(code[17])
-            self.tracking_status = TrackingStatus.get_value(code[18])
+            self.tracking_status = TrackingStatus.get_value(code[17])
+            self.panel_status = SwitchStatus.get_value(code[18])
+            self.power_status = SwitchStatus.get_value(code[19])
+            self.light_status = SwitchStatus.get_value(code[20])
+            self.aux_status = SwitchStatus.get_value(code[21])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])
@@ -50,7 +60,7 @@ class CracStatus():
             self._curtain_west_steps: str = "000"
 
     def __repr__(self):
-        return f'{repr(self.roof_status)}{repr(self.telescope_status)}{self.telescope_coords["alt"]}{self.telescope_coords["az"]}{repr(self.curtain_east_status)}{self.curtain_east_steps}{repr(self.curtain_west_status)}{self.curtain_west_steps}{repr(self.panel_status)}{repr(self.tracking_status)}'
+        return f'{repr(self.roof_status)}{repr(self.telescope_status)}{self.telescope_coords["alt"]}{self.telescope_coords["az"]}{repr(self.curtain_east_status)}{self.curtain_east_steps}{repr(self.curtain_west_status)}{self.curtain_west_steps}{repr(self.tracking_status)}{repr(self.panel_status)}{repr(self.power_status)}{repr(self.light_status)}{repr(self.aux_status)}'
 
     @property
     def telescope_coords(self):
