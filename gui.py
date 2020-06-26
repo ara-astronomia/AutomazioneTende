@@ -60,11 +60,11 @@ class Gui:
                             sg.Button('Off', key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
                         ]]), title="Panel Flat", pad=(3, 10)),
                         sg.Frame(layout=([[
-                            sg.Button('On', key=GuiKey.POWER_ON, disabled=False, size=(4, 1), tooltip="accensione alimentatori"),
+                            sg.Button('On', key=GuiKey.POWER_ON, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
                             sg.Button('Off', key=GuiKey.POWER_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
                         ]]), title="Power Switch", pad=(3, 10)),
                         sg.Frame(layout=([[
-                            sg.Button('On', key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="Attenzione, il tele è in fase di ripresa"),
+                            sg.Button('On', key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
                             sg.Button('Off', key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento luci cupola"),
                         ]]), title="Light Dome", pad=(3, 10)),
                         sg.Frame(layout=([[
