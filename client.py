@@ -108,12 +108,12 @@ def connection() -> str:
             # PANEL FLAT
             if cs.panel_status == SwitchStatus.ON:
                 LoggerClient.getLogger().info("pannello flat acceso")
-                g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="#2c2825", background_color="green")
+                #g_ui.update_status_panel(GuiLabel.PANEL_ON, text_color="white", background_color="green")
                 g_ui.update_disable_button_on()
 
             if cs.panel_status == SwitchStatus.OFF:
                 LoggerClient.getLogger().info("pannello flat spento")
-                g_ui.update_status_panel(GuiLabel.PANEL_OFF)
+                #g_ui.update_status_panel(GuiLabel.PANEL_OFF, text_color="black", background_color="red")
                 g_ui.update_disable_button_off()
 
             # POWER SWITCH
