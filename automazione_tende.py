@@ -88,18 +88,6 @@ class AutomazioneTende:
 
         return self.telescope.coords
 
-    def flat_tele(self) -> Dict[str, int]:
-
-        """ Park the Telescope """
-
-        self.telescope.flat_tele()
-        Logger.getLogger().debug("Telescope status %s, altitude %s, azimuth %s", self.telescope.status, self.telescope.coords["alt"], self.telescope.coords["az"])
-
-        self.crac_status.telescope_coords = self.telescope.coords
-        self.crac_status.telescope_status = self.telescope.status
-
-        return self.telescope.coords
-
     def read_altaz_mount_coordinate(self) -> Dict[str, int]:
 
         """ Read Telescope Coordinates """

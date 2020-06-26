@@ -4,7 +4,7 @@ class ButtonControl():
     def __init__(self, pin):
         self.status = False
         self.pin = pin
-        
+
     def on(self):
         self.status = True
 
