@@ -55,10 +55,11 @@ class GPIOPin(Pin, Enum):
     DT_W = Pin(Config.getInt("dt_w", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
 
     @staticmethod
-    def setup(mode=GPIO.BOARD):
-        GPIO.setmode(mode)
+    def setup():
+        import RPi.GPIO
+        RPi.GPIO.setmode(RPi.GPIO.BOARD)
         for pin in list(GPIOPin):
             if pin.pull:
-                GPIO.setup(pin.id_pin, pin.pin_setup, pull_up_down=pin.pull)
+                RPi.GPIO.setup(pin.id_pin, pin.pin_setup, pull_up_down=pin.pull)
             else:
-                GPIO.setup(pin.id_pin, pin.pin_setup)
+                RPi.GPIO.setup(pin.id_pin, pin.pin_setup)
