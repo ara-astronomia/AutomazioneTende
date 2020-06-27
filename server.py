@@ -73,6 +73,30 @@ try:
                         Logger.getLogger().debug("chiamata al metodo spegnimento pannello flat")
                         automazioneTende.panel_off()
 
+                    elif data == b'W':
+                        Logger.getLogger().debug("chiamata al metodo accensione alimentatori")
+                        automazioneTende.power_on()
+
+                    elif data == b'X':
+                        Logger.getLogger().debug("chiamata al metodo spegnimento alimentatori")
+                        automazioneTende.power_off()
+
+                    elif data == b'K':
+                        Logger.getLogger().debug("chiamata al metodo accensione luci cupola")
+                        automazioneTende.light_on()
+
+                    elif data == b'J':
+                        Logger.getLogger().debug("chiamata al metodo spegnimento luci cupola")
+                        automazioneTende.light_off()
+
+                    elif data == b'A':
+                        Logger.getLogger().debug("chiamata al metodo accensione ausiliare")
+                        automazioneTende.aux_on()
+
+                    elif data == b'O':
+                        Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
+                        automazioneTende.aux_off()
+
                     elif not data or data == b'E' or data == b'-':
                         automazioneTende.started = True
                         automazioneTende.move_tele(0, park_alt, park_az)

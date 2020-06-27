@@ -1,9 +1,12 @@
 import time
 import config
 from logger import Logger
-from status import Status, TelescopeStatus, PanelStatus
+from status import Status
+from status import TelescopeStatus
+from status import ButtonStatus
 from typing import Dict, Any
 from crac_status import CracStatus
+from gpio_pin import GPIOPin
 
 
 class AutomazioneTende:
@@ -14,31 +17,28 @@ class AutomazioneTende:
         if not mock:
             from roof_control import RoofControl
             from curtains import WestCurtain, EastCurtain
-            from panel_control import PanelControl
+            from button_control import ButtonControl
+
         else:
             from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl  # type: ignore
-            from mock.curtains import WestCurtain, EastCurtain  # type: ignore
-            from mock.panel_control import PanelControl
-            MockRPi = MagicMock()
-            modules = {
-                "RPi": MockRPi,
-                "RPi.GPIO": MockRPi.GPIO,
-            }
-            patcher = patch.dict("sys.modules", modules)
-            patcher.start()
+            from mock.roof_control import RoofControl
+            from mock.curtains import WestCurtain, EastCurtain
+            from mock.button_control import ButtonControl
 
         if thesky:
             import theskyx.telescope as telescopio
         else:
-            import mock.telescope as telescopio  # type: ignore
+            import mock.telescope as telescopio
 
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.telescope = telescopio.Telescope()
         self.curtain_east = EastCurtain()
         self.curtain_west = WestCurtain()
-        self.panel_control = PanelControl()
+        self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
+        self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
+        self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
+        self.aux_control = ButtonControl(GPIOPin.SWITCH_AUX)
 
         self.started = False
 
@@ -68,6 +68,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
+        self.crac_status.power_status = self.power_control.read()
+        self.crac_status.light_status = self.light_control.read()
+        self.crac_status.aux_status =self.aux_control.read()
 
         return self.crac_status
 
@@ -229,31 +232,61 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
+    # PANEL FLAT
     def panel_on(self):
         """ on panel flat and update the panel status in CracStatus object """
 
-        status_panel = self.crac_status.panel_status
-        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        if status_panel != PanelStatus.ON:
-            self.panel_control.panel_on()
-            self.telescope.move_tele(tr=1)
+        self.panel_control.on()
+        self.telescope.move_tele(tr=1)
 
     def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """
 
-        status_panel = self.crac_status.panel_status
-        Logger.getLogger().debug("Stato del pannello: %s", str(status_panel))
-        if status_panel != PanelStatus.OFF:
-            self.panel_control.panel_off()
+        self.panel_control.off()
+
+    # POWER SWITCH
+    def power_on(self):
+        """ on power switch and update the power switch status in CracStatus object """
+
+        self.power_control.on()
+
+    def power_off(self):
+        """ off power switch and update the power switch status in CracStatus object """
+
+        self.power_control.off()
+
+    # LIGHT DOME
+    def light_on(self):
+        """ on light dome and update the light status in CracStatus object """
+
+        self.light_control.on()
+
+    def light_off(self):
+        """ off light dome and update the light status in CracStatus object """
+
+        self.light_control.off()
+
+    # AUXILIARY
+    def aux_on(self):
+        """ on auxiliary and update the auxiliary status in CracStatus object """
+
+        self.aux_control.on()
+
+    def aux_off(self):
+        """ off auxiliary and update the auxiliary status in CracStatus object """
+
+        self.aux_control.off()
 
     def exit_program(self, n: int = 0) -> None:
 
         """ Shutdown the server """
 
-        from gpio_config import GPIOConfig
         Logger.getLogger().info("Uscita dall'applicazione")
         self.telescope.close_connection()
-        GPIOConfig().cleanup(n)
+        if not self.mock:
+            Logger.getLogger().debug("Mock: %s", self.mock)
+            from gpio_config import GPIOConfig
+            GPIOConfig().cleanup(n)
 
     def exec(self) -> None:
 

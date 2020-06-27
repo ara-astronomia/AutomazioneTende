@@ -28,9 +28,7 @@ class GuiLabel:
     TELESCOPE_TRACKING_OFF = "Track Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
-    PANEL_ON = "Acceso"
-    PANEL_OFF = "Spento"
-
+    
 
 class GuiKey:
 
@@ -47,3 +45,9 @@ class GuiKey:
     TIMEOUT = "__TIMEOUT__"
     PANEL_ON = "L"
     PANEL_OFF = "D"
+    LIGHT_ON = "K"
+    LIGHT_OFF = "J"
+    POWER_ON = "W"
+    POWER_OFF = "X"
+    AUX_ON = "A"
+    AUX_OFF = "O"

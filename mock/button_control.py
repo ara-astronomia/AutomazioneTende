@@ -1,4 +1,4 @@
-from status import SwitchStatus
+from status import ButtonStatus
 
 class ButtonControl():
     def __init__(self, pin):
@@ -13,6 +13,6 @@ class ButtonControl():
 
     def read(self):
         if self.status:
-            return SwitchStatus.ON
+            return ButtonStatus.ON
         else:
-            return SwitchStatus.OFF
+            return ButtonStatus.OFF
