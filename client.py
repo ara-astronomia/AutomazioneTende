@@ -5,7 +5,7 @@ import config
 import crac_status
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, TelescopeStatus, SwitchStatus, TrackingStatus
+from status import Status, TelescopeStatus, ButtonStatus, TrackingStatus
 
 
 def connection() -> str:
@@ -106,38 +106,38 @@ def connection() -> str:
                 g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.panel_status == SwitchStatus.ON:
+            if cs.panel_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("pannello flat acceso")
                 g_ui.update_disable_button_on()
 
-            if cs.panel_status == SwitchStatus.OFF:
+            if cs.panel_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_disable_button_off()
 
             # POWER SWITCH
-            if cs.power_status == SwitchStatus.ON:
+            if cs.power_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("Alimentari accesi")
                 g_ui.update_disable_button_power_switch_on()
 
-            if cs.power_status == SwitchStatus.OFF:
+            if cs.power_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("Alimentatori spenti")
                 g_ui.update_disable_button_power_switch_off()
 
             # LIGHT DOME
-            if cs.light_status == SwitchStatus.ON:
+            if cs.light_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("Luci cupola acccese")
                 g_ui.update_disable_button_light_on()
 
-            if cs.light_status == SwitchStatus.OFF:
+            if cs.light_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("Luci cupola spente")
                 g_ui.update_disable_button_light_off()
 
             # AUXILIARY
-            if cs.aux_status == SwitchStatus.ON:
+            if cs.aux_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("ausiliare acceso")
                 g_ui.update_disable_button_aux_on()
 
-            if cs.aux_status == SwitchStatus.OFF:
+            if cs.aux_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
                 g_ui.update_disable_button_aux_off()
 

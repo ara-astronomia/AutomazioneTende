@@ -67,11 +67,11 @@ try:
 
                     elif data == b'L':
                         Logger.getLogger().debug("chiamata al metodo accensione pannello flat")
-                        automazioneTende.on()
+                        automazioneTende.panel_on()
 
                     elif data == b'D':
                         Logger.getLogger().debug("chiamata al metodo spegnimento pannello flat")
-                        automazioneTende.off()
+                        automazioneTende.panel_off()
 
                     elif data == b'W':
                         Logger.getLogger().debug("chiamata al metodo accensione alimentatori")

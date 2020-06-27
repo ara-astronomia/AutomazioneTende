@@ -1,7 +1,7 @@
 from typing import Dict
 from status import Status
 from status import TelescopeStatus
-from status import SwitchStatus
+from status import ButtonStatus
 from status import TrackingStatus
 
 from logger import Logger
@@ -31,10 +31,10 @@ class CracStatus():
             self.curtain_west_status: Status = Status.STOPPED
             self._curtain_west_steps: str = "000"
             self.tracking_status: TrackingStatus = TrackingStatus.OFF
-            self.panel_status: SwitchStatus = SwitchStatus.OFF
-            self.power_status: SwitchStatus = SwitchStatus.OFF
-            self.light_status: SwitchStatus = SwitchStatus.OFF
-            self.aux_status: SwitchStatus = SwitchStatus.OFF
+            self.panel_status: ButtonStatus = ButtonStatus.OFF
+            self.power_status: ButtonStatus = ButtonStatus.OFF
+            self.light_status: ButtonStatus = ButtonStatus.OFF
+            self.aux_status: ButtonStatus = ButtonStatus.OFF
 
         elif len(code) == 22:
             self.roof_status = Status.get_value(code[0])
@@ -45,10 +45,10 @@ class CracStatus():
             self.curtain_west_status = Status.get_value(code[13])
             self._curtain_west_steps = code[14:17]
             self.tracking_status = TrackingStatus.get_value(code[17])
-            self.panel_status = SwitchStatus.get_value(code[18])
-            self.power_status = SwitchStatus.get_value(code[19])
-            self.light_status = SwitchStatus.get_value(code[20])
-            self.aux_status = SwitchStatus.get_value(code[21])
+            self.panel_status = ButtonStatus.get_value(code[18])
+            self.power_status = ButtonStatus.get_value(code[19])
+            self.light_status = ButtonStatus.get_value(code[20])
+            self.aux_status = ButtonStatus.get_value(code[21])
 
         elif len(code) == 3:
             self.roof_status = Status.get_value(code[0])

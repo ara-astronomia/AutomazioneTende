@@ -95,7 +95,7 @@ class Orientation(OrderedEnum):
     EAST = (1, "E")
 
 @unique
-class SwitchStatus(OrderedEnum):
+class ButtonStatus(OrderedEnum):
 
     OFF = (0, "S")  # PANNELLO FLAT SPENTO
     ON = (1, "A")  # PANNELLO FLAT ACCESO

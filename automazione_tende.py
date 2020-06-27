@@ -3,7 +3,7 @@ import config
 from logger import Logger
 from status import Status
 from status import TelescopeStatus
-from status import SwitchStatus
+from status import ButtonStatus
 from typing import Dict, Any
 from crac_status import CracStatus
 from gpio_pin import GPIOPin
@@ -218,13 +218,13 @@ class AutomazioneTende:
         self.crac_status.roof_status = status_roof
 
     # PANEL FLAT
-    def on(self):
+    def panel_on(self):
         """ on panel flat and update the panel status in CracStatus object """
 
         self.panel_control.on()
         self.telescope.move_tele(tr=1)
 
-    def off(self):
+    def panel_off(self):
         """ off panel flat and update the panel status in CracStatus object """
 
         self.panel_control.off()
