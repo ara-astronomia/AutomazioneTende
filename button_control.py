@@ -1,4 +1,4 @@
-from status import SwitchStatus
+from status import ButtonStatus
 from gpio_config import GPIOConfig
 
 class ButtonControl():
@@ -14,6 +14,6 @@ class ButtonControl():
 
     def read(self):
         if self.gpioconfig.status(self.pin):
-            return SwitchStatus.ON
+            return ButtonStatus.ON
         else:
-            return SwitchStatus.OFF
+            return ButtonStatus.OFF

@@ -15,6 +15,12 @@ class MockTelescopeTest(unittest.TestCase):
         socket.socket.connect = MagicMock(return_value=None)
         socket.socket.close = MagicMock(return_value=None)
 
+    def tearDown(self):
+        alt = self.telescopio.park_alt
+        az = self.telescopio.park_az
+        tr = 0
+        self.telescopio.move_tele(alt=alt, az=az, tr=0)
+
     def test_connection(self):
         self.assertEqual(False, self.telescopio.connected)
         self.telescopio.open_connection()
