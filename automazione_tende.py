@@ -41,12 +41,12 @@ class AutomazioneTende:
         self.aux_control = ButtonControl(GPIOPin.SWITCH_AUX)
 
         self.started = False
-        self.prevCoord = {'alt': 0, 'az': 0, 'tr': 0, 'error': 0}
 
         self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
         self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
         self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
         self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
+        self.prevSteps = {'east': self.alt_min_tend_e, 'west': self.alt_min_tend_w}
 
         # stabilisco il valore di increm per ogni tenda, increm corrisponde al
         # valore dell'angolo della tenda coperto da 1 step)
@@ -104,60 +104,82 @@ class AutomazioneTende:
 
         """ Read the height of the curtains """
 
-        return self.curtain_east.read() == Status.DANGER or self.curtain_west.read() == Status.DANGER
+        danger = Status.DANGER
+        curtain_east = self.curtain_east
+        curtain_west = self.curtain_west
+        return curtain_east.read() is danger or curtain_west.read() is danger
 
-    def move_curtains_height(self):
+    def move_curtains_steps(self, steps):
 
-        """ Change the height of the curtains to based on the given Coordinates """
+        """
+            Change the height of the curtains to based
+            on the given Coordinates
+        """
 
-        coords = self.telescope.coords
-        status = self.telescope.status
+        if steps["east"] is self.n_step_corsa:
+            self.curtain_east.open_up()
+        elif steps["east"] == 0:
+            self.curtain_east.bring_down()
+        else:
+            self.curtain_east.move(steps["east"])
 
+        if steps["west"] is self.n_step_corsa:
+            self.curtain_west.open_up()
+        elif steps["west"] == 0:
+            self.curtain_west.bring_down()
+        else:
+            self.curtain_west.move(steps["west"])
+
+    def calculate_curtains_steps(self):
+
+        """
+            Change the height of the curtains
+            to based on the given Coordinates
+        """
+
+        telescope = self.telescope
+        steps = {}
+        Logger.getLogger().debug("Telescope status %s", telescope.status)
         # TODO verify tele height:
         # if less than east_min_height e ovest_min_height
-        if self.telescope.is_below_curtains_area(self.alt_min_tend_e, self.alt_min_tend_w):
-            #   move both curtains to 0
-            self.park_curtains()
+        if telescope.is_below_curtains_area(0, 0):
+            #   keep both curtains to 0
+            steps = {"west": 0, "east": 0}
+
             #   else if higher to east_max_height e ovest_max_height
-        elif self.telescope.is_above_curtains_area(self.alt_max_tend_e, self.alt_max_tend_w) or not self.telescope.is_within_curtains_area():
+        elif telescope.is_above_curtains_area(self.alt_max_tend_e, self.alt_max_tend_w) or not telescope.is_within_curtains_area():
             #   move both curtains max open
-            self.open_all_curtains()
+            steps = {"west": self.n_step_corsa, "east": self.n_step_corsa}
 
             #   else if higher to ovest_min_height and Az tele to west
-        elif status == TelescopeStatus.WEST:
+        elif telescope.status == TelescopeStatus.WEST:
+            Logger.getLogger().debug("inside west status")
             #   move curtain east max open
-            self.curtain_east.open_up()
+            steps["east"] = self.n_step_corsa
             #   if less than west_min_height
-            if self.telescope.is_below_curtain(self.alt_min_tend_w):
+            if telescope.is_below_curtain(self.alt_min_tend_w):
                 #   move curtain west to 0 (closed)
-                self.curtain_west.bring_down()
+                steps["west"] = 0
             else:
                 #   move curtain west to f(Alt telescope - x)
-                step_w = (coords["alt"]-self.alt_min_tend_w)/self.increm_w
-                #   move curtain west to step
-                self.curtain_west.move(int(step_w))
+                steps["west"] = round((telescope.coords["alt"]-self.alt_min_tend_w)/self.increm_w)
 
             #   else if higher to ovest_min_height and Az tele to est
-        elif status == TelescopeStatus.EAST:
+        elif telescope.status == TelescopeStatus.EAST:
+            Logger.getLogger().debug("inside east status")
             #   move curtian west max open
-            self.curtain_west.open_up()
+            steps["west"] = self.n_step_corsa
             #   if inferior to est_min_height
-            if self.telescope.is_below_curtain(self.alt_min_tend_e):
+            if telescope.is_below_curtain(self.alt_min_tend_e):
                 #   move curtain east to 0 (closed)
-                self.curtain_east.bring_down()
+                steps["east"] = 0
             else:
                 #   move curtain east to f(Alt tele - x)
-                step_e = (coords["alt"]-self.alt_min_tend_e)/self.increm_e
-                #   move curtain east to step
-                self.curtain_east.move(int(step_e))
+                steps["east"] = round((telescope.coords["alt"]-self.alt_min_tend_e)/self.increm_e)
 
-        self.crac_status.curtain_east_status = self.curtain_east.read()
-        self.crac_status.curtain_east_steps = self.curtain_east.steps
-        self.crac_status.curtain_west_status = self.curtain_west.read()
-        self.crac_status.curtain_west_steps = self.curtain_west.steps
+        Logger.getLogger().debug("calculatd curtain steps %s", steps)
 
-        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
-        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
+        return steps
 
     def park_curtains(self) -> None:
 
@@ -171,13 +193,6 @@ class AutomazioneTende:
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps
 
-    def open_all_curtains(self):
-
-        """ Open up both curtains to the max extents """
-
-        self.curtain_east.open_up()
-        self.curtain_west.open_up()
-
     def motor_stop(self):
 
         """ Disable motor control """
@@ -185,13 +200,13 @@ class AutomazioneTende:
         self.curtain_east.motor_stop()
         self.curtain_west.motor_stop()
 
-    def diff_coordinates(self, prevCoord: Dict[str, int]) -> bool:
+    def is_diff_steps(self, cs: Dict[str, int], ps: Dict[str, int]) -> bool:
 
-        """ Check if delta coord is enough to move the curtains """
+        minDiffSteps = config.Config.getInt("diff_steps", "encoder_step")
+        is_east = abs(cs["east"] - ps["east"]) > minDiffSteps
+        is_west = abs(cs["west"] - ps["west"]) > minDiffSteps
 
-        Logger.getLogger().debug("Current coord: %s", self.telescope.coords)
-        Logger.getLogger().debug("Previous coord: %s", prevCoord)
-        return abs(self.telescope.coords["alt"] - prevCoord["alt"]) > config.Config.getFloat("diff_al") or abs(self.telescope.coords["az"] - prevCoord["az"]) > config.Config.getFloat("diff_az")
+        return is_east or is_west
 
     def open_roof(self):
 
@@ -277,18 +292,22 @@ class AutomazioneTende:
 
         """ Move the curtains and update the telescope coordinates"""
 
+        steps = self.calculate_curtains_steps()
+        self.crac_status.curtain_east_status = self.curtain_east.read()
+        self.crac_status.curtain_east_steps = self.curtain_east.steps
+        self.crac_status.curtain_west_status = self.curtain_west.read()
+        self.crac_status.curtain_west_steps = self.curtain_west.steps
+        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
+        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
         self.read_altaz_mount_coordinate()
 
         if not self.started:
             return
 
-        # TODO diff between steps instead of coords
-        if self.diff_coordinates(self.prevCoord):
-            self.prevCoord["alt"] = self.telescope.coords["alt"]
-            self.prevCoord["az"] = self.telescope.coords["az"]
-            self.prevCoord["error"] = self.telescope.coords["error"]
-            Logger.getLogger().debug("Differenza coordinate sufficienti")
-            self.move_curtains_height()
+        prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
+        if self.is_diff_steps(steps, prevSteps):
+            Logger.getLogger().debug("Differenza steps sufficienti")
+            self.move_curtains_steps(steps)
             # solo se la differenza è misurabile imposto le coordinate
             # precedenti uguali a quelle attuali altrimenti muovendosi
             # a piccoli movimenti le tende non verrebbero mai spostate
