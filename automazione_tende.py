@@ -142,14 +142,20 @@ class AutomazioneTende:
         Logger.getLogger().debug("Telescope status %s", telescope.status)
         # TODO verify tele height:
         # if less than east_min_height e ovest_min_height
+        if telescope.status is TelescopeStatus.LOST or telescope.status is TelescopeStatus.ERROR:
+            steps["west"] = self.curtain_west.steps
+            steps["east"] = self.curtain_east.steps
+
         if telescope.is_below_curtains_area(0, 0):
             #   keep both curtains to 0
-            steps = {"west": 0, "east": 0}
+            steps["west"] = 0
+            steps["east"] = 0
 
             #   else if higher to east_max_height e ovest_max_height
         elif telescope.is_above_curtains_area(self.alt_max_tend_e, self.alt_max_tend_w) or not telescope.is_within_curtains_area():
             #   move both curtains max open
-            steps = {"west": self.n_step_corsa, "east": self.n_step_corsa}
+            steps["west"] = self.n_step_corsa
+            steps["east"] = self.n_step_corsa
 
             #   else if higher to ovest_min_height and Az tele to west
         elif telescope.status == TelescopeStatus.WEST:
@@ -293,6 +299,7 @@ class AutomazioneTende:
         """ Move the curtains and update the telescope coordinates"""
 
         steps = self.calculate_curtains_steps()
+        Logger.getLogger().debug("calculated steps %s", steps)
         self.crac_status.curtain_east_status = self.curtain_east.read()
         self.crac_status.curtain_east_steps = self.curtain_east.steps
         self.crac_status.curtain_west_status = self.curtain_west.read()
