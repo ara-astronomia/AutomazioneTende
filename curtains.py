@@ -179,7 +179,7 @@ class Curtain:
         if (self.read() > CurtainsStatus.ACTIVED):
             return
 
-        self.target = int(step)
+        self.target = step
 
         # deciding the movement direction
         if self.steps < self.target:
