@@ -30,6 +30,20 @@ class AutomazioneTendeTest(unittest.TestCase):
         cs = {"east": 100, "west": 50}
         self.assertFalse(self.automazioneTende.is_diff_steps(cs, cs))
 
+    def test_calculate_curtains_step_tele_in_error(self):
+        telescopio = MagicMock()
+        at = self.automazioneTende
+        at.telescope = telescopio
+        comparison = {"east": at.curtain_east.steps, "west": at.curtain_west.steps}
+
+        telescopio.status = TelescopeStatus.ERROR
+        steps = at.calculate_curtains_steps()
+        self.assertEqual(steps, comparison)
+
+        telescopio.status = TelescopeStatus.LOST
+        steps = at.calculate_curtains_steps()
+        self.assertEqual(steps, comparison)
+
     def test_calculate_curtains_steps_at_min(self):
         telescopio = MagicMock()
         telescopio.is_below_curtains_area = MagicMock(return_value=True)
