@@ -68,11 +68,9 @@ class BaseTelescope:
         return self.status
 
     def is_within_curtains_area(self):
-        return self.status not in [
-            TelescopeStatus.NORTHEAST,
-            TelescopeStatus.NORTHWEST,
-            TelescopeStatus.SOUTHEAST,
-            TelescopeStatus.SOUTHWEST
+        return self.status in [
+            TelescopeStatus.EAST,
+            TelescopeStatus.WEST
         ]
 
     def is_below_curtains_area(self, park_est, park_west):

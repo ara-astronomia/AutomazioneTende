@@ -18,6 +18,11 @@ class Telescope(BaseTelescope):
         self.script_move_track: str = config.Config.getValue('move_track_tele_file')
         self.connected: bool = False
 
+    def __disconnection__(self):
+        Logger.getLogger().exception("Connessione con The Sky persa: ")
+        self.status = TelescopeStatus.LOST
+        self.connected = False
+
     def open_connection(self) -> None:
 
         if not self.connected:
@@ -33,19 +38,22 @@ class Telescope(BaseTelescope):
         return self.coords
 
     def move_tele(self, **kwargs) -> Dict[str, int]:
-        Logger.getLogger().info("metto in park il telescopio")
-        data = self.__call_thesky__(script=self.script_move_track, **kwargs)
-        Logger.getLogger().debug("Parking %s", data)
-        self.coords["error"] = self.__is_error__(data.decode("utf-8"))
-        self.__update_status__()
-        self.coords
+        Logger.getLogger().info("muovo il telescopio")
+        try:
+            data = self.__call_thesky__(script=self.script_move_track, **kwargs)
+        except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
+            self.__disconnection__()
+        else:
+            Logger.getLogger().debug("Parking %s", data)
+            self.coords["error"] = self.__is_error__(data.decode("utf-8"))
+            self.__update_status__()
+            self.coords
 
     def read(self):
         try:
             self.update_coords()
-        except (ConnectionError, TimeoutError):
-            Logger.getLogger().exception("Connessione con The Sky persa: ")
-            self.status = TelescopeStatus.LOST
+        except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
+            self.__disconnection__()
         else:
             self.__update_status__()
 
