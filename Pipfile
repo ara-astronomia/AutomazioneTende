@@ -5,8 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 coverage = "*"
-pylint = "*"
 mypy = "*"
+pycodestyle = "*"
 
 [packages]
 PySimpleGUI = "*"

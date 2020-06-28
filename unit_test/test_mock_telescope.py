@@ -2,18 +2,24 @@ import unittest
 import config
 import socket
 from unittest.mock import MagicMock
-from theskyx.telescope import Telescope
+from mock.telescope import Telescope
 import socket
 from base.singleton import Singleton
 
 
-class TelescopeTest(unittest.TestCase):
+class MockTelescopeTest(unittest.TestCase):
 
     def setUp(self):
         Singleton._instances = {}
         self.telescopio = Telescope()
         socket.socket.connect = MagicMock(return_value=None)
         socket.socket.close = MagicMock(return_value=None)
+
+    def tearDown(self):
+        alt = self.telescopio.park_alt
+        az = self.telescopio.park_az
+        tr = 0
+        self.telescopio.move_tele(alt=alt, az=az, tr=0)
 
     def test_connection(self):
         self.assertEqual(False, self.telescopio.connected)
@@ -27,23 +33,9 @@ class TelescopeTest(unittest.TestCase):
         self.assertEqual(False, self.telescopio.connected)
 
     def test_read_coords(self):
-        self.telescopio.open_connection()
-        self.telescopio.s.recv = MagicMock(return_value=b'{"tr":1,"az":106.2017082212961,"alt":22.049386909452107}|No error. Error = 0.')
-        self.telescopio.update_coords()
+        self.telescopio.update_coords(az=106.2017082212961, alt=22.049386909452107, tr=1, error=0)
         self.assertEqual({"az": 106, "alt": 22, "tr": 1, "error": 0}, self.telescopio.coords)
 
     def test_move_tele(self):
-        self.telescopio.open_connection()
-        self.telescopio.s.recv = MagicMock(return_value=b'{"tr":0,"az":0,"alt":0}|No error. Error = 0.')
-        self.telescopio.move_tele()
+        self.telescopio.move_tele(tr=0, az=0, alt=0)
         self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
-
-    def test_parse_result_success(self):
-        data = b'{"tr":1,"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")
-        self.telescopio.__parse_result__(data)
-        self.assertEqual({"tr": 1, "az": 95, "alt": 62, "error": 0}, self.telescopio.coords)
-
-    def test_parse_result_error(self):
-        data = b'{Error = 234.|No error. Error = 0.'.decode("utf-8")
-        self.telescopio.__parse_result__(data)
-        self.assertEqual(234, self.telescopio.coords["error"])

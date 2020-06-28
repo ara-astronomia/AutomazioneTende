@@ -14,10 +14,9 @@ if (sky6RASCOMTele.IsConnected == 0)
 else
 {{
   if (TargetAlt && TargetAz) {{
-	sky6RASCOMTele.SlewToAzAlt(TargetAz, TargetAlt, "");
+	  sky6RASCOMTele.SlewToAzAlt(TargetAz, TargetAlt, "");
   }}
   sky6RASCOMTele.SetTracking(Track, 1, 0, 0);
-
   Out = sky6RASCOMTele.LastSlewError();
 }}
 /* Socket End Packet */
