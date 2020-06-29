@@ -14,13 +14,13 @@ class AutomazioneTende:
         self.thesky = thesky
         if not mock:
             from roof_control import RoofControl
-            from curtains import WestCurtain, EastCurtain
+            from curtains import Curtain
             from button_control import ButtonControl
 
         else:
             from unittest.mock import patch, MagicMock
             from mock.roof_control import RoofControl
-            from mock.curtains import WestCurtain, EastCurtain
+            from mock.curtains import Curtain
             from mock.button_control import ButtonControl
 
         if thesky:
@@ -31,8 +31,8 @@ class AutomazioneTende:
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.telescope = telescopio.Telescope()
-        self.curtain_east = EastCurtain()
-        self.curtain_west = WestCurtain()
+        self.curtain_east = Curtain(clk=GPIOPin.CLK_E, dt=GPIOPin.DT_E, pin_verify_closed=GPIOPin.CURTAIN_E_VERIFY_CLOSED, pin_verify_open=GPIOPin.CURTAIN_E_VERIFY_OPEN, motor_a=GPIOPin.MOTORE_A, motor_b=GPIOPin.MOTORE_B, motor_e=GPIOPin.MOTORE_E)
+        self.curtain_west = Curtain(clk=GPIOPin.CLK_W, dt=GPIOPin.DT_W, pin_verify_closed=GPIOPin.CURTAIN_W_VERIFY_CLOSED, pin_verify_open=GPIOPin.CURTAIN_W_VERIFY_OPEN, motor_a=GPIOPin.MOTORW_A, motor_b=GPIOPin.MOTORW_B, motor_e=GPIOPin.MOTORW_E)
         self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
         self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)

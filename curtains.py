@@ -7,7 +7,7 @@ from status import CurtainsStatus
 
 
 class Curtain:
-    def __init__(self):
+    def __init__(self, clk, dt, pin_verify_closed, pin_verify_open, motor_a, motor_b, motor_e):
         self.__sub_min_step__ = -5
         self.__min_step__ = 0
         self.steps = 0
@@ -31,6 +31,15 @@ class Curtain:
         self.pin_closing = None
         self.pin_enabling_motor = None
         self.is_disabled = True
+
+        self.clk = clk
+        self.dt = dt
+        self.curtain_closed = pin_verify_closed
+        self.curtain_open = pin_verify_open
+        self.pin_opening = motor_a
+        self.pin_closing = motor_b
+        self.pin_enabling_motor = motor_e
+        self.__event_detect__()
 
     def __event_detect__(self):
         if config.Config.getInt("count_steps_simple", "encoder_step") == 0:
@@ -216,29 +225,3 @@ class Curtain:
         """
 
         self.__stop__()
-
-
-class WestCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()
-        self.clk = GPIOPin.CLK_W
-        self.dt = GPIOPin.DT_W
-        self.curtain_closed = GPIOPin.CURTAIN_W_VERIFY_CLOSED
-        self.curtain_open = GPIOPin.CURTAIN_W_VERIFY_OPEN
-        self.pin_opening = GPIOPin.MOTORW_A
-        self.pin_closing = GPIOPin.MOTORW_B
-        self.pin_enabling_motor = GPIOPin.MOTORW_E
-        self.__event_detect__()
-
-
-class EastCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()
-        self.clk = GPIOPin.CLK_E
-        self.dt = GPIOPin.DT_E
-        self.curtain_closed = GPIOPin.CURTAIN_E_VERIFY_CLOSED
-        self.curtain_open = GPIOPin.CURTAIN_E_VERIFY_OPEN
-        self.pin_opening = GPIOPin.MOTORE_A
-        self.pin_closing = GPIOPin.MOTORE_B
-        self.pin_enabling_motor = GPIOPin.MOTORE_E
-        self.__event_detect__()

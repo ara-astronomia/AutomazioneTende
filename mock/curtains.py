@@ -5,7 +5,7 @@ from status import CurtainsStatus
 
 
 class Curtain:
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.__sub_min_step__ = -5
         self.__min_step__ = 0
         self.steps = 0
@@ -81,13 +81,3 @@ class Curtain:
         status = None
         status = CurtainsStatus.STOPPED
         return status
-
-
-class WestCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()
-
-
-class EastCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()

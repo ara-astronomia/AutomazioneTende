@@ -107,8 +107,11 @@ class Gui:
                                     ]
                                 )),
                                 sg.Column(layout=(
-                                    [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                    [sg.Text('Tenda Ovest', size=(17, 1), justification='center', font=("Helvetica", 12)), sg.Text('Tenda Est', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [
+                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtain-west', background_color="red", text_color="white"),
+                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtain-east', background_color="red", text_color="white")
+                                    ]
                                 ))
 
                             ],
@@ -226,13 +229,20 @@ class Gui:
         self.win.FindElement('alt').Update(altitude)
         self.win.FindElement('az').Update(azimuth)
 
-    #CURTAINS
-    def update_status_curtains(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+    # CURTAINS
+    def update_status_curtain_east(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
-        """ Update Curtains Status """
+        """ Update Curtain East Status """
 
-        Logger.getLogger().info('update_status_curtains in gui')
-        self.win.FindElement('status-curtains').Update(status, text_color=text_color, background_color=background_color)
+        Logger.getLogger().info('update_status_curtain_east in gui')
+        self.win.FindElement('status-curtain-east').Update(status, text_color=text_color, background_color=background_color)
+
+    def update_status_curtain_west(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update Curtain West Status """
+
+        Logger.getLogger().info('update_status_curtain_west in gui')
+        self.win.FindElement('status-curtain-west').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
 
