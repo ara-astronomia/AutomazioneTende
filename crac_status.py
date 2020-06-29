@@ -90,7 +90,7 @@ class CracStatus():
     def __convert_steps__(self, steps: int) -> str:
         return f'{steps:03}'
 
-    def are_curtains_closed(self):
+    def are_curtains_disabled(self):
         self.logger.debug("curtain east status %s", self.curtain_east_status)
         self.logger.debug("curtain west status %s", self.curtain_west_status)
         return self.curtain_east_status is CurtainsStatus.DISABLED and self.curtain_west_status is CurtainsStatus.DISABLED

@@ -70,16 +70,19 @@ class CurtainsStatus(OrderedEnum):
 
     # static statuses have lower values
     DISABLED = (1, "D")
-    STOPPED = (2, "S")
-    ENABLED = (3, "A")
+    CLOSED = (2, "C")
+    STOPPED = (3, "S")
+    OPEN = (4, "A")
 
     # movement statuses have higher values
     CLOSING = (5, "L")
     OPENING = (6, "P")
 
-    # danger zone - threat it as a movement statuses (but we hope it has stopped)
-    # user should manually reset the steps after checking visually the curtains status
-    DANGER = (7, "D")
+    # danger zone - threat it as a movement statuses
+    # (but we hope it has stopped)
+    # user should manually reset the steps after checking
+    # visually the curtains status
+    DANGER = (7, "R")
     ERROR = (8, "E")
 
 

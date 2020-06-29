@@ -5,7 +5,8 @@ import config
 import crac_status
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, CurtainsStatus, TelescopeStatus, ButtonStatus, TrackingStatus
+from status import Status, CurtainsStatus, TelescopeStatus
+from status import ButtonStatus, TrackingStatus
 
 
 def connection() -> str:
@@ -25,7 +26,7 @@ def connection() -> str:
                 v = GuiKey.CONTINUE
 
             elif v is GuiKey.CLOSE_ROOF:
-                if crac_status.curtain_east_status is CurtainsStatus.ENABLED or crac_status.curtain_west_status is CurtainsStatus.ENABLED:
+                if cs.curtain_east_status > CurtainsStatus.DISABLED or cs.curtain_west_status > CurtainsStatus.DISABLED:
                     g_ui.status_alert(GuiLabel.ALERT_CURTAINS_ENABLED)
                     continue
 
@@ -34,7 +35,7 @@ def connection() -> str:
                     continue
 
             elif v is GuiKey.ENABLED_CURTAINS:
-                if crac_status.roof_status is Status.CLOSED:
+                if cs.roof_status is Status.CLOSED:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
@@ -98,12 +99,12 @@ def connection() -> str:
                 g_ui.update_status_curtains(GuiLabel.CURTAINS_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
 
-            elif crac_status.are_curtains_closed():
+            elif cs.are_curtains_disabled():
                 g_ui.update_status_curtains(GuiLabel.CURTAINS_DISABLED)
-                g_ui.update_disable_button_deactive_curtains()
+                g_ui.update_disable_button_disabled_curtains()
 
             else:
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_ACTIVED, text_color="#2c2825", background_color="green")
+                g_ui.update_status_curtains(GuiLabel.CURTAINS_ENABLED, text_color="#2c2825", background_color="green")
                 g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT

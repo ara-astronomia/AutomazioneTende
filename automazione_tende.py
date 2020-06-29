@@ -1,7 +1,7 @@
 import time
 import config
 from logger import Logger
-from status import Status, TelescopeStatus, PanelStatus, CurtainsStatus
+from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus
 from typing import Dict, Any
 from crac_status import CracStatus
 from gpio_pin import GPIOPin
@@ -307,8 +307,12 @@ class AutomazioneTende:
         self.read_altaz_mount_coordinate()
 
         if not self.started:
+            self.curtain_east.is_disabled = True
+            self.curtain_west.is_disabled = True
             return
 
+        self.curtain_east.is_disabled = False
+        self.curtain_west.is_disabled = False
         prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
         if self.is_diff_steps(steps, prevSteps):
             Logger.getLogger().debug("Differenza steps sufficienti")

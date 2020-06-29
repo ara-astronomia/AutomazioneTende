@@ -6,20 +6,22 @@ from gpio_pin import GPIOPin
 from base.singleton import Singleton
 from threading import Thread
 import time
-from status import Status
+from status import CurtainsStatus
 import config
+
 
 def threaded_event_simulation(pin, pin_status, edge, callback, bouncetime=100):
     new_pin_status = GPIOConfig().status(pin)
     if pin_status != new_pin_status:
         if (edge == "BOTH" or
-          (edge == "FALLING" and new_pin_status == False) or
-          (edge == "RAISING" and new_pin_status == True)):
+          (edge == "FALLING" and new_pin_status is False) or
+          (edge == "RAISING" and new_pin_status is True)):
             callback(pin)
             pin_status = new_pin_status
     if bouncetime > 0:
         time.sleep(bouncetime/1000)
     return new_pin_status
+
 
 class TestCurtain(unittest.TestCase):
 
@@ -163,70 +165,70 @@ class TestCurtain(unittest.TestCase):
 
     def test_west_should_open(self):
         curtain = WestCurtain()
-        self.__move__(curtain, Status.CLOSED, 5)
+        self.__move__(curtain, CurtainsStatus.DISABLED, 5)
         curtain.__open__.assert_called_once()
-        self.__move__(curtain, Status.STOPPED, 45, 23)
+        self.__move__(curtain, CurtainsStatus.STOPPED, 45, 23)
         curtain.__open__.assert_called_once()
 
     def test_east_should_close(self):
         curtain = EastCurtain()
-        self.__move__(curtain, Status.STOPPED, 7, 150)
+        self.__move__(curtain, CurtainsStatus.STOPPED, 7, 150)
         curtain.__close__.assert_called_once()
-        self.__move__(curtain, Status.OPEN, 7, curtain.__max_step__)
+        self.__move__(curtain, CurtainsStatus.OPEN, 7, curtain.__max_step__)
         curtain.__close__.assert_called_once()
 
     def test_west_should_not_open_while_in_danger(self):
         curtain = WestCurtain()
-        self.__move__(curtain, Status.DANGER, 115)
+        self.__move__(curtain, CurtainsStatus.DANGER, 115)
         curtain.__close__.assert_not_called()
         curtain.__open__.assert_not_called()
 
     def test_east_should_not_open_while_moving(self):
         curtain = EastCurtain()
-        self.__move__(curtain, Status.OPENING, 115)
+        self.__move__(curtain, CurtainsStatus.OPENING, 115)
         curtain.__close__.assert_not_called()
         curtain.__open__.assert_not_called()
 
     def test_west_should_not_close_while_in_danger(self):
         curtain = WestCurtain()
-        self.__move__(curtain, Status.DANGER, 15, 96)
+        self.__move__(curtain, CurtainsStatus.DANGER, 15, 96)
         curtain.__close__.assert_not_called()
         curtain.__open__.assert_not_called()
 
     def test_east_should_not_close_while_moving(self):
         curtain = EastCurtain()
-        self.__move__(curtain, Status.CLOSING, 73, 176)
+        self.__move__(curtain, CurtainsStatus.CLOSING, 73, 176)
         curtain.__close__.assert_not_called()
         curtain.__open__.assert_not_called()
 
     def test_read_is_danger(self):
         curtain = WestCurtain()
         curtain.steps = curtain.__security_step__
-        self.assertEqual(Status.DANGER, curtain.read())
+        self.assertEqual(CurtainsStatus.DANGER, curtain.read())
         curtain.steps = curtain.__sub_min_step__
-        self.assertEqual(Status.DANGER, curtain.read())
+        self.assertEqual(CurtainsStatus.DANGER, curtain.read())
 
     def test_read_is_open(self):
         curtain = WestCurtain()
         curtain.steps = curtain.__max_step__
         curtain.gpioconfig.status = MagicMock(side_effect=lambda value: True if value == curtain.curtain_open else False)
-        self.assertEqual(Status.OPEN, curtain.read())
+        self.assertEqual(CurtainsStatus.OPEN, curtain.read())
 
     def test_read_is_closed(self):
         curtain = WestCurtain()
         curtain.gpioconfig.status = MagicMock(side_effect=lambda value: True if value == curtain.curtain_closed else False)
-        self.assertEqual(Status.CLOSED, curtain.read())
+        self.assertEqual(CurtainsStatus.DISABLED, curtain.read())
 
     def test_read_is_stopped(self):
         curtain = WestCurtain()
         curtain.steps = 10
         curtain.gpioconfig.status = MagicMock(return_value=False)
-        self.assertEqual(Status.STOPPED, curtain.read())
+        self.assertEqual(CurtainsStatus.STOPPED, curtain.read())
 
     def test_read_is_error(self):
         curtain = WestCurtain()
         curtain.gpioconfig.status = MagicMock(return_value=True)
-        self.assertEqual(Status.ERROR, curtain.read())
+        self.assertEqual(CurtainsStatus.ERROR, curtain.read())
 
     def test_open(self):
         curtain = EastCurtain()
@@ -299,7 +301,7 @@ class TestCurtain(unittest.TestCase):
         curtain.steps = initial_steps
         curtain.manual_reset()
         curtain.read.assert_called_once()
-        if status == Status.STOPPED or status == Status.DANGER:
+        if status == CurtainsStatus.STOPPED or status == CurtainsStatus.DANGER:
             curtain.__remove_event_detect__.assert_called_once()
             curtain.gpioconfig.wait_for_on.assert_called_once()
             curtain.__stop__.assert_called_once()
@@ -315,31 +317,31 @@ class TestCurtain(unittest.TestCase):
 
     def test_manual_reset_to_closed(self):
         curtain = WestCurtain()
-        self.__manual_reset__(curtain, Status.STOPPED, curtain.curtain_closed, 10)
+        self.__manual_reset__(curtain, CurtainsStatus.STOPPED, curtain.curtain_closed, 10)
         curtain.__close__.assert_called_once()
         self.assertEqual(curtain.__min_step__, curtain.steps)
 
     def test_manual_reset_to_closed_not_working(self):
         curtain = WestCurtain()
-        self.__manual_reset__(curtain, Status.STOPPED, None, 10)
+        self.__manual_reset__(curtain, CurtainsStatus.STOPPED, None, 10)
         curtain.__close__.assert_called_once()
         self.assertEqual(curtain.__sub_min_step__, curtain.steps)
 
     def test_manual_reset_to_open(self):
         curtain = EastCurtain()
-        self.__manual_reset__(curtain, Status.STOPPED, curtain.curtain_open, curtain.__max_step__ - 25)
+        self.__manual_reset__(curtain, CurtainsStatus.STOPPED, curtain.curtain_open, curtain.__max_step__ - 25)
         curtain.__open__.assert_called_once()
         self.assertEqual(curtain.__max_step__, curtain.steps)
 
     def test_manual_reset_to_open_not_working(self):
         curtain = EastCurtain()
-        self.__manual_reset__(curtain, Status.STOPPED, None, curtain.__max_step__ - 5)
+        self.__manual_reset__(curtain, CurtainsStatus.STOPPED, None, curtain.__max_step__ - 5)
         curtain.__open__.assert_called_once()
         self.assertEqual(curtain.__security_step__, curtain.steps)
 
     def test_manual_reset_fails_when_opening(self):
         curtain = WestCurtain()
-        self.__manual_reset__(curtain, Status.OPENING, curtain.curtain_open, curtain.__max_step__ - 15)
+        self.__manual_reset__(curtain, CurtainsStatus.OPENING, curtain.curtain_open, curtain.__max_step__ - 15)
 
 if __name__ == '__main__':
     unittest.main()

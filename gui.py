@@ -108,7 +108,7 @@ class Gui:
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Tende', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.CURTAINS_DEACTIVED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
+                                    [sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtains', background_color="red", text_color="white")]
                                 ))
 
                             ],
@@ -191,7 +191,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ACTIVED_CURTAINS, GuiKey.DEACTIVED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
     def update_disable_button_close_roof(self):  # status: str, disabeld: str =''):
 
@@ -207,7 +207,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ACTIVED_CURTAINS, GuiKey.DEACTIVED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
@@ -249,13 +249,13 @@ class Gui:
         """ Update enable button curtains"""
 
         Logger.getLogger().info('update_enable_disable_button_curtains in gui')
-        self.__toggle_button__(GuiKey.DEACTIVED_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.DISABLED_CURTAINS, disabled=True)
 
     def update_disable_button_enabled_curtains(self):
         """ Update enable button curtains"""
 
         Logger.getLogger().info('update_enable_disable_button_curtains in gui')
-        self.__toggle_button__(GuiKey.ACTIVED_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.ENABLED_CURTAINS, disabled=True)
 
     # PANEL FLAT
     def update_disable_button_on(self):  # status: str, disabeld: str =''):

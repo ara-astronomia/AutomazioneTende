@@ -5,6 +5,7 @@ from gpio_config import GPIOConfig
 import threading
 from status import CurtainsStatus
 
+
 class Curtain:
     def __init__(self):
         self.__sub_min_step__ = -5
@@ -29,6 +30,7 @@ class Curtain:
         self.pin_opening = None
         self.pin_closing = None
         self.pin_enabling_motor = None
+        self.is_disabled = True
 
     def __event_detect__(self):
         if config.Config.getInt("count_steps_simple", "encoder_step") == 0:
@@ -160,9 +162,11 @@ class Curtain:
         elif self.is_enable and self.is_closing and not self.is_opening and not self.is_open and not self.is_closed:
             status = CurtainsStatus.CLOSING
         elif self.is_open and not self.is_enable:
-            status = CurtainsStatus.ACTIVED
+            status = CurtainsStatus.OPEN
+        elif self.is_closed and not self.is_enable and self.is_disabled:
+            status = CurtainsStatus.DISABLED
         elif self.is_closed and not self.is_enable:
-            status = CurtainsStatus.DEACTIVED
+            status = CurtainsStatus.CLOSED
         elif not self.is_enable:
             status = CurtainsStatus.STOPPED
 
@@ -176,7 +180,7 @@ class Curtain:
         """ Move the motor in a direction based on the starting and target steps """
 
         # while the motors are moving we don't want to start another movement
-        if (self.read() > CurtainsStatus.ACTIVED):
+        if (self.read() > CurtainsStatus.OPEN):
             return
 
         self.target = step
@@ -214,7 +218,6 @@ class Curtain:
         self.__stop__()
 
 
-
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
         super().__init__()
@@ -226,6 +229,7 @@ class WestCurtain(Curtain, metaclass=Singleton):
         self.pin_closing = GPIOPin.MOTORW_B
         self.pin_enabling_motor = GPIOPin.MOTORW_E
         self.__event_detect__()
+
 
 class EastCurtain(Curtain, metaclass=Singleton):
     def __init__(self):

@@ -3,6 +3,7 @@ from base.singleton import Singleton
 import threading
 from status import CurtainsStatus
 
+
 class Curtain:
     def __init__(self):
         self.__sub_min_step__ = -5
@@ -11,6 +12,7 @@ class Curtain:
         self.__max_step__ = config.Config.getInt("n_step_corsa", "encoder_step")
         self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.lockRotary = threading.Lock()
+        self.is_disabled = True
 
     def manual_reset(self):
 
@@ -35,7 +37,9 @@ class Curtain:
         status = None
 
         if self.steps == self.__max_step__:
-            status = CurtainsStatus.ACTIVED
+            status = CurtainsStatus.OPEN
+        elif self.steps == self.__min_step__ and self.is_disabled is True:
+            status = CurtainsStatus.DISABLED
         elif self.steps == self.__min_step__:
             status = CurtainsStatus.CLOSED
         else:
@@ -78,9 +82,11 @@ class Curtain:
         status = CurtainsStatus.STOPPED
         return status
 
+
 class WestCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
         super().__init__()
+
 
 class EastCurtain(Curtain, metaclass=Singleton):
     def __init__(self):
