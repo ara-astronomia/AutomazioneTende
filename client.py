@@ -1,8 +1,8 @@
-import gui
-import time
 import socket
+import time
 import config
 import crac_status
+import gui
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
 from status import Status, CurtainsStatus, TelescopeStatus
@@ -95,47 +95,45 @@ def connection() -> str:
                 g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
 
             # CURTAINS
-            if cs.curtain_east_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
-                g_ui.update_status_curtain_east(GuiLabel.CURTAINS_ANOMALY)
-                g_ui.update_disable_button_close_roof()
-                g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
-
-            elif cs.curtain_east_status is CurtainsStatus.DISABLED:
+            if cs.curtain_east_status is CurtainsStatus.DISABLED and cs.curtain_west_status is CurtainsStatus.DISABLED:
                 g_ui.update_status_curtain_east(GuiLabel.CURTAINS_DISABLED)
-                g_ui.update_disable_button_disabled_curtains()
-            
-            elif cs.curtain_east_status is CurtainsStatus.CLOSED:
-                g_ui.update_status_curtain_east(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
-
-            elif cs.curtain_east_status is CurtainsStatus.STOPPED:
-                g_ui.update_status_curtain_east(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
-
-            else:
-                g_ui.update_status_curtain_east(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
-
-            if cs.curtain_west_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
-                g_ui.update_status_curtain_west(GuiLabel.CURTAINS_ANOMALY)
-                g_ui.update_disable_button_close_roof()
-                g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
-
-            elif cs.curtain_west_status is CurtainsStatus.DISABLED:
                 g_ui.update_status_curtain_west(GuiLabel.CURTAINS_DISABLED)
                 g_ui.update_disable_button_disabled_curtains()
-            
-            elif cs.curtain_west_status is CurtainsStatus.CLOSED:
-                g_ui.update_status_curtain_west(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
-
-            elif cs.curtain_west_status is CurtainsStatus.STOPPED:
-                g_ui.update_status_curtain_west(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
 
             else:
-                g_ui.update_status_curtain_west(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
+                if cs.curtain_east_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_ANOMALY)
+                    g_ui.update_disable_button_close_roof()
+                    g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
+
+                elif cs.curtain_east_status is CurtainsStatus.CLOSED:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_east_status is CurtainsStatus.STOPPED:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_east_status is CurtainsStatus.OPEN:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                if cs.curtain_west_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_ANOMALY)
+                    g_ui.update_disable_button_close_roof()
+                    g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
+
+                elif cs.curtain_west_status is CurtainsStatus.CLOSED:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_west_status is CurtainsStatus.STOPPED:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_west_status is CurtainsStatus.OPEN:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
             if cs.panel_status == ButtonStatus.ON:
@@ -172,7 +170,6 @@ def connection() -> str:
             if cs.aux_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
                 g_ui.update_disable_button_aux_off()
-
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:
