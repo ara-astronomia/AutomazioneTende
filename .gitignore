@@ -110,4 +110,4 @@ venv.bak/
 .DS_Store
 .vscode
 
-mock/telescope.ini
+telescope.ini

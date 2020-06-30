@@ -1,8 +1,9 @@
 import json
+import os
 import re
 import socket
 import config
-from base.telescope import BaseTelescope
+from components.telescope.telescope import BaseTelescope
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
@@ -14,8 +15,8 @@ class Telescope(BaseTelescope):
         super().__init__()
         self.hostname = config.Config.getValue("theskyx_server")
         self.port: int = 3040
-        self.script: str = config.Config.getValue('altaz_mount_file')
-        self.script_move_track: str = config.Config.getValue('move_track_tele_file')
+        self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
+        self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.connected: bool = False
 
     def __disconnection__(self):

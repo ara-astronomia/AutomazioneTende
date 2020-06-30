@@ -2,7 +2,7 @@ import unittest
 import config
 import socket
 from unittest.mock import MagicMock
-from theskyx.telescope import Telescope
+from components.telescope.theskyx.telescope import Telescope
 import socket
 from base.singleton import Singleton
 

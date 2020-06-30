@@ -1,12 +1,12 @@
 import unittest
-from curtains import Curtain
+from components.curtains.factory_curtain import FactoryCurtain
 from unittest.mock import MagicMock, patch
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from base.singleton import Singleton
 from threading import Thread
 import time
-from status import CurtainsStatus
+from status import CurtainsStatus, Orientation
 import config
 
 
@@ -26,10 +26,10 @@ def threaded_event_simulation(pin, pin_status, edge, callback, bouncetime=100):
 class TestCurtain(unittest.TestCase):
 
     def east_curtain(self):
-        return Curtain(clk=GPIOPin.CLK_E, dt=GPIOPin.DT_E, pin_verify_closed=GPIOPin.CURTAIN_E_VERIFY_CLOSED, pin_verify_open=GPIOPin.CURTAIN_E_VERIFY_OPEN, motor_a=GPIOPin.MOTORE_A, motor_b=GPIOPin.MOTORE_B, motor_e=GPIOPin.MOTORE_E)
-    
+        return FactoryCurtain.curtain(orientation=Orientation.EAST)
+
     def west_curtain(self):
-        return Curtain(clk=GPIOPin.CLK_W, dt=GPIOPin.DT_W, pin_verify_closed=GPIOPin.CURTAIN_W_VERIFY_CLOSED, pin_verify_open=GPIOPin.CURTAIN_W_VERIFY_OPEN, motor_a=GPIOPin.MOTORW_A, motor_b=GPIOPin.MOTORW_B, motor_e=GPIOPin.MOTORW_E)
+        return FactoryCurtain.curtain(orientation=Orientation.WEST)
 
     def setUp(self):
         Singleton._instances = {}

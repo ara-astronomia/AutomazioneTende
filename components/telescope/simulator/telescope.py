@@ -2,7 +2,7 @@ import configparser
 import json
 import os
 import socket
-from base import telescope
+from components.telescope import telescope
 from logger import Logger
 from status import TrackingStatus
 
