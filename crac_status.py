@@ -1,4 +1,5 @@
 from typing import Dict
+from typing import SupportsRound
 from status import Status
 from status import CurtainsStatus
 from status import TelescopeStatus
@@ -26,7 +27,7 @@ class CracStatus():
         if not code:
             self.roof_status: Status = Status.CLOSED
             self.telescope_status: TelescopeStatus = TelescopeStatus.PARKED
-            self._telescope_coords: Dict[str, str] = { "alt": "000", "az": "000" }
+            self._telescope_coords: Dict[str, str] = {"alt": "000", "az": "000"}
             self.curtain_east_status: CurtainsStatus = CurtainsStatus.DISABLED
             self._curtain_east_steps: str = "000"
             self.curtain_west_status: CurtainsStatus = CurtainsStatus.DISABLED
@@ -87,8 +88,8 @@ class CracStatus():
     def curtain_west_steps(self, steps: int) -> None:
         self._curtain_west_steps = self.__convert_steps__(steps)
 
-    def __convert_steps__(self, steps: int) -> str:
-        return f'{steps:03}'
+    def __convert_steps__(self, steps: SupportsRound) -> str:
+        return f'{round(steps):03}'
 
     def are_curtains_disabled(self):
         self.logger.debug("curtain east status %s", self.curtain_east_status)
@@ -106,6 +107,9 @@ class CracStatus():
         self.logger.debug("curtain west status %s", self.curtain_west_status)
         return (
                     self.roof_status is Status.CLOSED and
+                    self.curtain_east_status and
+                    self.curtain_west_status and
+                    self.telescope_status and
                     (
                         self.curtain_east_status > CurtainsStatus.DISABLED or
                         self.curtain_west_status > CurtainsStatus.DISABLED or

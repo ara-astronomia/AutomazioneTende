@@ -82,9 +82,9 @@ class Telescope(BaseTelescope):
             jsonStringEnd = data.find("|")
             jsonString = data[:jsonStringEnd]
             coords = json.loads(jsonString)
-            self.coords["alt"] = int(round(coords["alt"]))
-            self.coords["az"] = int(round(coords["az"]))
-            self.coords["tr"] = int(round(coords["tr"]))
+            self.coords["alt"] = round(coords["alt"], 2)
+            self.coords["az"] = round(coords["az"], 2)
+            self.coords["tr"] = coords["tr"]
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:

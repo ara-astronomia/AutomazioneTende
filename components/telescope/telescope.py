@@ -73,11 +73,8 @@ class BaseTelescope:
             TelescopeStatus.WEST
         ]
 
-    def is_below_curtains_area(self, park_est, park_west):
-        return self.is_below_curtain(park_est) and self.is_below_curtain(park_west)
-
-    def is_below_curtain(self, park):
-        return self.coords["alt"] <= park
+    def is_below_curtains_area(self):
+        return self.coords["alt"] <= self.max_secure_alt
 
     def is_above_curtains_area(self, max_est, max_west):
         return self.coords["alt"] >= max_est and self.coords["alt"] >= max_west

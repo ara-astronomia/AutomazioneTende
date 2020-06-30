@@ -1,6 +1,7 @@
 from status import ButtonStatus
 from gpio_config import GPIOConfig
 
+
 class ButtonControl():
     def __init__(self, pin):
         self.pin = pin
