@@ -5,7 +5,7 @@ from status import CurtainsStatus
 
 
 class Curtain:
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         self.__sub_min_step__ = -5
         self.__min_step__ = 0
         self.steps = 0
