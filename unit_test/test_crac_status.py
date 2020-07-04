@@ -19,8 +19,6 @@ class TestCracStatus(unittest.TestCase):
         cs = CracStatus()
         cs.curtain_east_status = CurtainsStatus.DISABLED
         cs.curtain_west_status = CurtainsStatus.DISABLED
-        cs.curtain_west_status.is_disabled = True
-        cs.curtain_east_status.is_disabled = True
         self.assertTrue(cs.are_curtains_disabled())
 
     def test_telescope_in_secure_and_roof_is_closed(self):
@@ -34,3 +32,8 @@ class TestCracStatus(unittest.TestCase):
         cs.telescope_status = TelescopeStatus.SECURE
         cs.roof_status = Status.CLOSING
         self.assertTrue(cs.telescope_in_secure_and_roof_is_closing)
+
+    def test_create_crac_status(self):
+        code = "CPP090125A250S090SSSAA"
+        cs = CracStatus(code)
+        self.assertEqual(repr(cs), code)

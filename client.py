@@ -42,7 +42,7 @@ def connection() -> str:
             LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
-            rcv = s.recv(cs.lenght())
+            rcv = s.recv(cs.length)
             data = rcv.decode("utf-8")
             cs = crac_status.CracStatus(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
