@@ -39,9 +39,19 @@ try:
                     data: bytes = conn.recv(1)
                     Logger.getLogger().debug("Data: %s", data)
 
-                    if not data or (data == b"0" or data == b'E') and automazioneTende.started:
-                        automazioneTende.started = False
-                        automazioneTende.park_curtains()
+                    if not data or (data == b"0" or data == b'E'):
+                        if automazioneTende.started:
+                            automazioneTende.started = False
+                            automazioneTende.park_curtains()
+                        automazioneTende.move_tele(0, park_alt, park_az)
+                        automazioneTende.close_roof()
+                        try:
+                            conn.close()
+                        finally:
+                            if data == b'-':
+                                automazioneTende.exit_program()
+                                exit(0)
+                            break
 
                     elif data == b"1":
                         automazioneTende.started = True
@@ -96,20 +106,6 @@ try:
                     elif data == b'O':
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
                         automazioneTende.aux_off()
-
-                    elif not data or data == b'E' or data == b'-':
-                        automazioneTende.started = True
-                        automazioneTende.move_tele(0, park_alt, park_az)
-                        automazioneTende.exec()
-                        automazioneTende.started = False
-                        automazioneTende.close_roof()
-                        try:
-                            conn.close()
-                        finally:
-                            if data == b'-':
-                                automazioneTende.exit_program()
-                                exit(0)
-                            break
 
                     if not MOCK or data == b'1' or data == b'c':
                         Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
