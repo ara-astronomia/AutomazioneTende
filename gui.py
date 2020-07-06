@@ -45,8 +45,8 @@ class Gui:
                             sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=True, size=(5, 1)),
-                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=True, size=(5, 1))
+                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=False, size=(5, 1)),
+                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=False, size=(5, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Attiva', key=GuiKey.ENABLED_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
@@ -56,7 +56,7 @@ class Gui:
                     ],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('On', key=GuiKey.PANEL_ON, disabled=False, size=(4, 1), tooltip="accensione pannnello del flat"),
+                            sg.Button('On', key=GuiKey.PANEL_ON, disabled=True, size=(4, 1), tooltip="accensione pannnello del flat"),
                             sg.Button('Off', key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
                         ]]), title="Panel Flat", pad=(3, 10)),
                         sg.Frame(layout=([[
@@ -194,7 +194,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=True)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=False)
 
     def update_disable_button_close_roof(self):  # status: str, disabeld: str =''):
 
@@ -210,7 +210,7 @@ class Gui:
 
         Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
-        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.PARK_TELE, GuiKey.FLAT_TELE, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
+        self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
     def update_status_tele(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
 
@@ -268,7 +268,14 @@ class Gui:
         self.__toggle_button__(GuiKey.ENABLED_CURTAINS, disabled=True)
 
     # PANEL FLAT
-    def update_disable_button_on(self):  # status: str, disabeld: str =''):
+    def update_disable_panel_all(self):  # status: str, disabeld: str =''):
+
+        """ Update enable button on panel flat"""
+
+        Logger.getLogger().info('update_disable_button_panel_flat_all')
+        self.__toggle_button__(GuiKey.PANEL_ON, GuiKey.PANEL_OFF, disabled=True, button_color=["white", "green"]) #, tooltip="aridaje!! è già acceso!!")
+
+    def update_disable_panel_on(self):  # status: str, disabeld: str =''):
 
         """ Update enable button on panel flat"""
 
@@ -276,7 +283,7 @@ class Gui:
         self.__toggle_button__(GuiKey.PANEL_ON, disabled=True, button_color=["white", "green"]) #, tooltip="aridaje!! è già acceso!!")
         self.__toggle_button__(GuiKey.PANEL_OFF, disabled=False, button_color=["black", "white"]) #, tooltip="premi per spegnere il pannello dei flat")
 
-    def update_disable_button_off(self):  # status: str, disabeld: str =''):
+    def update_disable_panel_off(self):  # status: str, disabeld: str =''):
 
         """ Update disable button off panel flat"""
 

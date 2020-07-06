@@ -294,6 +294,9 @@ class AutomazioneTende:
         Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
         self.read_altaz_mount_coordinate()
 
+        if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
+            self.panel_off()
+
         if not self.started:
             self.park_curtains()
             self.curtain_east.is_disabled = True

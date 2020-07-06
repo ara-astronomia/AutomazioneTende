@@ -136,13 +136,17 @@ def connection() -> str:
                     g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.panel_status == ButtonStatus.ON:
-                LoggerClient.getLogger().info("pannello flat acceso")
-                g_ui.update_disable_button_on()
+            if cs.telescope_status not in [TelescopeStatus.SECURE, TelescopeStatus.FLATTER]:
+                LoggerClient.getLogger().info("pannello flat disattivato")
+                g_ui.update_disable_panel_all()
 
-            if cs.panel_status == ButtonStatus.OFF:
+            elif cs.panel_status is ButtonStatus.ON:
+                LoggerClient.getLogger().info("pannello flat acceso")
+                g_ui.update_disable_panel_on()
+
+            elif cs.panel_status is ButtonStatus.OFF:
                 LoggerClient.getLogger().info("pannello flat spento")
-                g_ui.update_disable_button_off()
+                g_ui.update_disable_panel_off()
 
             # POWER SWITCH
             if cs.power_status == ButtonStatus.ON:
