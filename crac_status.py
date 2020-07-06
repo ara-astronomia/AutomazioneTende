@@ -20,10 +20,10 @@ def __convert_steps__(steps: SupportsRound) -> str:
 
 def __convert_coords__(coords: Dict[str, float]) -> str:
     alt = int(coords["alt"] * 100)
-    if len(str(alt)) > 4:
+    if alt > 9000:
         ValueError("Altezza telescopio non valida")
     az = int(coords["az"] * 100)
-    if len(str(az)) > 5:
+    if az > 36000:
         ValueError("Azimut telescopio non valido")
     Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
     return f'{alt:04}{az:05}'
