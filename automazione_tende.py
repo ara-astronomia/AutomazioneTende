@@ -295,6 +295,7 @@ class AutomazioneTende:
         self.read_altaz_mount_coordinate()
 
         if not self.started:
+            self.park_curtains()
             self.curtain_east.is_disabled = True
             self.curtain_west.is_disabled = True
             return
