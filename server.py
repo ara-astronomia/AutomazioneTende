@@ -107,7 +107,7 @@ try:
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
                         automazioneTende.aux_off()
 
-                    if not MOCK or data == b'1' or data == b'c':
+                    if not MOCK or data in [b'1', b'c', b'0']:
                         Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                         automazioneTende.exec()
 
