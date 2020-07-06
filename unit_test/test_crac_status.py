@@ -34,6 +34,13 @@ class TestCracStatus(unittest.TestCase):
         self.assertTrue(cs.telescope_in_secure_and_roof_is_closing)
 
     def test_create_crac_status(self):
-        code = "CPP090125A250S090SSSAA"
+        code = "CPP802012534A250S090SSSAA"
         cs = CracStatus(code)
+        self.assertEqual(cs.telescope_coords, {"alt": 80.20, "az": 125.34})
+        self.assertEqual(repr(cs), code)
+
+    def test_create_crac_status_2(self):
+        code = "CPP012002530A250S090SSSAA"
+        cs = CracStatus(code)
+        self.assertEqual(cs.telescope_coords, {"alt": 1.2, "az": 25.3})
         self.assertEqual(repr(cs), code)

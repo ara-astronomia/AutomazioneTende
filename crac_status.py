@@ -18,20 +18,28 @@ def __convert_steps__(steps: SupportsRound) -> str:
     return f'{round(steps):03}'
 
 
-def __convert_coords__(coords: Dict[str, int]) -> str:
-    return f'{round(coords["alt"]):03}{round(coords["az"]):03}'
+def __convert_coords__(coords: Dict[str, float]) -> str:
+    alt = int(coords["alt"] * 100)
+    if len(str(alt)) > 4:
+        ValueError("Altezza telescopio non valida")
+    az = int(coords["az"] * 100)
+    if len(str(az)) > 5:
+        ValueError("Azimut telescopio non valido")
+    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
+    return f'{alt:04}{az:05}'
 
 
 def __reverse_coords__(value: str) -> Dict:
-    alt = int(value[0:3])
-    az = int(value[3:6])
+    alt = round(float(f"{value[0:2]}.{value[2:4]}"), 2)
+    az = round(float(f"{value[4:7]}.{value[7:9]}"), 2)
     coords = {"alt": alt, "az": az}
+    Logger.getLogger().debug("coords VALUE: %s", coords)
     return coords
 
 
 def __structure__():
     status = Status.CLOSED
-    coords = {"alt": 0, "az": 0}
+    coords = {"alt": 0.00, "az": 0.00}
     parked = TelescopeStatus.PARKED
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
@@ -40,7 +48,7 @@ def __structure__():
     data = {}
     data["roof_status"] = {"orig": status, "trans": repr, "reverse": status.get_value}
     data["telescope_status"] = {"orig": parked, "trans": repr, "reverse": parked.get_value}
-    data["telescope_coords"] = {"orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
+    data["telescope_coords"] = {"len": 9, "orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
     data["curtain_east_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
     data["curtain_east_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["curtain_west_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
@@ -78,6 +86,7 @@ class CracStatus:
                 length = len(default_value)
                 end = i + length
                 self.logger.debug("%s code VALUE: %s", key, code[i:end])
+                self.logger.debug("%s length VALUE: %s", key, length)
                 self.__reverse__(code[i:end], key)
                 self.length += length
                 i = end
@@ -86,6 +95,7 @@ class CracStatus:
         code = ""
         for key, value in self._structure.items():
             code += value["trans"](self.__dict__[f"_{key}"])
+        self.logger.debug("FULL CODE VALUE: %s", code)
         return code
 
     def __check_type__(self, value, name):
@@ -245,7 +255,7 @@ if __name__ == "__main__":
     print(cs.light_status)
     print(cs.aux_status)
     print(cs.length)
-    cs = CracStatus("CPP000000D000D000TSSSS")
+    cs = CracStatus("CPP100012045D000D000TSSSS")
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
