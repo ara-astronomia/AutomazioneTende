@@ -39,7 +39,7 @@ try:
                     data: bytes = conn.recv(1)
                     Logger.getLogger().debug("Data: %s", data)
 
-                    if not data or (data == b"0" or data == b'E'):
+                    if not data or data == b'E':
                         if automazioneTende.started:
                             automazioneTende.started = False
                             automazioneTende.park_curtains()
@@ -56,7 +56,7 @@ try:
                     elif data == b"1":
                         automazioneTende.started = True
 
-                    elif data == b'-':
+                    elif data == b'0':
                         automazioneTende.started = False
 
                     elif data == b'R':
