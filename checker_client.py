@@ -1,14 +1,18 @@
-import time, config, socket
+import socket
+import time
+import config
 from electro_tests import gui
-from gui_constants import GuiKey,GuiLabel
+from gui_constants import GuiKey, GuiLabel
 from logger import LoggerClient
 from status import Status, TelescopeStatus
+
 
 def change_status(status_switch, key, win):
     if status_switch == "1":
         win.Find(key).update('Attivo', text_color='white', background_color='green')
     elif status_switch == "0":
         win.Find(key).update('Disattivo', text_color='white', background_color='red')
+
 
 def change_encoder(count, key, win):
     if count:
@@ -79,10 +83,6 @@ def connection() -> str:
 
             change_encoder(data[9:12], "Count_W", win)
             change_encoder(data[12:], "Count_E", win)
-
-
-
-
 
 
 HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
