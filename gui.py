@@ -38,7 +38,7 @@ class Gui:
         sg.theme('DarkBlue')
         layout = [
                     [sg.Menu([], tearoff=True)],
-                    [sg.Text('Monitor Tende e Tetto ', size=(55, 1), justification='center', font=("Helvetica", 15))],
+                    [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
                             sg.Button('Apri', key=GuiKey.OPEN_ROOF, disabled=False, size=(6, 1)),
@@ -96,8 +96,8 @@ class Gui:
                     [sg.Frame(layout=([
                             [
                                 sg.Column(layout=(
-                                    [sg.Text('Tetto', size=(17, 1), justification='center', font=("Helvetica", 12))],
-                                    [sg.Text(GuiLabel.ROOF_CLOSED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
+                                    [sg.Text('Tetto', size=(11, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text(GuiLabel.ROOF_CLOSED, size=(11, 1), justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
@@ -107,15 +107,15 @@ class Gui:
                                     ]
                                 )),
                                 sg.Column(layout=(
-                                    [sg.Text('Tenda Ovest', size=(17, 1), justification='center', font=("Helvetica", 12)), sg.Text('Tenda Est', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text('Tenda Ovest', size=(11, 1), justification='center', font=("Helvetica", 12)), sg.Text('Tenda Est', size=(11, 1), justification='center', font=("Helvetica", 12))],
                                     [
-                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtain-west', background_color="red", text_color="white"),
-                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(17, 1), justification='center', font=("Helvetica", 12), key='status-curtain-east', background_color="red", text_color="white")
+                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(11, 1), justification='center', font=("Helvetica", 12), key='status-curtain-west', background_color="red", text_color="white"),
+                                        sg.Text(GuiLabel.CURTAINS_DISABLED, size=(11, 1), justification='center', font=("Helvetica", 12), key='status-curtain-east', background_color="red", text_color="white")
                                     ]
                                 ))
 
                             ],
-                            [sg.Text(GuiLabel.NO_ALERT, size=(64, 1), justification='center', background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert", relief=sg.RELIEF_RIDGE)]
+                            [sg.Text(GuiLabel.NO_ALERT, size=(58, 1), justification='center', background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert", relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
                     )]
                  ]
