@@ -2,7 +2,7 @@ import configparser
 import json
 import os
 import socket
-from base import telescope
+from components.telescope import telescope
 from logger import Logger
 from status import TrackingStatus
 
@@ -41,7 +41,7 @@ class Telescope(telescope.BaseTelescope):
         tr = self.__is_number_or_input__(tr, "la situazione del tracking")
         error = self.__is_number_or_input__(error, "il codice di errore (0 non ci sono errori)", int, 0, 999)
 
-        self.coords = {'tr': tr, 'alt': round(alt), 'az': round(az), 'error': error}
+        self.coords = {'tr': tr, 'alt': round(alt, 2), 'az': round(az, 2), 'error': error}
 
         config = configparser.ConfigParser()
         config["coords"] = {'alt': str(alt), 'az': str(az), 'tr': str(tr), 'error': str(error)}

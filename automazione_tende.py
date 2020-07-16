@@ -1,40 +1,35 @@
 import time
+import importlib
 import config
 from logger import Logger
-from status import Status
-from status import TelescopeStatus
-from status import ButtonStatus
+from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus
+from status import Orientation
 from typing import Dict, Any
 from crac_status import CracStatus
 from gpio_pin import GPIOPin
+from components.curtains.factory_curtain import FactoryCurtain
 
 
 class AutomazioneTende:
 
-    def __init__(self, mock: bool = False, thesky: bool = False):
+    def __init__(self, telescope_plugin: str, mock: bool = False):
         self.mock = mock
-        self.thesky = thesky
+
         if not mock:
-            from roof_control import RoofControl
-            from curtains import WestCurtain, EastCurtain
-            from button_control import ButtonControl
+            from components.roof_control import RoofControl
+            from components.button_control import ButtonControl
 
         else:
             from unittest.mock import patch, MagicMock
             from mock.roof_control import RoofControl
-            from mock.curtains import WestCurtain, EastCurtain
             from mock.button_control import ButtonControl
 
-        if thesky:
-            import theskyx.telescope as telescopio
-        else:
-            import mock.telescope as telescopio
-
+        telescopio = importlib.import_module(f"components.telescope.{telescope_plugin}.telescope")
+        self.telescope = telescopio.Telescope()
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
-        self.telescope = telescopio.Telescope()
-        self.curtain_east = EastCurtain()
-        self.curtain_west = WestCurtain()
+        self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
+        self.curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST, mock=self.mock)
         self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
         self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
@@ -104,7 +99,7 @@ class AutomazioneTende:
 
         """ Read the height of the curtains """
 
-        danger = Status.DANGER
+        danger = CurtainsStatus.DANGER
         curtain_east = self.curtain_east
         curtain_west = self.curtain_west
         return curtain_east.read() is danger or curtain_west.read() is danger
@@ -146,7 +141,7 @@ class AutomazioneTende:
             steps["west"] = self.curtain_west.steps
             steps["east"] = self.curtain_east.steps
 
-        if telescope.is_below_curtains_area(0, 0):
+        if telescope.is_below_curtains_area():
             #   keep both curtains to 0
             steps["west"] = 0
             steps["east"] = 0
@@ -162,13 +157,8 @@ class AutomazioneTende:
             Logger.getLogger().debug("inside west status")
             #   move curtain east max open
             steps["east"] = self.n_step_corsa
-            #   if less than west_min_height
-            if telescope.is_below_curtain(self.alt_min_tend_w):
-                #   move curtain west to 0 (closed)
-                steps["west"] = 0
-            else:
-                #   move curtain west to f(Alt telescope - x)
-                steps["west"] = round((telescope.coords["alt"]-self.alt_min_tend_w)/self.increm_w)
+            #   move curtain west to f(Alt telescope - x)
+            steps["west"] = round((telescope.coords["alt"]-self.alt_min_tend_w)/self.increm_w)
 
             #   else if higher to ovest_min_height and Az tele to est
         elif telescope.status == TelescopeStatus.EAST:
@@ -176,12 +166,8 @@ class AutomazioneTende:
             #   move curtian west max open
             steps["west"] = self.n_step_corsa
             #   if inferior to est_min_height
-            if telescope.is_below_curtain(self.alt_min_tend_e):
-                #   move curtain east to 0 (closed)
-                steps["east"] = 0
-            else:
-                #   move curtain east to f(Alt tele - x)
-                steps["east"] = round((telescope.coords["alt"]-self.alt_min_tend_e)/self.increm_e)
+            #   move curtain east to f(Alt tele - x)
+            steps["east"] = round((telescope.coords["alt"]-self.alt_min_tend_e)/self.increm_e)
 
         Logger.getLogger().debug("calculatd curtain steps %s", steps)
 
@@ -308,9 +294,17 @@ class AutomazioneTende:
         Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
         self.read_altaz_mount_coordinate()
 
+        if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
+            self.panel_off()
+
         if not self.started:
+            self.park_curtains()
+            self.curtain_east.is_disabled = True
+            self.curtain_west.is_disabled = True
             return
 
+        self.curtain_east.is_disabled = False
+        self.curtain_west.is_disabled = False
         prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
         if self.is_diff_steps(steps, prevSteps):
             Logger.getLogger().debug("Differenza steps sufficienti")

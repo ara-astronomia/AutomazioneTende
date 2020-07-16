@@ -1,10 +1,10 @@
 import socket, config, getopt, sys
 from logger import Logger
 import time
-from status import Status
+from status import Orientation
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from curtains import EastCurtain, WestCurtain
+from components.curtains.factory_curtain import FactoryCurtain
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -15,7 +15,7 @@ try:
     opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
 except getopt.GetoptError:
     Logger.getLogger().exception("parametri errati")
-    exit(2) #esce dall'applicazione con errore
+    exit(2) # esce dall'applicazione con errore
 for opt, _1 in opts:
     if opt in ('-m', '--mock'):
         MOCK = True
@@ -24,11 +24,13 @@ for opt, _1 in opts:
 
 error_level: int = 0
 gpioConfig = GPIOConfig()
-east_curtain = EastCurtain()
-west_curtain = WestCurtain()
+curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
+curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
+
 
 def convert_steps(steps):
     return f'{steps:03}'
+
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

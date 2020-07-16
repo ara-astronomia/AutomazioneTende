@@ -1,11 +1,12 @@
-import gui
-import time
 import socket
+import time
 import config
 import crac_status
+import gui
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, TelescopeStatus, ButtonStatus, TrackingStatus
+from status import Status, CurtainsStatus, TelescopeStatus
+from status import ButtonStatus, TrackingStatus
 
 
 def connection() -> str:
@@ -25,15 +26,15 @@ def connection() -> str:
                 v = GuiKey.CONTINUE
 
             elif v is GuiKey.CLOSE_ROOF:
-                if cs.curtain_east_status > Status.CLOSED or cs.curtain_west_status > Status.CLOSED:
-                    g_ui.status_alert(GuiLabel.ALERT_CURTAINS_OPEN)
+                if cs.curtain_east_status > CurtainsStatus.DISABLED or cs.curtain_west_status > CurtainsStatus.DISABLED:
+                    g_ui.status_alert(GuiLabel.ALERT_CURTAINS_ENABLED)
                     continue
 
                 if cs.telescope_status >= TelescopeStatus.NORTHEAST:
                     g_ui.status_alert(GuiLabel.ALERT_TELESCOPE_OPERATIVE.format(status=cs.telescope_status))
                     continue
 
-            elif v is GuiKey.START_CURTAINS:
+            elif v is GuiKey.ENABLED_CURTAINS:
                 if cs.roof_status is Status.CLOSED:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
@@ -41,7 +42,7 @@ def connection() -> str:
             LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
-            rcv = s.recv(cs.lenght())
+            rcv = s.recv(cs.length)
             data = rcv.decode("utf-8")
             cs = crac_status.CracStatus(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
@@ -94,25 +95,58 @@ def connection() -> str:
                 g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
 
             # CURTAINS
-            if cs.are_curtains_in_danger():
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_ANOMALY)
-                g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
-
-            elif cs.are_curtains_closed():
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_CLOSED)
+            if cs.curtain_east_status is CurtainsStatus.DISABLED and cs.curtain_west_status is CurtainsStatus.DISABLED:
+                g_ui.update_status_curtain_east(GuiLabel.CURTAINS_DISABLED)
+                g_ui.update_status_curtain_west(GuiLabel.CURTAINS_DISABLED)
+                g_ui.update_disable_button_disabled_curtains()
 
             else:
-                g_ui.update_status_curtains(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_close_roof()
+                if cs.curtain_east_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_ANOMALY)
+                    g_ui.update_disable_button_close_roof()
+                    g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
+
+                elif cs.curtain_east_status is CurtainsStatus.CLOSED:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_east_status is CurtainsStatus.STOPPED:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_east_status is CurtainsStatus.OPEN:
+                    g_ui.update_status_curtain_east(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                if cs.curtain_west_status in [CurtainsStatus.ERROR, CurtainsStatus.DANGER]:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_ANOMALY)
+                    g_ui.update_disable_button_close_roof()
+                    g_ui.status_alert(GuiLabel.ALERT_CHECK_CURTAINS_SWITCH)
+
+                elif cs.curtain_west_status is CurtainsStatus.CLOSED:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_CLOSED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_west_status is CurtainsStatus.STOPPED:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_STOPPED, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
+
+                elif cs.curtain_west_status is CurtainsStatus.OPEN:
+                    g_ui.update_status_curtain_west(GuiLabel.CURTAINS_OPEN, text_color="#2c2825", background_color="green")
+                    g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.panel_status == ButtonStatus.ON:
-                LoggerClient.getLogger().info("pannello flat acceso")
-                g_ui.update_disable_button_on()
+            if cs.telescope_status not in [TelescopeStatus.SECURE, TelescopeStatus.FLATTER]:
+                LoggerClient.getLogger().info("pannello flat disattivato")
+                g_ui.update_disable_panel_all()
 
-            if cs.panel_status == ButtonStatus.OFF:
+            elif cs.panel_status is ButtonStatus.ON:
+                LoggerClient.getLogger().info("pannello flat acceso")
+                g_ui.update_disable_panel_on()
+
+            elif cs.panel_status is ButtonStatus.OFF:
                 LoggerClient.getLogger().info("pannello flat spento")
-                g_ui.update_disable_button_off()
+                g_ui.update_disable_panel_off()
 
             # POWER SWITCH
             if cs.power_status == ButtonStatus.ON:
@@ -140,7 +174,6 @@ def connection() -> str:
             if cs.aux_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
                 g_ui.update_disable_button_aux_off()
-
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:

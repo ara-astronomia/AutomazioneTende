@@ -2,7 +2,7 @@ import unittest
 import config
 import socket
 from unittest.mock import MagicMock
-from mock.telescope import Telescope
+from components.telescope.simulator.telescope import Telescope
 import socket
 from base.singleton import Singleton
 
@@ -34,7 +34,7 @@ class MockTelescopeTest(unittest.TestCase):
 
     def test_read_coords(self):
         self.telescopio.update_coords(az=106.2017082212961, alt=22.049386909452107, tr=1, error=0)
-        self.assertEqual({"az": 106, "alt": 22, "tr": 1, "error": 0}, self.telescopio.coords)
+        self.assertEqual({"az": 106.20, "alt": 22.05, "tr": 1, "error": 0}, self.telescopio.coords)
 
     def test_move_tele(self):
         self.telescopio.move_tele(tr=0, az=0, alt=0)

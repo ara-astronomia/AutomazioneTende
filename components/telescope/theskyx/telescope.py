@@ -1,8 +1,9 @@
 import json
+import os
 import re
 import socket
 import config
-from base.telescope import BaseTelescope
+from components.telescope.telescope import BaseTelescope
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
@@ -14,8 +15,8 @@ class Telescope(BaseTelescope):
         super().__init__()
         self.hostname = config.Config.getValue("theskyx_server")
         self.port: int = 3040
-        self.script: str = config.Config.getValue('altaz_mount_file')
-        self.script_move_track: str = config.Config.getValue('move_track_tele_file')
+        self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
+        self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.connected: bool = False
 
     def __disconnection__(self):
@@ -81,9 +82,9 @@ class Telescope(BaseTelescope):
             jsonStringEnd = data.find("|")
             jsonString = data[:jsonStringEnd]
             coords = json.loads(jsonString)
-            self.coords["alt"] = int(round(coords["alt"]))
-            self.coords["az"] = int(round(coords["az"]))
-            self.coords["tr"] = int(round(coords["tr"]))
+            self.coords["alt"] = round(coords["alt"], 2)
+            self.coords["az"] = round(coords["az"], 2)
+            self.coords["tr"] = coords["tr"]
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:

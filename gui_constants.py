@@ -8,10 +8,12 @@ class GuiLabel:
     ALERT_TELESCOPE_ROOF = "Attenzione, Telescopio vicino al tetto"
     ALERT_TELESCOPE_ROOF_CLOSING = "Attenzione, Telescopio non in park e tetto in chiusura"
     ALERT_TELESCOPE_OPERATIVE = "Attenzione telescopio operativo: {status}"
-    ALERT_CURTAINS_OPEN = "Attenzione tende aperte"
+    ALERT_CURTAINS_ENABLED = "Attenzione tende aperte"
     ALERT_ROOF_CLOSED = "Attenzione tetto chiuso"
-    CURTAINS_CLOSED = "Disattive"
-    CURTAINS_OPEN = "Attive"
+    CURTAINS_DISABLED = "Disattivata"
+    CURTAINS_CLOSED = "Chiusa"
+    CURTAINS_STOPPED = "Ferma"
+    CURTAINS_OPEN = "Aperta"
     CURTAINS_ANOMALY = "Anomalia"
     TELESCOPE_PARKED = "Parked"
     TELESCOPE_FLATTER = "Flatter"
@@ -28,7 +30,7 @@ class GuiLabel:
     TELESCOPE_TRACKING_OFF = "Track Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
-    
+
 
 class GuiKey:
 
@@ -36,8 +38,8 @@ class GuiKey:
     PARK_TELE = "P"
     FLAT_TELE = "F"
     CLOSE_ROOF = "T"
-    START_CURTAINS = "1"
-    STOP_CURTAINS = "0"
+    ENABLED_CURTAINS = "1"
+    DISABLED_CURTAINS = "0"
     CALIBRATE_CURTAINS = "2"
     SHUTDOWN = "-"
     CONTINUE = "c"

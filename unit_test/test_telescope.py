@@ -2,7 +2,7 @@ import unittest
 import config
 import socket
 from unittest.mock import MagicMock
-from theskyx.telescope import Telescope
+from components.telescope.theskyx.telescope import Telescope
 import socket
 from base.singleton import Singleton
 
@@ -30,7 +30,7 @@ class TelescopeTest(unittest.TestCase):
         self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"tr":1,"az":106.2017082212961,"alt":22.049386909452107}|No error. Error = 0.')
         self.telescopio.update_coords()
-        self.assertEqual({"az": 106, "alt": 22, "tr": 1, "error": 0}, self.telescopio.coords)
+        self.assertEqual({"az": 106.20, "alt": 22.05, "tr": 1, "error": 0}, self.telescopio.coords)
 
     def test_move_tele(self):
         self.telescopio.open_connection()
@@ -41,7 +41,7 @@ class TelescopeTest(unittest.TestCase):
     def test_parse_result_success(self):
         data = b'{"tr":1,"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")
         self.telescopio.__parse_result__(data)
-        self.assertEqual({"tr": 1, "az": 95, "alt": 62, "error": 0}, self.telescopio.coords)
+        self.assertEqual({"tr": 1, "az": 95.20, "alt": 61.95, "error": 0}, self.telescopio.coords)
 
     def test_parse_result_error(self):
         data = b'{Error = 234.|No error. Error = 0.'.decode("utf-8")
