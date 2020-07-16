@@ -17,8 +17,10 @@ gpioConfig = GPIOConfig()
 east_curtain = EastCurtain()
 west_curtain = WestCurtain()
 
+
 def convert_steps(steps):
     return f'{steps:03}'
+
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
