@@ -56,7 +56,7 @@ class Gui:
                     ],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('On', key=GuiKey.PANEL_ON, disabled=True, size=(4, 1), tooltip="accensione pannnello del flat"),
+                            sg.Button('On', key=GuiKey.PANEL_ON, disabled=True, size=(4, 1), tooltip="accensione pannello del flat"),
                             sg.Button('Off', key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
                         ]]), title="Panel Flat", pad=(3, 10)),
                         sg.Frame(layout=([[
@@ -273,7 +273,7 @@ class Gui:
         """ Update enable button on panel flat"""
 
         Logger.getLogger().info('update_disable_button_panel_flat_all')
-        self.__toggle_button__(GuiKey.PANEL_ON, GuiKey.PANEL_OFF, disabled=True, button_color=["white", "green"]) #, tooltip="aridaje!! è già acceso!!")
+        self.__toggle_button__(GuiKey.PANEL_ON, GuiKey.PANEL_OFF, disabled=True, button_color=["black", "red"]) #, tooltip="aridaje!! è già acceso!!")
 
     def update_disable_panel_on(self):  # status: str, disabeld: str =''):
 
