@@ -36,7 +36,7 @@ def create_win():
                     ]]), title="Tenda West", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
                     sg.Frame(layout=([[
                         sg.Text(GuiLabel.STAND_BY, key="Curtain_E_is_open", size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color='DarkBlue', font=("Helvetica", 9), pad=((3, 8), (1, 5))),
-                        sg.Text(GuiLabel.STAND_BY, key="Curtain_E_is_closed", size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color'DarkBlue', font=("Helvetica", 9), pad=((3, 3), (1, 5))),
+                        sg.Text(GuiLabel.STAND_BY, key="Curtain_E_is_closed", size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color='DarkBlue', font=("Helvetica", 9), pad=((3, 3), (1, 5))),
                     ]]), title="Tenda Est", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 4)),
                     sg.Frame(layout=([[
                         sg.Text(GuiLabel.STAND_BY, key="Roof_open", size=(7, 1), relief=sg.RELIEF_SUNKEN, justification='center', background_color="white", text_color='DarkBlue', font=("Helvetica", 9), pad=((3, 8), (1, 5))),
