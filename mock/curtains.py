@@ -1,7 +1,8 @@
 import config
 from base.singleton import Singleton
 import threading
-from status import Status
+from status import CurtainsStatus
+
 
 class Curtain:
     def __init__(self):
@@ -11,13 +12,14 @@ class Curtain:
         self.__max_step__ = config.Config.getInt("n_step_corsa", "encoder_step")
         self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.lockRotary = threading.Lock()
+        self.is_disabled = True
 
     def manual_reset(self):
 
         """ Reset the steps counter with the help of the edge switchers """
 
         status = self.read()
-        if status != Status.STOPPED and status != Status.DANGER:
+        if status != CurtainsStatus.STOPPED and status != CurtainsStatus.DANGER:
             return
 
         distance_to_min_step = abs(self.steps - self.__min_step__)
@@ -35,14 +37,16 @@ class Curtain:
         status = None
 
         if self.steps == self.__max_step__:
-            status = Status.OPEN
+            status = CurtainsStatus.OPEN
+        elif self.steps == self.__min_step__ and self.is_disabled is True:
+            status = CurtainsStatus.DISABLED
         elif self.steps == self.__min_step__:
-            status = Status.CLOSED
+            status = CurtainsStatus.CLOSED
         else:
-            status = Status.STOPPED
+            status = CurtainsStatus.STOPPED
 
         if not status:
-            status = Status.ERROR
+            status = CurtainsStatus.ERROR
 
         return status
 
@@ -75,13 +79,5 @@ class Curtain:
         """ Disable pin motor """
 
         status = None
-        status = Status.STOPPED
+        status = CurtainsStatus.STOPPED
         return status
-
-class WestCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()
-
-class EastCurtain(Curtain, metaclass=Singleton):
-    def __init__(self):
-        super().__init__()

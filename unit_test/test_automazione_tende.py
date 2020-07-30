@@ -13,7 +13,7 @@ class AutomazioneTendeTest(unittest.TestCase):
     def setUp(self):
         Singleton._instances = {}
         self.original_config_getInt = config.Config.getInt
-        self.automazioneTende = AutomazioneTende()
+        self.automazioneTende = AutomazioneTende(telescope_plugin="theskyx")
 
     def __side_effect_for_diff_steps__(self, key, section):
         side_effect = 0 if key == "diff_steps" else self.original_config_getInt(key, section)
@@ -69,25 +69,11 @@ class AutomazioneTendeTest(unittest.TestCase):
         telescopio.is_above_curtains_area = MagicMock(return_value=False)
         telescopio.is_within_curtains_area = MagicMock(return_value=True)
         telescopio.status = TelescopeStatus.WEST
-        telescopio.is_below_curtain = MagicMock(return_value=False)
         telescopio.coords = {"alt": 40.0}
         at = self.automazioneTende
         at.telescope = telescopio
         steps = at.calculate_curtains_steps()
         comparison = {"east": at.n_step_corsa, "west": 200}
-        self.assertEqual(steps, comparison)
-
-    def test_calculate_curtains_steps_at_east_max_at_west_min(self):
-        telescopio = MagicMock()
-        telescopio.is_below_curtains_area = MagicMock(return_value=False)
-        telescopio.is_above_curtains_area = MagicMock(return_value=False)
-        telescopio.is_within_curtains_area = MagicMock(return_value=True)
-        telescopio.status = TelescopeStatus.WEST
-        telescopio.is_below_curtain = MagicMock(return_value=True)
-        at = self.automazioneTende
-        at.telescope = telescopio
-        steps = at.calculate_curtains_steps()
-        comparison = {"east": at.n_step_corsa, "west": 0}
         self.assertEqual(steps, comparison)
 
     def test_calculate_curtains_steps_at_west_max(self):
@@ -96,23 +82,9 @@ class AutomazioneTendeTest(unittest.TestCase):
         telescopio.is_above_curtains_area = MagicMock(return_value=False)
         telescopio.is_within_curtains_area = MagicMock(return_value=True)
         telescopio.status = TelescopeStatus.EAST
-        telescopio.is_below_curtain = MagicMock(return_value=False)
         telescopio.coords = {"alt": 40.0}
         at = self.automazioneTende
         at.telescope = telescopio
         steps = at.calculate_curtains_steps()
         comparison = {"east": 200, "west": at.n_step_corsa}
-        self.assertEqual(steps, comparison)
-
-    def test_calculate_curtains_steps_at_west_max_at_east_min(self):
-        telescopio = MagicMock()
-        telescopio.is_below_curtains_area = MagicMock(return_value=False)
-        telescopio.is_above_curtains_area = MagicMock(return_value=False)
-        telescopio.is_within_curtains_area = MagicMock(return_value=True)
-        telescopio.status = TelescopeStatus.EAST
-        telescopio.is_below_curtain = MagicMock(return_value=True)
-        at = self.automazioneTende
-        at.telescope = telescopio
-        steps = at.calculate_curtains_steps()
-        comparison = {"east": 0, "west": at.n_step_corsa}
         self.assertEqual(steps, comparison)

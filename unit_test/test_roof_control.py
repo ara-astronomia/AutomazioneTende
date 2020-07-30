@@ -1,10 +1,11 @@
 import unittest
 from unittest.mock import MagicMock
-from roof_control import RoofControl
+from components.roof_control import RoofControl
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from status import Status
 from base.singleton import Singleton
+
 
 class RoofControlTest(unittest.TestCase):
     def setUp(self):

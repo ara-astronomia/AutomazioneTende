@@ -5,6 +5,7 @@ from gpio_pin import GPIOPin
 from base.singleton import Singleton
 from gpio_config import GPIOConfig
 
+
 class RoofControl(metaclass=Singleton):
 
     def __init__(self):

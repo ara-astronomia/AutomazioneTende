@@ -66,6 +66,27 @@ class Status(OrderedEnum):
 
 
 @unique
+class CurtainsStatus(OrderedEnum):
+
+    # static statuses have lower values
+    DISABLED = (1, "D")
+    CLOSED = (2, "C")
+    STOPPED = (3, "S")
+    OPEN = (4, "A")
+
+    # movement statuses have higher values
+    CLOSING = (5, "L")
+    OPENING = (6, "P")
+
+    # danger zone - threat it as a movement statuses
+    # (but we hope it has stopped)
+    # user should manually reset the steps after checking
+    # visually the curtains status
+    DANGER = (7, "R")
+    ERROR = (8, "E")
+
+
+@unique
 class TelescopeStatus(OrderedEnum):
 
     PARKED = (0, "PP")  # TELESCOPIO IN PARK
@@ -94,11 +115,13 @@ class Orientation(OrderedEnum):
     WEST = (0, "W")
     EAST = (1, "E")
 
+
 @unique
 class ButtonStatus(OrderedEnum):
 
     OFF = (0, "S")  # PANNELLO FLAT SPENTO
     ON = (1, "A")  # PANNELLO FLAT ACCESO
+
 
 @unique
 class TrackingStatus(OrderedEnum):

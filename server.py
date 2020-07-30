@@ -6,7 +6,7 @@ from status import Status
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
-THESKY: bool = False
+TELESCOPE_PLUGIN: str = "simulator"
 MOCK: bool = False
 park_alt = config.Config.getValue("park_alt", "telescope")
 park_az = config.Config.getValue("park_az", "telescope")
@@ -22,9 +22,9 @@ for opt, _1 in opts:
     if opt in ('-m', '--mock'):
         MOCK = True
     elif opt in ('-s', '--sky'):
-        THESKY = True
+        TELESCOPE_PLUGIN = "theskyx"
 
-automazioneTende: AutomazioneTende = AutomazioneTende(MOCK, THESKY)
+automazioneTende: AutomazioneTende = AutomazioneTende(TELESCOPE_PLUGIN, mock=MOCK)
 error_level: int = 0
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -39,14 +39,24 @@ try:
                     data: bytes = conn.recv(1)
                     Logger.getLogger().debug("Data: %s", data)
 
-                    if not data or (data == b"0" or data == b'E') and automazioneTende.started:
-                        automazioneTende.started = False
-                        automazioneTende.park_curtains()
+                    if not data or data == b'E':
+                        if automazioneTende.started:
+                            automazioneTende.started = False
+                            automazioneTende.park_curtains()
+                        automazioneTende.move_tele(0, park_alt, park_az)
+                        automazioneTende.close_roof()
+                        try:
+                            conn.close()
+                        finally:
+                            if data == b'-':
+                                automazioneTende.exit_program()
+                                exit(0)
+                            break
 
                     elif data == b"1":
                         automazioneTende.started = True
 
-                    elif data == b'-':
+                    elif data == b'0':
                         automazioneTende.started = False
 
                     elif data == b'R':
@@ -97,23 +107,8 @@ try:
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
                         automazioneTende.aux_off()
 
-                    elif not data or data == b'E' or data == b'-':
-                        automazioneTende.started = True
-                        automazioneTende.move_tele(0, park_alt, park_az)
-                        automazioneTende.exec()
-                        automazioneTende.started = False
-                        automazioneTende.close_roof()
-                        try:
-                            conn.close()
-                        finally:
-                            if data == b'-':
-                                automazioneTende.exit_program()
-                                exit(0)
-                            break
-
-                    if not MOCK or data == b'1' or data == b'c':
-                        Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
-                        automazioneTende.exec()
+                    Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
+                    automazioneTende.exec()
 
                     conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
 
