@@ -47,20 +47,20 @@ def create_win():
         ],
         [
             sg.Frame(layout=([[
-                sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=True, size=(4, 1), tooltip="accensione pannnello del flat"),
-                sg.Button(GuiLabel.OFF, key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
-            ]]), title="Panel Flat", pad=(3, 10)),
+                sg.Radio(GuiLabel.ON,"Panel", key=GuiKey.PANEL_ON, default=False),
+                sg.Radio(GuiLabel.OFF,"Panel", key=GuiKey.PANEL_OFF, default=False)
+            ]]), title="Panel Flat", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 10)),
             sg.Frame(layout=([[
-                sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
-                sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
+                sg.Radio(GuiLabel.ON, "PowerS", key=GuiKey.POWER_ON, default=False, tooltip="accensione alimentarori"),
+                sg.Radio(GuiLabel.OFF, "PowerS", key=GuiKey.POWER_OFF, default=False,  tooltip="spegnimento alimentatori"),
             ]]), title="Power Switch", pad=(3, 10)),
             sg.Frame(layout=([[
-                sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
-                sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento luci cupola"),
+                sg.Radio(GuiLabel.ON, "Light", key=GuiKey.LIGHT_ON, default= False, tooltip="accensioni luci cupola"),
+                sg.Radio(GuiLabel.OFF, "Light",  key=GuiKey.LIGHT_OFF, default=False, tooltip="spegnimento luci cupola"),
             ]]), title="Light Dome", pad=(3, 10)),
             sg.Frame(layout=([[
-                sg.Button(GuiLabel.ON, key=GuiKey.AUX_ON, disabled=False, size=(4, 1), tooltip="nessuna strumentazione ausiliare implementata"),
-                sg.Button(GuiLabel.OFF, key=GuiKey.AUX_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="nessuna strumentazione ausiliare implementata"),
+                sg.Radio(GuiLabel.ON, "Aux", key=GuiKey.AUX_ON, default=False, tooltip="accensione ausiliari"),
+                sg.Radio(GuiLabel.OFF, "Aux", key=GuiKey.AUX_OFF, default=False, tooltip="spegnimento ausiliari"),
             ]]), title="Auxiliary", pad=(3, 10)),
         ]
     ]
