@@ -1,4 +1,3 @@
-#import getop
 import sys
 import socket
 import time
@@ -8,7 +7,6 @@ from status import Orientation
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from curtains import EastCurtain, WestCurtain
-#from encoder_test import WestEncoder, EastEncoder
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -17,13 +15,9 @@ error_level: int = 0
 gpioConfig = GPIOConfig()
 east_curtain = EastCurtain()
 west_curtain = WestCurtain()
-#west_encoder = WestEncoder()
-#east_encoder = EastEncoder()
-
 
 def convert_steps(steps):
     return f'{steps:03}'
-
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -130,9 +124,6 @@ try:
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_off(GPIOPin.MOTORE_E)
-
-                    roof = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
-
 
                     wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
                     wb = 1 if gpioConfig.status(GPIOPin.MOTORW_B) else 0
