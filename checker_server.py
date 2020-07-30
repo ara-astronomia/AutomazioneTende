@@ -1,10 +1,6 @@
-import getop
-import sys
 import socket
-import time
 import config
 from logger import Logger
-from status import Orientation
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from curtains import EastCurtain, WestCurtain
