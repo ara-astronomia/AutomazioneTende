@@ -1,27 +1,16 @@
-import socket, config, getopt, sys
-from logger import Logger
-import time
+import socket
 from status import Orientation
+import config
+from logger import Logger
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from components.curtains.factory_curtain import FactoryCurtain
 
-HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
-PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
-THESKY: bool = False
-MOCK: bool = False
 
-try:
-    opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
-except getopt.GetoptError:
-    Logger.getLogger().exception("parametri errati")
-    exit(2) # esce dall'applicazione con errore
-for opt, _1 in opts:
-    if opt in ('-m', '--mock'):
-        MOCK = True
-    elif opt in ('-s', '--sky'):
-        THESKY = True
-
+# Standard loopback interface address (localhost)
+HOST: str = config.Config.getValue("loopback_ip", "server")
+# Port to listen on (non-privileged ports are > 1023)
+PORT: str = config.Config.getInt("port", "server")
 error_level: int = 0
 gpioConfig = GPIOConfig()
 curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
@@ -41,60 +30,102 @@ try:
             conn, _ = s.accept()
             with conn:
                 while True:
-                    data = conn.recv(3).decode("UTF-8")
+                    data = conn.recv(7).decode("UTF-8")
                     Logger.getLogger().debug("Data: %s", data)
                     if data:
                         roof = data[0]
-                        curtain_west = data[1]
-                        curtain_east = data[2]
+                        panel = data[1]
+                        power = data[2]
+                        light = data[3]
+                        aux = data[4]
+                        curtain_west = data[5]
+                        curtain_east = data[6]
                     else:
                         try:
                             conn.close()
                         finally:
                             break
-
+                    # ROOF
                     if roof == 'O':
-                        Logger.getLogger().debug("chiamata del metodo per apertura tetto (automazioneTende.open_roof) ")
+                        Logger.getLogger().debug("test apertura tetto")
                         gpioConfig.turn_on(GPIOPin.SWITCH_ROOF)
                         Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
+                    if roof == 'C':
+                        Logger.getLogger().debug("test chiusura tetto")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
+                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
+
+                    # PANEL FLAT
+                    if panel == 'A':
+                        Logger.getLogger().debug("test accensione pannello flat")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_PANEL)
+                        Logger.getLogger().debug("PANEL FLAT: %s", gpioConfig.status(GPIOPin.SWITCH_PANEL))
+                    if panel == 'S':
+                        Logger.getLogger().debug("test spegnimento panel flat")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_PANEL)
+                        Logger.getLogger().debug("PANEL FLAT: %s", gpioConfig.status(GPIOPin.SWITCH_PANEL))
+
+                    # POWER SWITCH
+                    if power == 'A':
+                        Logger.getLogger().debug("test accensione alimentatori")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER)
+                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
+                    if power == 'S':
+                        Logger.getLogger().debug("test spegnimento alimentatori")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER)
+                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
+
+                    # LIGHT
+                    if light == 'A':
+                        Logger.getLogger().debug("test accensioni luci cupola ")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_LIGHT)
+                        Logger.getLogger().debug("LUCI CUPOLA: %s", gpioConfig.status(GPIOPin.SWITCH_LIGHT))
+                    if light == 'S':
+                        Logger.getLogger().debug("test spegnimento luci cupola ")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_LIGHT)
+                        Logger.getLogger().debug("LUCI CUPOLA: %s", gpioConfig.status(GPIOPin.SWITCH_LIGHT))
+
+                    # AUX
+                    if aux == 'A':
+                        Logger.getLogger().debug("test accensione dispositivo ausiliare ")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_AUX)
+                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
+                    if aux == 'S':
+                        Logger.getLogger().debug("test spegnimento dispositivo ausiliare ")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_AUX)
+                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
+
+
                     if curtain_west == 'O':
                         Logger.getLogger().debug("chiamata del metodo per apertura tenda west (automazioneTende.open_all_curtains.curtain_west.open_up) ")
                         gpioConfig.turn_on(GPIOPin.MOTORW_A)
                         gpioConfig.turn_off(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
-                    if curtain_east == 'O':
-                        Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
-                        gpioConfig.turn_on(GPIOPin.MOTORE_A)
-                        gpioConfig.turn_off(GPIOPin.MOTORE_B)
-                        gpioConfig.turn_on(GPIOPin.MOTORE_E)
-
-                    if roof == 'C':
-                        Logger.getLogger().debug("chiamata del metodo per chiusura tetto (automazioneTende.open_roof) ")
-                        gpioConfig.turn_off(GPIOPin.SWITCH_ROOF)
-                        Logger.getLogger().debug("MOTORE TETTO: %s", gpioConfig.status(GPIOPin.SWITCH_ROOF))
                     if curtain_west == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda west (automazioneTende.open_all_curtains.curtain_west.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORW_A)
                         gpioConfig.turn_on(GPIOPin.MOTORW_B)
                         gpioConfig.turn_on(GPIOPin.MOTORW_E)
+                    if curtain_west == 'S':
+                        Logger.getLogger().debug("metodo per stop tenda west in stand-by ")
+                        gpioConfig.turn_off(GPIOPin.MOTORW_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORW_B)
+
+                    if curtain_east == 'O':
+                        Logger.getLogger().debug("chiamata del metodo per apertura tenda east (automazioneTende.open_all_curtains.curtain_east.open_up) ")
+                        gpioConfig.turn_on(GPIOPin.MOTORE_A)
+                        gpioConfig.turn_off(GPIOPin.MOTORE_B)
+                        gpioConfig.turn_on(GPIOPin.MOTORE_E)
                     if curtain_east == 'C':
                         Logger.getLogger().debug("chiamata del metodo per chiusura tenda east (automazioneTende.open_all_curtains.curtain_east.bring_down) ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_on(GPIOPin.MOTORE_B)
                         gpioConfig.turn_on(GPIOPin.MOTORE_E)
-
-                    if curtain_west == 'S':
-                        Logger.getLogger().debug("metodo per stop tenda west in stand-by ")
-                        gpioConfig.turn_off(GPIOPin.MOTORW_A)
-                        gpioConfig.turn_off(GPIOPin.MOTORW_B)
-                        gpioConfig.turn_off(GPIOPin.MOTORW_E)
                     if curtain_east == 'S':
                         Logger.getLogger().debug("metodo per stop tenda east in stand-by ")
                         gpioConfig.turn_off(GPIOPin.MOTORE_A)
                         gpioConfig.turn_off(GPIOPin.MOTORE_B)
                         gpioConfig.turn_off(GPIOPin.MOTORE_E)
-
-                    roof = "O" if gpioConfig.status(GPIOPin.SWITCH_ROOF) else "C"
 
                     wa = 1 if gpioConfig.status(GPIOPin.MOTORW_A) else 0
                     wb = 1 if gpioConfig.status(GPIOPin.MOTORW_B) else 0
@@ -126,15 +157,15 @@ try:
                         Exception("ERRORRRRRREW")
 
                     #verity roof if open or closed
-                    sor = gpioConfig.status_test(GPIOPin.VERIFY_OPEN)
-                    scr = gpioConfig.status_test(GPIOPin.VERIFY_CLOSED)
+                    sor = gpioConfig.status_pull(GPIOPin.VERIFY_OPEN)
+                    scr = gpioConfig.status_pull(GPIOPin.VERIFY_CLOSED)
                     #verity curtain West open or closed
-                    sow = gpioConfig.status_test(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-                    scw = gpioConfig.status_test(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
+                    sow = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_OPEN)
+                    scw = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
                     #verity curtain East open or closed
-                    soe = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-                    sce = gpioConfig.status_test(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
-                    #number step west
+                    soe = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_OPEN)
+                    sce = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+                    #number step west east
                     nwe = convert_steps(west_curtain.steps)
                     nee = convert_steps(east_curtain.steps)
 

@@ -30,6 +30,9 @@ class GuiLabel:
     TELESCOPE_TRACKING_OFF = "Track Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
+    ON = "On"
+    OFF = "Off"
+    STAND_BY = "Standby"
 
 
 class GuiKey:
