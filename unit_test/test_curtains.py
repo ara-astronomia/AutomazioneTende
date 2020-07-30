@@ -14,7 +14,7 @@ def threaded_event_simulation(pin, pin_status, edge, callback, bouncetime=100):
     if pin_status != new_pin_status:
         if (edge == "BOTH" or
           (edge == "FALLING" and new_pin_status == False) or
-          (edge == "RAISING" and new_pin_status == True)):
+          (edge == "RISING" and new_pin_status == True)):
             callback(pin)
             pin_status = new_pin_status
     if bouncetime > 0:
@@ -34,10 +34,10 @@ class TestCurtain(unittest.TestCase):
 
         curtain.gpioconfig.status = MagicMock(return_value=False)
         pin_status = curtain.gpioconfig.status(pin)
-        pin_status = threaded_event_simulation(pin, pin_status, "RAISING", curtain.__reset_steps__)
+        pin_status = threaded_event_simulation(pin, pin_status, "RISING", curtain.__reset_steps__)
 
         curtain.gpioconfig.status = MagicMock(side_effect=lambda value: True if value == pin else False)
-        pin_status = threaded_event_simulation(pin, pin_status, "RAISING", curtain.__reset_steps__)
+        pin_status = threaded_event_simulation(pin, pin_status, "RISING", curtain.__reset_steps__)
 
     def test_open_all_curtain(self):
         curtain = EastCurtain()
