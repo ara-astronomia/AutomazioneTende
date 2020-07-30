@@ -86,9 +86,9 @@ def connection() -> str:
                     elif k == "ES":
                         curtain_east = "S"
 
-                    code = roof + panel + power + light + aux + curtain_west + curtain_east
+            code = roof + panel + power + light + aux + curtain_west + curtain_east
 
-                    LoggerClient.getLogger().debug("Code: %s", code)
+            LoggerClient.getLogger().debug("Code: %s", code)
 
             s.sendall(code.encode("UTF-8"))
 
