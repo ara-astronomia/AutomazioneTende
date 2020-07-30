@@ -4,15 +4,22 @@ import config
 from electro_tests import gui
 from gui_constants import GuiKey, GuiLabel
 from logger import LoggerClient
-from status import Status, TelescopeStatus
-
+from status import Status
+from status import TelescopeStatus
+from status import ButtonStatus
 
 def change_status(status_switch, key, win):
-    if status_switch == "1":
-        win.Find(key).update('Attivo', text_color='white', background_color='green')
-    elif status_switch == "0":
-        win.Find(key).update('Disattivo', text_color='white', background_color='red')
+    if status_switch == "0":
+        win.Find(key).update('Chiuso', text_color='white', background_color='green')
+    elif status_switch == "1":
+        win.Find(key).update('Aperto', text_color='white', background_color='red')
 
+def change_status_button(status_button, key, win):
+    status_button = ButtonStatus
+    if status_button == "S":
+        win.Find(key).update(disabled=True, text_color='white', background_color='green')    
+    elif status_button == "A":
+        win.Find(key).update(disabled=False, text_color = 'yellow', background_color='purple')
 
 def change_encoder(count, key, win):
     if count:
@@ -25,7 +32,7 @@ def connection() -> str:
         win = gui.create_win()
 
         while True:
-            v, values = win.Read(timeout=2000)
+            v, values = win.Read(timeout=5000)
 
             if not v:
                 s.close()
@@ -34,15 +41,37 @@ def connection() -> str:
             roof = "S"
             curtain_west = "S"
             curtain_east = "S"
-
+            panel = "S"
+            power = "S"
+            light = "S"
+            aux = "S"
+            
             for k, value in values.items():
                 if value:
                     if k == "RO":
                         roof = "O"
                     elif k == "RC":
                         roof = "C"
-                    elif k == "RS":
-                        roof = "S"
+                        
+                    elif k == GuiKey.PANEL_ON:
+                        panel = "A"
+                    elif k == GuiKey.PANEL_OFF:
+                        panel = "S"
+
+                    elif k is GuiKey.POWER_ON:
+                        power = "A"
+                    elif k is GuiKey.POWER_OFF:
+                        power = "S"
+
+                    elif k is GuiKey.LIGHT_ON:
+                        light = "A"        
+                    elif k is GuiKey.LIGHT_OFF:
+                        light = "S"
+
+                    elif k is GuiKey.AUX_ON:
+                        aux = "A"
+                    elif k is GuiKey.AUX_OFF:
+                        aux = "S"
 
                     elif k == "WO":
                         curtain_west = "O"
@@ -50,7 +79,6 @@ def connection() -> str:
                         curtain_west = "C"
                     elif k == "WS":
                         curtain_west = "S"
-
                     elif k == "EO":
                         curtain_east = "O"
                     elif k == "EC":
@@ -58,9 +86,9 @@ def connection() -> str:
                     elif k == "ES":
                         curtain_east = "S"
 
-            code = roof + curtain_west + curtain_east
+                    code = roof + panel + power + light + aux + curtain_west + curtain_east
 
-            LoggerClient.getLogger().debug("Code: %s", code)
+                    LoggerClient.getLogger().debug("Code: %s", code)
 
             s.sendall(code.encode("UTF-8"))
 
