@@ -166,13 +166,13 @@ try:
                     soe = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
                     #number step west east
-                    nwe = convert_steps(west_curtain.steps)
-                    nee = convert_steps(east_curtain.steps)
+                    nwe = "999" #convert_steps(west_curtain.steps)
+                    nee = "666" #convert_steps(east_curtain.steps)
 
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)
-                    Logger.getLogger().info("Encoder est: %s", east_curtain.steps)
-                    Logger.getLogger().info("Encoder west: %s", west_curtain.steps)
+                    Logger.getLogger().info("Encoder est: %s", nwe)
+                    Logger.getLogger().info("Encoder west: %s", nee)
                     conn.sendall(test_status.encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit):
