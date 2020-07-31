@@ -10,7 +10,7 @@ pycodestyle = "*"
 
 [packages]
 PySimpleGUI = "*"
-"RPi.GPIO" = {version = "*",platform_machine = "=='armv7l'"}
+"RPi.GPIO" = {version = "*",platform_machine = "=='armv6l'"}
 
 [requires]
 python_version = "3.7"
