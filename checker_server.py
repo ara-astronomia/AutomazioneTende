@@ -4,7 +4,8 @@ import config
 from logger import Logger
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from components.curtains.factory_curtain import FactoryCurtain
+from encoder_test import WestEncoder, EastEncoder
+# from components.curtains.factory_curtain import FactoryCurtain
 
 
 # Standard loopback interface address (localhost)
@@ -13,9 +14,10 @@ HOST: str = config.Config.getValue("loopback_ip", "server")
 PORT: str = config.Config.getInt("port", "server")
 error_level: int = 0
 gpioConfig = GPIOConfig()
-curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
-curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
-
+# curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
+# curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
+west_encoder = WestEncoder()
+east_encoder = EastEncoder()
 
 def convert_steps(steps):
     return f'{steps:03}'
@@ -166,8 +168,10 @@ try:
                     soe = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
                     #number step west east
-                    nwe = "999" #convert_steps(west_curtain.steps)
-                    nee = "666" #convert_steps(east_curtain.steps)
+                    #print (west_encoder.steps)
+                    #print (east_encoder.steps)
+                    nwe = convert_steps(west_encoder.steps)
+                    nee = convert_steps(east_encoder.steps)
 
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)

@@ -26,11 +26,12 @@ class GPIOConfig(metaclass=Singleton):
     def status(self, pin):
         return GPIO.input(pin.id_pin) is pin.on_is
 
+
     def status_pull(self, pin):
-        if GPIO.input(pin.id_pin) == 0:
-           print ("stato pin", pin.id_pin," chiuso")
-        elif GPIO.input(pin.id_pin) == 1:
-           print ("stato pin", pin.id_pin," aperto")
+        #if GPIO.input(pin.id_pin) == 0:
+           # print ("stato pin", pin.id_pin," chiuso")
+        #elif GPIO.input(pin.id_pin) == 1
+           # print ("stato pin", pin.id_pin," aperto")
         return "1" if GPIO.input(pin.id_pin) else "0"   
 
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
