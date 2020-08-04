@@ -35,26 +35,32 @@ class Encoder:
         self.gpioconfig.remove_event_detect(self.clk)
 
     def __count_steps__(self, dt_or_clk):
-        self.encoder_a = self.gpioconfig.status_pull(self.dt)
-        print (self.encoder_a)
-        self.encoder_b = self.gpioconfig.status_pull(self.clk)
-        print (self.encoder_b)
+        #self.encoder_a = self.gpioconfig.status_pull(self.dt)
+        #print (self.encoder_a)
+        #self.encoder_b = self.gpioconfig.status_pull(self.clk)
+        #print (self.encoder_b)
         print (dt_or_clk)
         print ("clk",self.clk)
         print ("dt",self.dt)
-        if self.encoder_a and self.encoder_b:
-            self.lockRotary.acquire()
-            try:
-                if dt_or_clk == self.clk:
-                    self.steps -= 1
-                    print ("clk", self.steps)
-                elif dt_or_clk == self.dt:
-                    self.steps += 1
-                    print ("dt", self.steps)
-
-                print ("steps", self.steps)    
-            finally:
-                self.lockRotary.release()
+        clkLast = GPIO.input(18)
+        counter = 0
+        #if self.encoder_a and self.encoder_b:
+        #    self.lockRotary.acquire()
+        try:
+            while True:
+                clk = GPIO.input(18)
+                dt = GPIO.input(22)
+                if clk != clkLast:
+                    if dt != clk:
+                        counter += 1
+                    else:
+                        counter -= 1
+                    print("counter", counter)
+                    clkLast = clk
+                sleep(0.001)
+        finally:
+            GPIO.cleanup() 
+        #   self.lockRotary.release()
                         
 class WestEncoder(Encoder, metaclass=Singleton):
     def __init__(self):
@@ -69,3 +75,13 @@ class EastEncoder(Encoder, metaclass=Singleton):
         self.clk = self.gpiopin.CLK_E
         self.dt = self.gpiopin.DT_E
         self.__event_detect__()
+
+        '''         if dt_or_clk == 18: # self.clk:
+                    self.steps -= 1
+                    print ("clk", self.steps)
+                elif dt_or_clk == 22: # self.dt:
+                    self.steps += 1
+                    print ("dt", self.steps)
+
+                print ("steps", self.steps)    
+            finally:'''
