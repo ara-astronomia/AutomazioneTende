@@ -57,21 +57,21 @@ class Gui:
                     ],
                     [
                         sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=True, size=(4, 1), tooltip="accensione pannnello del flat"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
-                        ]]), title="Panel Flat", pad=(3, 10)),
-                        sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
                             sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
-                        ]]), title="Power Switch", pad=(3, 10)),
-                        sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento luci cupola"),
-                        ]]), title="Light Dome", pad=(3, 10)),
+                        ]]), title="Power Switch Tele", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.AUX_ON, disabled=False, size=(4, 1), tooltip="nessuna strumentazione ausiliare implementata"),
                             sg.Button(GuiLabel.OFF, key=GuiKey.AUX_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="nessuna strumentazione ausiliare implementata"),
-                        ]]), title="Auxiliary", pad=(3, 10)),
+                        ]]), title="Power Switch CCD", pad=(3, 10)),
+                        sg.Frame(layout=([[
+                            sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=False, size=(4, 1), tooltip="accensione pannnello del flat"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
+                        ]]), title="Panel Flat", pad=(3, 10)),
+                        sg.Frame(layout=([[
+                            sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento luci cupola"),
+                        ]]), title="Light Dome", pad=(3, 10))
                     ],
                     [
                         sg.Canvas(size=(self.l, self.h), background_color='grey', key='canvas'),
