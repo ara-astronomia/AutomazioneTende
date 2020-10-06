@@ -45,6 +45,7 @@ class Gui:
                             sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
+                            sg.Button('Sync', key=GuiKey.SYNC_TELE, disabled=False, size=(5, 1)),
                             sg.Button('Park', key=GuiKey.PARK_TELE, disabled=False, size=(5, 1)),
                             sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=False, size=(5, 1))
                         ]]), title="Telescopio", pad=(3, 0)),
