@@ -107,6 +107,10 @@ try:
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
                         automazioneTende.aux_off()
 
+                    elif data == b'S':
+                        Logger.getLogger().debug("chiamata al metodo sincronizzazione")
+                        pass
+
                     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     automazioneTende.exec()
 
