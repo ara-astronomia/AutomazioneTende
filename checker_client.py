@@ -58,9 +58,9 @@ def connection() -> str:
                     elif k == GuiKey.PANEL_OFF:
                         panel = "S"
 
-                    elif k is GuiKey.POWER_ON:
+                    elif k is GuiKey.POWER_ON_TELE:
                         power = "A"
-                    elif k is GuiKey.POWER_OFF:
+                    elif k is GuiKey.POWER_OFF_TELE:
                         power = "S"
 
                     elif k is GuiKey.LIGHT_ON:
@@ -68,9 +68,9 @@ def connection() -> str:
                     elif k is GuiKey.LIGHT_OFF:
                         light = "S"
 
-                    elif k is GuiKey.AUX_ON:
+                    elif k is GuiKey.POWER_ON_CCD:
                         aux = "A"
-                    elif k is GuiKey.AUX_OFF:
+                    elif k is GuiKey.POWER_OFF_CCD:
                         aux = "S"
 
                     elif k == "WO":

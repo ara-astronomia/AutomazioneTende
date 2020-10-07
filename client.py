@@ -169,11 +169,11 @@ def connection() -> str:
             # AUXILIARY
             if cs.aux_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("ausiliare acceso")
-                g_ui.update_disable_button_aux_on()
+                g_ui.update_disable_button_power_on_ccd()
 
             if cs.aux_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
-                g_ui.update_disable_button_aux_off()
+                g_ui.update_disable_button_power_off_ccd()
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:

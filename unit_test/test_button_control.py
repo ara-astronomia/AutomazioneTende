@@ -14,13 +14,13 @@ class TestButtonControl(unittest.TestCase):
     def panel_control(self):
         return ButtonControl(GPIOPin.SWITCH_PANEL)
 
-    def power_control(self):
+    def power_tele_control(self):
         return ButtonControl(GPIOPin.SWITCH_POWER)
 
     def light_control(self):
         return ButtonControl(GPIOPin.SWITCH_LIGHT)
 
-    def aux_control(self):
+    def power_ccd_control(self):
         return ButtonControl(GPIOPin.SWITCH_AUX)
 
     def setUp(self):
@@ -29,14 +29,14 @@ class TestButtonControl(unittest.TestCase):
     def test_panel_control(self):
         self.__check_button__(self.panel_control())
 
-    def test_power_control(self):
-        self.__check_button__(self.power_control())
+    def test_power_tele_control(self):
+        self.__check_button__(self.power_tele_control())
 
     def test_light_control(self):
         self.__check_button__(self.light_control())
 
-    def test_aux_control(self):
-        self.__check_button__(self.aux_control())
+    def test_power_ccd_control(self):
+        self.__check_button__(self.power_ccd_control())
 
     def __check_button__(self, button):
         button.gpioconfig = MagicMock()

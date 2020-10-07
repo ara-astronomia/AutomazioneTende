@@ -57,12 +57,12 @@ class Gui:
                     ],
                     [
                         sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
+                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_TELE, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_TELE, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
                         ]]), title="Power Switch Tele", pad=(3, 10)),
                         sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.AUX_ON, disabled=False, size=(4, 1), tooltip="nessuna strumentazione ausiliare implementata"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.AUX_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="nessuna strumentazione ausiliare implementata"),
+                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_CCD, disabled=False, size=(4, 1), tooltip="nessuna strumentazione ausiliare implementata"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_CCD, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="nessuna strumentazione ausiliare implementata"),
                         ]]), title="Power Switch CCD", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=False, size=(4, 1), tooltip="accensione pannnello del flat"),
@@ -298,16 +298,16 @@ class Gui:
         """ Update enable button on power switch"""
 
         Logger.getLogger().info('update_disable_button_power_switch_on')
-        self.__toggle_button__(GuiKey.POWER_ON, disabled=True, button_color=["white", "green"])
-        self.__toggle_button__(GuiKey.POWER_OFF, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=True, button_color=["white", "green"])
+        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=False, button_color=["black", "white"])
 
     def update_disable_button_power_switch_off(self):  # status: str, disabeld: str =''):
 
         """ Update disable button off power switch"""
 
         Logger.getLogger().info('update_disable_button_power_switch_off')
-        self.__toggle_button__(GuiKey.POWER_ON, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.POWER_OFF, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=True, button_color=["black", "red"])
 
     # LIGHT DOME
     def update_disable_button_light_on(self):  # status: str, disabeld: str =''):
@@ -327,21 +327,21 @@ class Gui:
         self.__toggle_button__(GuiKey.LIGHT_OFF, disabled=True, button_color=["black", "red"])
 
     # AUXILIARY
-    def update_disable_button_aux_on(self):  # status: str, disabeld: str =''):
+    def update_disable_button_power_on_ccd(self):  # status: str, disabeld: str =''):
 
         """ Update enable button on auxiliary"""
 
         Logger.getLogger().info('update_disable_button_auxiliary_on')
-        self.__toggle_button__(GuiKey.AUX_ON, disabled=True, button_color=["white", "green"])
-        self.__toggle_button__(GuiKey.AUX_OFF, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=True, button_color=["white", "green"])
+        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=False, button_color=["black", "white"])
 
-    def update_disable_button_aux_off(self):  # status: str, disabeld: str =''):
+    def update_disable_button_power_off_ccd(self):  # status: str, disabeld: str =''):
 
         """ Update enable button off auxiliary"""
 
         Logger.getLogger().info('update_disable_button_auxiliary_off')
-        self.__toggle_button__(GuiKey.AUX_ON, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.AUX_OFF, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=True, button_color=["black", "red"])
 
     # STATUS TRACKING
     def update_status_tracking(self, status, text_color: str = 'white', background_color: str = 'red') -> None:

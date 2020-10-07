@@ -31,9 +31,9 @@ class AutomazioneTende:
         self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
         self.curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST, mock=self.mock)
         self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
-        self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
+        self.power_tele_control = ButtonControl(GPIOPin.SWITCH_POWER)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
-        self.aux_control = ButtonControl(GPIOPin.SWITCH_AUX)
+        self.power_ccd_control = ButtonControl(GPIOPin.SWITCH_AUX)
 
         self.started = False
 
@@ -63,9 +63,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
-        self.crac_status.power_status = self.power_control.read()
+        self.crac_status.power_status = self.power_tele_control.read()
         self.crac_status.light_status = self.light_control.read()
-        self.crac_status.aux_status =self.aux_control.read()
+        self.crac_status.aux_status =self.power_ccd_control.read()
 
         return self.crac_status
 
@@ -224,6 +224,28 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
+    # POWER SWITCH TELE
+    def power_on_tele(self):
+        """ on power switch and update the power switch status in CracStatus object """
+
+        self.power_tele_control.on()
+
+    def power_off_tele(self):
+        """ off power switch and update the power switch status in CracStatus object """
+
+        self.power_tele_control.off()
+
+    # POWER SWITCH CCD
+    def power_on_ccd(self):
+        """ on auxiliary and update the auxiliary status in CracStatus object """
+
+        self.power_ccd_control.on()
+
+    def power_off_ccd(self):
+        """ off auxiliary and update the auxiliary status in CracStatus object """
+
+        self.power_ccd_control.off()
+
     # PANEL FLAT
     def panel_on(self):
         """ on panel flat and update the panel status in CracStatus object """
@@ -236,17 +258,6 @@ class AutomazioneTende:
 
         self.panel_control.off()
 
-    # POWER SWITCH
-    def power_on(self):
-        """ on power switch and update the power switch status in CracStatus object """
-
-        self.power_control.on()
-
-    def power_off(self):
-        """ off power switch and update the power switch status in CracStatus object """
-
-        self.power_control.off()
-
     # LIGHT DOME
     def light_on(self):
         """ on light dome and update the light status in CracStatus object """
@@ -257,17 +268,6 @@ class AutomazioneTende:
         """ off light dome and update the light status in CracStatus object """
 
         self.light_control.off()
-
-    # AUXILIARY
-    def aux_on(self):
-        """ on auxiliary and update the auxiliary status in CracStatus object """
-
-        self.aux_control.on()
-
-    def aux_off(self):
-        """ off auxiliary and update the auxiliary status in CracStatus object """
-
-        self.aux_control.off()
 
     def exit_program(self, n: int = 0) -> None:
 
