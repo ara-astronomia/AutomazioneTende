@@ -100,3 +100,6 @@ class Telescope(BaseTelescope):
         if self.connected:
             self.s.close()
             self.connected = False
+
+    def sync(self, delta_sync):
+        pass

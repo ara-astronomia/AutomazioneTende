@@ -30,7 +30,10 @@ class BaseTelescope:
     def flat_tele(self):
         raise NotImplementedError()
 
-    def read(self, ):
+    def read(self):
+        raise NotImplementedError()
+
+    def sync(self, delta_sync):
         raise NotImplementedError()
 
     def __update_status__(self):

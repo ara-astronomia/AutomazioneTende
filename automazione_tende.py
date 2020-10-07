@@ -1,3 +1,4 @@
+import datetime
 import time
 import importlib
 import config
@@ -239,13 +240,21 @@ class AutomazioneTende:
     # POWER SWITCH
     def power_on(self):
         """ on power switch and update the power switch status in CracStatus object """
-
+        self.telescope_started_at = datetime.datetime.utcnow()
         self.power_control.on()
 
     def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
 
         self.power_control.off()
+    
+    # SYNC SWITCH
+    def sync(self):
+        if self.power_control.read() is ButtonStatus.ON:
+            self.telescope_started_at
+            sync_at = datetime.datetime.utcnow()
+            delta_sync = sync_at - self.telescope_started_at
+            self.telescope.sync(delta_sync)
 
     # LIGHT DOME
     def light_on(self):
