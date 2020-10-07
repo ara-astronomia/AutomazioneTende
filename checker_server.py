@@ -170,6 +170,7 @@ try:
                     #number step west east
                     #print (west_encoder.steps)
                     #print (east_encoder.steps)
+                    print (west_encoder)
                     nwe = convert_steps(west_encoder.steps)
                     nee = convert_steps(east_encoder.steps)
 
