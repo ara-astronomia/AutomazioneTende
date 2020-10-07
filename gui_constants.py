@@ -38,7 +38,7 @@ class GuiLabel:
 class GuiKey:
 
     OPEN_ROOF = "R"
-    SYNC_TELE = 'S'
+    SYNC_TELE = "S"
     PARK_TELE = "P"
     FLAT_TELE = "F"
     CLOSE_ROOF = "T"
