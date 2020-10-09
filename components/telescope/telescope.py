@@ -20,6 +20,11 @@ class BaseTelescope:
         self.coords: Dict[str, int] = {"alt": 0, "az": 0, "tr": 0, "error": 0}
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
+        #GEOGRAFIC SECTION
+        self.lat = config.Config.getValue("lat", "geografic")
+        self.lon = config.Config.getValue("lon", "geografic")
+        self.height = config.Config.getInt("height", "geografic")
+        self.name_obs = config.Config.getValue("name_obs", "geografic")
 
     def update_coords(self):
         raise NotImplementedError()
