@@ -41,28 +41,28 @@ class Gui:
                     [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
-                            sg.Button('Apri', key=GuiKey.OPEN_ROOF, disabled=False, size=(6, 1)),
-                            sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="non puoi chiudere il tetto perche è gia chiuso")
+                            sg.Button('Apri', key=GuiKey.OPEN_ROOF, disabled=False, size=(6, 1), tooltip="apre il tetto"),
+                            sg.Button('Chiudi', key=GuiKey.CLOSE_ROOF, disabled=True, size=(6, 1), tooltip="chiude il tetto")
                         ]]), title="Tetto", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Sync', key=GuiKey.SYNC_TELE, disabled=False, size=(5, 1)),
-                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=False, size=(5, 1)),
-                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=False, size=(5, 1))
+                            sg.Button('Sync', key=GuiKey.SYNC_TELE, disabled=False, size=(5, 1), tooltip='sincronizza il telescopio'),
+                            sg.Button('Park', key=GuiKey.PARK_TELE, disabled=False, size=(5, 1), tooltip='porta il telescopio in posizione di park'),
+                            sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=False, size=(5, 1) , tooltip='porta il telescopio in posizione di flat')
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
                             sg.Button('Attiva', key=GuiKey.ENABLED_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key=GuiKey.DISABLED_CURTAINS, disabled=True,  size=(6, 1)),
-                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1))
+                            sg.Button('Disattiva', key=GuiKey.DISABLED_CURTAINS, disabled=True,  size=(6, 1)tooltip='schiacccia per attivare'),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1)tooltip='schiacccia per attivare')
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
                         sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_TELE, disabled=False, size=(4, 1), tooltip="accensione alimentarori"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_TELE, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatori"),
+                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_TELE, disabled=False, size=(4, 1), tooltip="accensione alimentarore telescopio"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_TELE, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatore telescopio"),
                         ]]), title="Power Switch Tele", pad=(3, 10)),
                         sg.Frame(layout=([[
-                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_CCD, disabled=False, size=(4, 1), tooltip="nessuna strumentazione ausiliare implementata"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_CCD, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="nessuna strumentazione ausiliare implementata"),
+                            sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_CCD, disabled=False, size=(4, 1), tooltip="accensione alimentatore CCD"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_CCD, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatore CCD"),
                         ]]), title="Power Switch CCD", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=False, size=(4, 1), tooltip="accensione pannnello del flat"),
