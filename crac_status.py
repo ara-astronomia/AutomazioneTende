@@ -55,9 +55,9 @@ def __structure__():
     data["curtain_west_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["tracking_status"] = {"orig": tracking, "trans": repr, "reverse": tracking.get_value}
     data["panel_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
-    data["power_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["power_tele_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
-    data["aux_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["power_ccd_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     return data
 
 
@@ -188,12 +188,12 @@ class CracStatus:
         self.__assign__(value, "panel_status")
 
     @property
-    def power_status(self):
-        return self._power_status
+    def power_tele_status(self):
+        return self._power_tele_status
 
-    @power_status.setter
-    def power_status(self, value: Dict[str, int]) -> None:
-        self.__assign__(value, "power_status")
+    @power_tele_status.setter
+    def power_tele_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "power_tele_status")
 
     @property
     def light_status(self):
@@ -204,12 +204,12 @@ class CracStatus:
         self.__assign__(value, "light_status")
 
     @property
-    def aux_status(self):
-        return self._aux_status
+    def power_ccd_status(self):
+        return self._power_ccd_status
 
-    @aux_status.setter
-    def aux_status(self, value: Dict[str, int]) -> None:
-        self.__assign__(value, "aux_status")
+    @power_ccd_status.setter
+    def power_ccd_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "power_ccd_status")
 
     def are_curtains_disabled(self):
         return self.curtain_east_status is CurtainsStatus.DISABLED and self.curtain_west_status is CurtainsStatus.DISABLED
@@ -251,9 +251,9 @@ if __name__ == "__main__":
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
     print(cs.panel_status)
-    print(cs.power_status)
+    print(cs.power_tele_status)
     print(cs.light_status)
-    print(cs.aux_status)
+    print(cs.power_ccd_status)
     print(cs.length)
     cs = CracStatus("CPP100012045D000D000TSSSS")
     print(cs.roof_status)
@@ -265,7 +265,7 @@ if __name__ == "__main__":
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
     print(cs.panel_status)
-    print(cs.power_status)
+    print(cs.power_tele_status)
     print(cs.light_status)
-    print(cs.aux_status)
+    print(cs.power_ccd_status)
     print(cs.length)
