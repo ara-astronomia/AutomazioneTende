@@ -15,13 +15,14 @@ lat = config.Config.getValue("lat", "geografic")
 lon = config.Config.getValue("lon", "geografic")
 height = config.Config.getInt("height", "geografic")
 name_obs = config.Config.getValue("name_obs", "geografic")
-timezone = config.Config.getInt("timezone", "geografic")
+timezone= config.Config.getInt("timezone", "geografic")
 ora_leg = config.Config.getValue("ora_leg", "geografic")
+time = timezone + ora_leg
 
 #Calcola i valori di Ar e Dec per la posizione di Alt e Az del momento
 def conv_altaz_to_ardec():
     name_obs = EarthLocation(lat, lon, (height)*u.m)
-    time_sync = datetime.datetime.now(datetime.timezone(datetime.timedelta((hours=timezone)+ora_leg)))
+    time_sync = datetime.datetime.now(datetime.timezone(datetime.timedelta((hours=time))))
     Logger.getLogger().info(time_sync, ' time sync')
     aa = AltAz(location=name_obs, obstime=time_sync)
     coord_AltAz = SkyCoord((Alt_deg)*u.deg, (Az_deg)*u.deg, frame=aa)
@@ -33,8 +34,9 @@ def conv_altaz_to_ardec():
     dec = dec_icrs[0:17]
     Logger.getLogger().info(ar, 'ar_park (formato orario decimale)')
     Logger.getLogger().info(dec, 'dec park')
+    return ar, dec
 
 #passa i nuovi valori di Ar al js
-def push_newAr_Dec():
-    pass
+#def push_newAr_Dec():
+#    pass
 conv_altaz_to_ardec()
