@@ -148,7 +148,7 @@ def connection() -> str:
                 LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_disable_panel_off()
 
-            # POWER SWITCH
+            # POWER SWITCH TELESCOPIO
             if cs.power_tele_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("Alimentari accesi")
                 g_ui.update_disable_button_power_switch_on()
@@ -166,7 +166,7 @@ def connection() -> str:
                 LoggerClient.getLogger().info("Luci cupola spente")
                 g_ui.update_disable_button_light_off()
 
-            # AUXILIARY
+            # POWER SWITCH CCD
             if cs.power_ccd_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("ausiliare acceso")
                 g_ui.update_disable_button_power_on_ccd()
