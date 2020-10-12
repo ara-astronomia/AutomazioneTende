@@ -58,6 +58,7 @@ def __structure__():
     data["power_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["aux_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    #data["telescope_sync_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     return data
 
 
@@ -138,6 +139,14 @@ class CracStatus:
     @telescope_coords.setter
     def telescope_coords(self, value: Dict[str, int]) -> None:
         self.__assign__(value, "telescope_coords")
+
+    @property
+    def telescope_sync_status(self):
+        return self._telescope_sync_status
+
+    @telescope_sync_status.setter
+    def telescope_sync_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "telescope_sync_status")
 
     @property
     def curtain_east_status(self):
@@ -245,6 +254,7 @@ if __name__ == "__main__":
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
+    print(cs.telescope_sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
@@ -259,6 +269,7 @@ if __name__ == "__main__":
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
+    print(cs.telescope_sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
