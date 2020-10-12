@@ -3,6 +3,7 @@ from enum import IntEnum, unique
 from typing import Dict
 from status import TelescopeStatus, TrackingStatus
 from logger import Logger
+import components.telescope.sync
 
 
 class BaseTelescope:
@@ -38,7 +39,8 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
-    def sync(self, delta_sync):
+    def sync(self, utcnow):
+        #sync.conv_altaz_to_ardec(utcnow)
         raise NotImplementedError()
 
     def __update_status__(self):
