@@ -84,6 +84,9 @@ class AutomazioneTende:
 
         return self.telescope.coords
 
+    #def sync_tele():
+    #    pass
+
     def read_altaz_mount_coordinate(self) -> Dict[str, int]:
 
         """ Read Telescope Coordinates """
@@ -240,21 +243,20 @@ class AutomazioneTende:
     # POWER SWITCH
     def power_on(self):
         """ on power switch and update the power switch status in CracStatus object """
-        self.telescope_started_at = datetime.datetime.utcnow()
         self.power_control.on()
+        self.time_sync()
 
     def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
 
         self.power_control.off()
-    
+
     # SYNC SWITCH
-    def sync(self):
+    def time_sync(self):
         if self.power_control.read() is ButtonStatus.ON:
-            self.telescope_started_at
-            sync_at = datetime.datetime.utcnow()
-            delta_sync = sync_at - self.telescope_started_at
-            self.telescope.sync(delta_sync)
+            time_UTC_sync = datetime.datetime.utcnow()
+            self.telescope.sync(time_UTC_sync)
+            Logger.getLogger().debug("tempo UTC di conv coord per sync: %s", time_UTC_sync)
 
     # LIGHT DOME
     def light_on(self):
