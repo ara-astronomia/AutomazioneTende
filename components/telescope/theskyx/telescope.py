@@ -4,6 +4,7 @@ import re
 import socket
 import config
 from components.telescope.telescope import BaseTelescope
+from components.telescope.sync import conv_altaz_to_ardec
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
@@ -17,7 +18,9 @@ class Telescope(BaseTelescope):
         self.port: int = 3040
         self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
+        self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
         self.connected: bool = False
+        #self.sync = conv_altaz_to_ardec(utc_sync)
 
     def __disconnection__(self):
         Logger.getLogger().exception("Connessione con The Sky persa: ")
@@ -96,10 +99,21 @@ class Telescope(BaseTelescope):
                 error_code = int(r2.group(0))
         return error_code
 
+    def sync(self, utc_sync):
+        utc_now = utc_sync
+        data = conv_altaz_to_ardec(utc_now)
+        Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
+        Logger.getLogger().debug("valori di sincronizzazione diar e dec al tempo UTC di sync: %s", data)
+        self.sync_tele(self, data)
+
+    def sync_tele(self, **kwargs) -> Dict[str, int]:
+        Logger.getLogger().info("sincronizzo il telescopio")
+        try:
+            data = self.__call_thesky__(script=self.script_sync_tele, **kwargs)
+        except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
+            self.__disconnection__()
+
     def close_connection(self) -> None:
         if self.connected:
             self.s.close()
             self.connected = False
-
-    def sync(self, delta_sync):
-        pass
