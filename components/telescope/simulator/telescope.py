@@ -5,7 +5,7 @@ import socket
 from components.telescope import telescope
 from logger import Logger
 from status import TrackingStatus
-
+from components.telescope.sync import conv_altaz_to_ardec
 
 class Telescope(telescope.BaseTelescope):
 
@@ -60,6 +60,20 @@ class Telescope(telescope.BaseTelescope):
     def read(self):
         self.coords = self.update_coords()
         self.__update_status__()
+
+    def sync(self, utc_sync):
+        utc_now = utc_sync
+        data = conv_altaz_to_ardec(utc_now)
+        Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
+        data = {"ar": data[0], "dec":data[1]}
+        Logger.getLogger().debug("valori di sincronizzazione diar e dec al tempo UTC di sync: %s", data)
+        self.sync_tele(**data)
+
+    def sync_tele(self, **kwargs):
+        Logger.getLogger().info("sincronizzo il telescopio")
+        print (kwargs)
+        Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
+        self.update_coords(tr=kwargs.get("tr"), alt=kwargs.get("alt"), az=kwargs.get("az"))
 
     def __is_number_or_input__(self, s, message, kind=int, start=0, stop=1):
         if self.__is_number__(s, kind, start, stop):
