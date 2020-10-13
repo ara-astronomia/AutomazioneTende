@@ -33,7 +33,8 @@ def conv_altaz_to_ardec(utc_sync):
     dec_icrs = str(coord_ArDec.dec*u.deg)
     ar_icrs_deg = ar_icrs[0:17]
     ar  = (float(ar_icrs_deg))/15 #conversione ar da gradi a ore
-    dec = dec_icrs[0:17]
+    dec_str = dec_icrs[0:17]
+    dec = float(dec_str)
     Logger.getLogger().debug('ar_park (formato orario decimale): %s', ar)
     Logger.getLogger().debug('dec park (formato declinazione deccimale): %s', dec)
 
