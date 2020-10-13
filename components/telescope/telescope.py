@@ -40,7 +40,6 @@ class BaseTelescope:
         raise NotImplementedError()
 
     def sync(self, utcnow):
-        #sync.conv_altaz_to_ardec(utcnow)
         raise NotImplementedError()
 
     def __update_status__(self):
