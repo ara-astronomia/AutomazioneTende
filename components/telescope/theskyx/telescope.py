@@ -103,15 +103,19 @@ class Telescope(BaseTelescope):
         utc_now = utc_sync
         data = conv_altaz_to_ardec(utc_now)
         Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
+        data = {"ar": data[0], "dec":data[1]}
         Logger.getLogger().debug("valori di sincronizzazione diar e dec al tempo UTC di sync: %s", data)
-        self.sync_tele(self, data)
+        self.sync_tele(**data)
 
-    def sync_tele(self, **kwargs) -> Dict[str, int]:
+    def sync_tele(self, **kwargs) -> Dict[str, float]:
         Logger.getLogger().info("sincronizzo il telescopio")
+        print (kwargs)
         try:
             data = self.__call_thesky__(script=self.script_sync_tele, **kwargs)
         except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
             self.__disconnection__()
+        else:
+            Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
 
     def close_connection(self) -> None:
         if self.connected:
