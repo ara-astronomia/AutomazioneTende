@@ -50,6 +50,7 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
         self.crac_status = CracStatus()
+        utc_time_sync = None
 
     def read(self) -> CracStatus:
 
@@ -244,7 +245,8 @@ class AutomazioneTende:
     def power_on(self):
         """ on power switch and update the power switch status in CracStatus object """
         self.power_control.on()
-        self.time_sync()
+        AutomazioneTende.utc_sync = (datetime.datetime.utcnow())
+        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", AutomazioneTende.utc_sync)
 
     def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
@@ -254,9 +256,9 @@ class AutomazioneTende:
     # SYNC SWITCH
     def time_sync(self):
         if self.power_control.read() is ButtonStatus.ON:
-            time_UTC_sync = datetime.datetime.utcnow()
-            self.telescope.sync(time_UTC_sync)
-            Logger.getLogger().debug("tempo UTC di conv coord per sync: %s", time_UTC_sync)
+            time_utc_sync = AutomazioneTende.utc_sync
+            Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_utc_sync)
+            self.telescope.sync(time_utc_sync)
 
     # LIGHT DOME
     def light_on(self):
