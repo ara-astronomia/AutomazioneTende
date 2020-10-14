@@ -15,13 +15,13 @@ class TestButtonControl(unittest.TestCase):
         return ButtonControl(GPIOPin.SWITCH_PANEL)
 
     def power_tele_control(self):
-        return ButtonControl(GPIOPin.SWITCH_POWER)
+        return ButtonControl(GPIOPin.SWITCH_POWER_TELE)
 
     def light_control(self):
         return ButtonControl(GPIOPin.SWITCH_LIGHT)
 
     def power_ccd_control(self):
-        return ButtonControl(GPIOPin.SWITCH_AUX)
+        return ButtonControl(GPIOPin.SWITCH_POWER_CCD)
 
     def setUp(self):
         Singleton._instances = {}

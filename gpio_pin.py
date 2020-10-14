@@ -30,11 +30,11 @@ class GPIOPin(Pin, Enum):
     # impostazione gpio panel flat
     SWITCH_PANEL = Pin(Config.getInt("switch_panel", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_on", "panel_board"))
     # impostazione gpio alimentatore
-    SWITCH_POWER = Pin(Config.getInt("switch_power", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on_tele", "panel_board"))
+    SWITCH_POWER_TELE = Pin(Config.getInt("switch_power", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on_tele", "panel_board"))
     # impostazione gpio luci cupola
     SWITCH_LIGHT = Pin(Config.getInt("switch_light", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_light_on", "panel_board"))
     # impostazione gpio auxiliary
-    SWITCH_AUX = Pin(Config.getInt("switch_aux", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on_ccd", "panel_board"))
+    SWITCH_POWER_CCD = Pin(Config.getInt("switch_aux", "panel_board"), GPIO.OUT, on_is=Config.getInt("switch_power_on_ccd", "panel_board"))
 
     # impostazione gpio switch fine_corsa tende
     CURTAIN_W_VERIFY_OPEN = Pin(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), GPIO.IN, pull=GPIO.PUD_UP)

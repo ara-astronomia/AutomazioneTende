@@ -31,9 +31,9 @@ class AutomazioneTende:
         self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
         self.curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST, mock=self.mock)
         self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
-        self.power_tele_control = ButtonControl(GPIOPin.SWITCH_POWER)
+        self.power_tele_control = ButtonControl(GPIOPin.SWITCH_POWER_TELE)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
-        self.power_ccd_control = ButtonControl(GPIOPin.SWITCH_AUX)
+        self.power_ccd_control = ButtonControl(GPIOPin.SWITCH_POWER_CCD)
 
         self.started = False
 
