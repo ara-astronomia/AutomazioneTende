@@ -75,12 +75,17 @@ def connection() -> str:
                 LoggerClient.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
 
+            elif cs.telescope_status == TelescopeStatus.SYNC:
+                LoggerClient.getLogger().info("telescopio sincronizzato da CRaC")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_SYNC)
+                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
+
             elif cs.telescope_status == TelescopeStatus.SECURE:
                 LoggerClient.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
 
             elif cs.telescope_status == TelescopeStatus.LOST:
-                LoggerClient.getLogger().info("telescopio ha perso la conessione con thesky ")
+                LoggerClient.getLogger().info("telescopio ha perso la connessione con thesky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
 
@@ -92,7 +97,7 @@ def connection() -> str:
             else:
                 cardinal = vars(GuiLabel).get(f"TELESCOPE_{cs.telescope_status.abbr}")
                 LoggerClient.getLogger().info("telescopio operativo: %s", cardinal)
-                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
+                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="yellow")
 
             # CURTAINS
             if cs.curtain_east_status is CurtainsStatus.DISABLED and cs.curtain_west_status is CurtainsStatus.DISABLED:
@@ -177,7 +182,11 @@ def connection() -> str:
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:
-                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
+                if cs.tracking_status == TelescopeStatus.SYNC:
+                    g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
+                else:
+                    g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="yellow")
+
             elif cs.tracking_status == TrackingStatus.OFF:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
 
