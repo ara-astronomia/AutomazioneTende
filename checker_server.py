@@ -35,9 +35,9 @@ try:
                     if data:
                         roof = data[0]
                         panel = data[1]
-                        power = data[2]
+                        power_tele = data[2]
                         light = data[3]
-                        aux = data[4]
+                        power_ccd = data[4]
                         curtain_west = data[5]
                         curtain_east = data[6]
                     else:
@@ -68,12 +68,12 @@ try:
                     # POWER SWITCH
                     if power == 'A':
                         Logger.getLogger().debug("test accensione alimentatori")
-                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER)
-                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
+                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER_TELE)
+                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_TELE))
                     if power == 'S':
                         Logger.getLogger().debug("test spegnimento alimentatori")
-                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER)
-                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
+                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER_TELE)
+                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_TELE))
 
                     # LIGHT
                     if light == 'A':
@@ -88,12 +88,12 @@ try:
                     # AUX
                     if aux == 'A':
                         Logger.getLogger().debug("test accensione dispositivo ausiliare ")
-                        gpioConfig.turn_on(GPIOPin.SWITCH_AUX)
-                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
+                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER_CCD)
+                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_CCD))
                     if aux == 'S':
                         Logger.getLogger().debug("test spegnimento dispositivo ausiliare ")
-                        gpioConfig.turn_off(GPIOPin.SWITCH_AUX)
-                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
+                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER_CCD)
+                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_CCD))
 
 
                     if curtain_west == 'O':
