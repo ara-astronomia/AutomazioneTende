@@ -123,6 +123,11 @@ class ButtonStatus(OrderedEnum):
     OFF = (0, "S")  # PANNELLO FLAT SPENTO
     ON = (1, "A")  # PANNELLO FLAT ACCESO
 
+@unique
+class SyncStatus(OrderedEnum):
+
+    OFF = (0, "N")  # TELESCOPIO SINCRONIZZATO
+    ON = (1, "S")  # TELESCOPIO NON SINCRONIZZATO
 
 @unique
 class TrackingStatus(OrderedEnum):
