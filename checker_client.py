@@ -59,9 +59,9 @@ def connection() -> str:
                         panel = "S"
 
                     elif k is GuiKey.POWER_ON_TELE:
-                        power = "A"
+                        power_tele = "A"
                     elif k is GuiKey.POWER_OFF_TELE:
-                        power = "S"
+                        power_tele = "S"
 
                     elif k is GuiKey.LIGHT_ON:
                         light = "A"
@@ -69,9 +69,9 @@ def connection() -> str:
                         light = "S"
 
                     elif k is GuiKey.POWER_ON_CCD:
-                        aux = "A"
+                        power_ccd = "A"
                     elif k is GuiKey.POWER_OFF_CCD:
-                        aux = "S"
+                        power_ccd = "S"
 
                     elif k == "WO":
                         curtain_west = "O"
@@ -86,7 +86,7 @@ def connection() -> str:
                     elif k == "ES":
                         curtain_east = "S"
 
-            code = roof + panel + power + light + aux + curtain_west + curtain_east
+            code = roof + panel + power_tele + light + power_ccd + curtain_west + curtain_east
 
             LoggerClient.getLogger().debug("Code: %s", code)
 
