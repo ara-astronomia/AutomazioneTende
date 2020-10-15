@@ -5,8 +5,12 @@ import crac_status
 import gui
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, CurtainsStatus, TelescopeStatus
-from status import ButtonStatus, TrackingStatus
+from status import Status
+from status import CurtainsStatus
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import TrackingStatus
+from status import SyncStatus
 
 
 def connection() -> str:
@@ -78,7 +82,7 @@ def connection() -> str:
             elif cs.telescope_status == TelescopeStatus.SYNC:
                 LoggerClient.getLogger().info("telescopio sincronizzato da CRaC")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SYNC)
-                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_SYNC, text_color="#2c2825", background_color="green")
 
             elif cs.telescope_status == TelescopeStatus.SECURE:
                 LoggerClient.getLogger().info("telescopio in sicurezza ")
@@ -97,7 +101,7 @@ def connection() -> str:
             else:
                 cardinal = vars(GuiLabel).get(f"TELESCOPE_{cs.telescope_status.abbr}")
                 LoggerClient.getLogger().info("telescopio operativo: %s", cardinal)
-                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="yellow")
+                g_ui.update_status_tele(cardinal, text_color="#2c2825", background_color="green")
 
             # CURTAINS
             if cs.curtain_east_status is CurtainsStatus.DISABLED and cs.curtain_west_status is CurtainsStatus.DISABLED:
@@ -182,13 +186,15 @@ def connection() -> str:
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:
-                if cs.tracking_status == TelescopeStatus.SYNC:
-                    g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
-                else:
-                    g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="yellow")
-
+                g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
             elif cs.tracking_status == TrackingStatus.OFF:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
+
+            # SYNC
+            if cs.sync_status == SyncStatus.ON:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
+            elif cs.sync_status == SyncStatus.OFF:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_OFF, text_color="red", background_color="white")
 
             # ALERT
             if cs.is_in_anomaly():
