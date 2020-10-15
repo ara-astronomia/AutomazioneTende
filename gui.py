@@ -101,10 +101,11 @@ class Gui:
                                     [sg.Text(GuiLabel.ROOF_CLOSED, size=(11, 1), justification='center', font=("Helvetica", 12), key='status-roof', background_color="red", text_color="white")]
                                 )),
                                 sg.Column(layout=(
-                                    [sg.Text('Telescopio', size=(17, 1), justification='center', font=("Helvetica", 12))],
+                                    [sg.Text('Telescopio', size=(25, 1), justification='center', font=("Helvetica", 12))],
                                     [
                                         sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white"),
-                                        sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red")
+                                        sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red"),
+                                        sg.Text(GuiLabel.TELESCOPE_SYNC_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-sync', background_color="white", text_color="red")
                                     ]
                                 )),
                                 sg.Column(layout=(
@@ -350,6 +351,15 @@ class Gui:
 
         Logger.getLogger().info('update_status_tracking in gui')
         self.win.FindElement('status-tracking').Update(status, text_color=text_color, background_color=background_color)
+
+    # STATUS SYNC
+    def update_status_sync(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+        """ Update Sync Status """
+
+        Logger.getLogger().info('update_status_sync in gui')
+        self.win.FindElement('status-sync').Update(status, text_color=text_color, background_color=background_color)
+
 
     # GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
