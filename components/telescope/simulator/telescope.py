@@ -5,6 +5,7 @@ import socket
 from components.telescope import telescope
 from logger import Logger
 from status import TrackingStatus
+from status import SyncStatus
 from components.telescope.sync import conv_altaz_to_ardec
 
 class Telescope(telescope.BaseTelescope):
