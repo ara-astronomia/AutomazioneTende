@@ -3,7 +3,11 @@ import time
 import importlib
 import config
 from logger import Logger
-from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus
+from status import Status
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import CurtainsStatus
+from status import SyncStatus
 from status import Orientation
 from typing import Dict, Any
 from crac_status import CracStatus
@@ -65,6 +69,7 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
+        self.crac_status.sync_status = self.telescope.sync_status
         self.crac_status.power_status = self.power_control.read()
         self.crac_status.light_status = self.light_control.read()
         self.crac_status.aux_status =self.aux_control.read()
@@ -259,6 +264,7 @@ class AutomazioneTende:
             time_utc_sync = AutomazioneTende.utc_sync
             Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_utc_sync)
             self.telescope.sync(time_utc_sync)
+            self.telescope.update_status_sync()
 
     # LIGHT DOME
     def light_on(self):
