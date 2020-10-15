@@ -148,12 +148,12 @@ def connection() -> str:
                 LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_disable_panel_off()
 
-            # POWER SWITCH
-            if cs.power_status == ButtonStatus.ON:
+            # POWER SWITCH TELESCOPIO
+            if cs.power_tele_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("Alimentari accesi")
                 g_ui.update_disable_button_power_switch_on()
 
-            if cs.power_status == ButtonStatus.OFF:
+            if cs.power_tele_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("Alimentatori spenti")
                 g_ui.update_disable_button_power_switch_off()
 
@@ -166,14 +166,14 @@ def connection() -> str:
                 LoggerClient.getLogger().info("Luci cupola spente")
                 g_ui.update_disable_button_light_off()
 
-            # AUXILIARY
-            if cs.aux_status == ButtonStatus.ON:
+            # POWER SWITCH CCD
+            if cs.power_ccd_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("ausiliare acceso")
-                g_ui.update_disable_button_aux_on()
+                g_ui.update_disable_button_power_on_ccd()
 
-            if cs.aux_status == ButtonStatus.OFF:
+            if cs.power_ccd_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
-                g_ui.update_disable_button_aux_off()
+                g_ui.update_disable_button_power_off_ccd()
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:

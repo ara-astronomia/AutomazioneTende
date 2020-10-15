@@ -17,7 +17,7 @@ def change_status(status_switch, key, win):
 def change_status_button(status_button, key, win):
     status_button = ButtonStatus
     if status_button == "S":
-        win.Find(key).update(disabled=True, text_color='white', background_color='green')    
+        win.Find(key).update(disabled=True, text_color='white', background_color='green')
     elif status_button == "A":
         win.Find(key).update(disabled=False, text_color = 'yellow', background_color='purple')
 
@@ -42,36 +42,36 @@ def connection() -> str:
             curtain_west = "S"
             curtain_east = "S"
             panel = "S"
-            power = "S"
+            power_tele = "S"
             light = "S"
-            aux = "S"
-            
+            power_ccd = "S"
+
             for k, value in values.items():
                 if value:
                     if k == "RO":
                         roof = "O"
                     elif k == "RC":
                         roof = "C"
-                        
+
                     elif k == GuiKey.PANEL_ON:
                         panel = "A"
                     elif k == GuiKey.PANEL_OFF:
                         panel = "S"
 
-                    elif k is GuiKey.POWER_ON:
-                        power = "A"
-                    elif k is GuiKey.POWER_OFF:
-                        power = "S"
+                    elif k is GuiKey.POWER_ON_TELE:
+                        power_tele = "A"
+                    elif k is GuiKey.POWER_OFF_TELE:
+                        power_tele = "S"
 
                     elif k is GuiKey.LIGHT_ON:
-                        light = "A"        
+                        light = "A"
                     elif k is GuiKey.LIGHT_OFF:
                         light = "S"
 
-                    elif k is GuiKey.AUX_ON:
-                        aux = "A"
-                    elif k is GuiKey.AUX_OFF:
-                        aux = "S"
+                    elif k is GuiKey.POWER_ON_CCD:
+                        power_ccd = "A"
+                    elif k is GuiKey.POWER_OFF_CCD:
+                        power_ccd = "S"
 
                     elif k == "WO":
                         curtain_west = "O"
@@ -86,7 +86,7 @@ def connection() -> str:
                     elif k == "ES":
                         curtain_east = "S"
 
-            code = roof + panel + power + light + aux + curtain_west + curtain_east
+            code = roof + panel + power_tele + light + power_ccd + curtain_west + curtain_east
 
             LoggerClient.getLogger().debug("Code: %s", code)
 
