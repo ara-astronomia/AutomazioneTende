@@ -5,6 +5,7 @@ from status import CurtainsStatus
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import TrackingStatus
+from status import SyncStatus
 
 from logger import Logger
 APP = "SERVER"
@@ -44,6 +45,7 @@ def __structure__():
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
     button = ButtonStatus.OFF
+    sync = SyncStatus.OFF
 
     data = {}
     data["roof_status"] = {"orig": status, "trans": repr, "reverse": status.get_value}
@@ -58,7 +60,7 @@ def __structure__():
     data["power_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["aux_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
-    data["telescope_sync_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["sync_status"] = {"orig": sync, "trans": repr, "reverse": sync.get_value}
     return data
 
 
@@ -181,6 +183,14 @@ class CracStatus:
         self.__assign__(value, "tracking_status")
 
     @property
+    def sync_status(self):
+        return self._sync_status
+
+    @sync_status.setter
+    def sync_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "sync_status")
+
+    @property
     def panel_status(self):
         return self._panel_status
 
@@ -246,7 +256,7 @@ if __name__ == "__main__":
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
-    print(cs.telescope_sync_status)
+    print(cs.sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
@@ -261,7 +271,7 @@ if __name__ == "__main__":
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
-    print(cs.telescope_sync_status)
+    print(cs.sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
