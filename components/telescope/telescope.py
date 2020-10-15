@@ -2,6 +2,8 @@ import config
 from enum import IntEnum, unique
 from typing import Dict
 from status import TelescopeStatus, TrackingStatus
+from status import ButtonStatus
+from status import SyncStatus
 from logger import Logger
 import components.telescope.sync
 
@@ -20,6 +22,7 @@ class BaseTelescope:
         self.azimut_nw = config.Config.getInt("azNW", "azimut")
         self.coords: Dict[str, int] = {"alt": 0, "az": 0, "tr": 0, "error": 0}
         self.status: TelescopeStatus = TelescopeStatus.PARKED
+        self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
         #GEOGRAFIC SECTION
         self.lat = config.Config.getValue("lat", "geografic")
@@ -69,11 +72,12 @@ class BaseTelescope:
 
         self.tracking_status = TrackingStatus.from_value(self.coords["tr"])
 
+
         Logger.getLogger().debug("Altezza Telescopio: %s", str(self.coords['alt']))
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))
         Logger.getLogger().debug("Status Telescopio: %s", str(self.status))
         Logger.getLogger().debug("Status Tracking: %s %s", str(self.coords['tr']), str(self.tracking_status))
-
+        Logger.getLogger().debug("Status Sync: %s ", str(self.sync_status))
         return self.status
 
     def is_within_curtains_area(self):
@@ -81,6 +85,9 @@ class BaseTelescope:
             TelescopeStatus.EAST,
             TelescopeStatus.WEST
         ]
+
+    def update_status_sync(self):
+        self.sync_status = SyncStatus.ON
 
     def is_below_curtains_area(self):
         return self.coords["alt"] <= self.max_secure_alt
