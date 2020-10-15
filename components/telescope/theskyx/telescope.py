@@ -8,6 +8,7 @@ from components.telescope.sync import conv_altaz_to_ardec
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
+from status import SyncStatus
 
 
 class Telescope(BaseTelescope):
