@@ -103,7 +103,7 @@ class Gui:
                                 sg.Column(layout=(
                                     [sg.Text('Telescopio', size=(25, 1), justification='center', font=("Helvetica", 12))],
                                     [
-                                        sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="red", text_color="white"),
+                                        sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="white", text_color="red"),
                                         sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red"),
                                         sg.Text(GuiLabel.TELESCOPE_SYNC_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-sync', background_color="white", text_color="red")
                                     ]
