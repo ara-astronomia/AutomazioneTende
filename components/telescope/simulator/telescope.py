@@ -62,8 +62,8 @@ class Telescope(telescope.BaseTelescope):
         self.coords = self.update_coords()
         self.__update_status__()
 
-    def sync(self, utc_sync):
-        utc_now = utc_sync
+    def sync(self, sync_time):
+        utc_now = sync_time
         data = conv_altaz_to_ardec(utc_now)
         Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
         data = {"ar": data[0], "dec":data[1]}

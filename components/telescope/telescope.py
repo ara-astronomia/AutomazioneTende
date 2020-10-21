@@ -24,12 +24,13 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
-        #GEOGRAFIC SECTION
-        self.lat = config.Config.getValue("lat", "geografic")
-        self.lon = config.Config.getValue("lon", "geografic")
-        self.height = config.Config.getInt("height", "geografic")
-        self.name_obs = config.Config.getValue("name_obs", "geografic")
-
+        #geographic SECTION
+        """
+        self.lat = config.Config.getValue("lat", "geographic")
+        self.lon = config.Config.getValue("lon", "geographic")
+        self.height = config.Config.getInt("height", "geographic")
+        self.name_obs = config.Config.getValue("name_obs", "geographic")
+        """
     def update_coords(self):
         raise NotImplementedError()
 

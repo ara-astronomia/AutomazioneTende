@@ -21,7 +21,7 @@ class Telescope(BaseTelescope):
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
         self.connected: bool = False
-        #self.sync = conv_altaz_to_ardec(utc_sync)
+        #self.sync = conv_altaz_to_ardec(sync_time)
 
     def __disconnection__(self):
         Logger.getLogger().exception("Connessione con The Sky persa: ")
@@ -100,8 +100,8 @@ class Telescope(BaseTelescope):
                 error_code = int(r2.group(0))
         return error_code
 
-    def sync(self, utc_sync):
-        utc_now = utc_sync
+    def sync(self, sync_time):
+        utc_now = sync_time
         data = conv_altaz_to_ardec(utc_now)
         Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
         data = {"ar": data[0], "dec":data[1]}

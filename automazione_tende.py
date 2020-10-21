@@ -54,6 +54,9 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
         self.crac_status = CracStatus()
+        self.timezone = config.Config.getValue("timezone", "geographic")
+        self.ora_leg = config.Config.getValue("ora_leg", "geographic")
+        timezone_daylight = None
         utc_time_sync = None
 
     def read(self) -> CracStatus:
@@ -248,10 +251,15 @@ class AutomazioneTende:
 
     # POWER SWITCH
     def power_on(self):
+        timezone = self.timezone
+        ora_leg = self.ora_leg
+        timezone_daylight = timezone + ora_leg
+        print (timezone_daylight)
+        type (timezone_daylight)
         """ on power switch and update the power switch status in CracStatus object """
         self.power_control.on()
-        AutomazioneTende.utc_sync = (datetime.datetime.utcnow())
-        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", AutomazioneTende.utc_sync)
+        AutomazioneTende.sync_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=int(timezone_daylight)))
+        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", AutomazioneTende.sync_time)
 
     def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
@@ -261,10 +269,10 @@ class AutomazioneTende:
     # SYNC SWITCH
     def time_sync(self):
         if self.power_control.read() is ButtonStatus.ON:
-            time_utc_sync = AutomazioneTende.utc_sync
-            Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_utc_sync)
-            self.telescope.sync(time_utc_sync)
-            self.telescope.update_status_sync()
+            time_local_sync = AutomazioneTende.sync_time
+            Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_local_sync)
+            self.telescope.sync(time_local_sync)
+            #self.telescope.update_status_sync()
 
     # LIGHT DOME
     def light_on(self):
