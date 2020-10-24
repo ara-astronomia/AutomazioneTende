@@ -79,11 +79,6 @@ def connection() -> str:
                 LoggerClient.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
 
-            elif cs.telescope_status == TelescopeStatus.SYNC:
-                LoggerClient.getLogger().info("telescopio sincronizzato da CRaC")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_SYNC)
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_SYNC, text_color="#2c2825", background_color="green")
-
             elif cs.telescope_status == TelescopeStatus.SECURE:
                 LoggerClient.getLogger().info("telescopio in sicurezza ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")

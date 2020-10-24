@@ -92,7 +92,6 @@ class TelescopeStatus(OrderedEnum):
     PARKED = (0, "PP")  # TELESCOPIO IN PARK
     FLATTER = (1, "FF")  # TELESCOPIO IN POSIZIONE DI RIPRESA FLAT
     SECURE = (2, "SS")  # TELESCOPIO IN SICUREZZA, SOTTO IL COLMO DEL TETTO
-    SYNC = (11, "SY") # TELESCOPIO SINCRONIZZATO
 
     # TELESCOPIO IN CONDIZIONE DI OPERABILITÀ
     NORTHEAST = (3, "NE")
@@ -123,11 +122,13 @@ class ButtonStatus(OrderedEnum):
     OFF = (0, "S")  # PANNELLO FLAT SPENTO
     ON = (1, "A")  # PANNELLO FLAT ACCESO
 
+
 @unique
 class SyncStatus(OrderedEnum):
 
-    OFF = (0, "N")  # TELESCOPIO SINCRONIZZATO
-    ON = (1, "S")  # TELESCOPIO NON SINCRONIZZATO
+    OFF = (0, "N")  # TELESCOPIO NON SINCRONIZZATO
+    ON = (1, "S")  # TELESCOPIO SINCRONIZZATO
+
 
 @unique
 class TrackingStatus(OrderedEnum):

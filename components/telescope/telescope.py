@@ -6,6 +6,7 @@ from status import ButtonStatus
 from status import SyncStatus
 from logger import Logger
 import components.telescope.sync
+from components.telescope.sync import conv_altaz_to_ardec
 
 
 class BaseTelescope:
@@ -24,7 +25,7 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
-        #geographic SECTION
+        # geographic SECTION
         """
         self.lat = config.Config.getValue("lat", "geographic")
         self.lon = config.Config.getValue("lon", "geographic")
@@ -43,8 +44,19 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
-    def sync(self, utcnow):
-        raise NotImplementedError()
+    def sync(self, sync_time):
+        utc_now = sync_time
+        data = conv_altaz_to_ardec(utc_now)
+        Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
+        data = {"ar": data[0], "dec": data[1]}
+        Logger.getLogger().debug("valori di sincronizzazione diar e dec al tempo UTC di sync: %s", data)
+        if self.sync_tele(**data):
+            self.sync_status = SyncStatus.ON
+        else:
+            self.sync_status = SyncStatus.OFF
+
+    def nosync(self):
+        self.sync_status: SyncStatus = SyncStatus.OFF
 
     def __update_status__(self):
 
@@ -72,7 +84,6 @@ class BaseTelescope:
                 self.status = TelescopeStatus.EAST
 
         self.tracking_status = TrackingStatus.from_value(self.coords["tr"])
-
 
         Logger.getLogger().debug("Altezza Telescopio: %s", str(self.coords['alt']))
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))

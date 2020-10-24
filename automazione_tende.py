@@ -272,7 +272,6 @@ class AutomazioneTende:
             time_local_sync = AutomazioneTende.sync_time
             Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_local_sync)
             self.telescope.sync(time_local_sync)
-            #self.telescope.update_status_sync()
 
     # LIGHT DOME
     def light_on(self):
