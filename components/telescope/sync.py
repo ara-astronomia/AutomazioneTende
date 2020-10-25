@@ -29,9 +29,9 @@ def conv_altaz_to_ardec(sync_time):
 
     aa = AltAz(location=name_obs, obstime=time_local_sync)
     coord_AltAz = SkyCoord((Alt_deg)*u.deg, (Az_deg)*u.deg, frame=aa, equinox=equinox)
-    print (coord_AltAz)
+    Logger.getLogger().debug('AltAz_park letto: %s', coord_AltAz)
     coord_ArDec = coord_AltAz.transform_to('fk5')
-    print (coord_ArDec)
+    Logger.getLogger().debug('ar e dec convertite in formato FK5: %s', coord_ArDec)
     ar_icrs = str(coord_ArDec.ra*u.deg)
     dec_icrs = str(coord_ArDec.dec*u.deg)
     ar_icrs_deg = ar_icrs[0:17]
