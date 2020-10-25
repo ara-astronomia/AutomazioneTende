@@ -56,7 +56,7 @@ class GPIOPin(Pin, Enum):
 
     @staticmethod
     def setup():
-        import RPi.GPIO
+        import RPi.GPIO  # type: ignore
         RPi.GPIO.setmode(RPi.GPIO.BOARD)
         for pin in list(GPIOPin):
             if pin.pull:

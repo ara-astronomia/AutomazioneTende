@@ -13,6 +13,10 @@ APP = "SERVER"
 
 def init():
     global APP
+    if APP == "SERVER":
+        from logger import Logger
+    else:
+        from logger import LoggerClient as Logger
 
 
 def __convert_steps__(steps: SupportsRound) -> str:
@@ -69,10 +73,6 @@ class CracStatus:
     _structure = __structure__()
 
     def __init__(self, code: str = None):
-        if APP == "SERVER":
-            from logger import Logger
-        else:
-            from logger import LoggerClient as Logger
         self.logger = Logger.getLogger()
 
         self.length = 0
@@ -151,7 +151,7 @@ class CracStatus:
         self.__assign__(value, "curtain_east_status")
 
     @property
-    def curtain_east_steps(self) -> str:
+    def curtain_east_steps(self):
         return self._curtain_east_steps
 
     @curtain_east_steps.setter
@@ -167,7 +167,7 @@ class CracStatus:
         self.__assign__(value, "curtain_west_status")
 
     @property
-    def curtain_west_steps(self) -> str:
+    def curtain_west_steps(self):
         return self._curtain_west_steps
 
     @curtain_west_steps.setter

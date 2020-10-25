@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import PySimpleGUI as sg  # type: ignore
 from logger import Logger
 from gui_constants import GuiLabel, GuiKey
 

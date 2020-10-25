@@ -26,11 +26,11 @@ class AutomazioneTende:
 
         else:
             from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl
-            from mock.button_control import ButtonControl
+            from mock.roof_control import RoofControl  # type: ignore
+            from mock.button_control import ButtonControl  # type: ignore
 
         telescopio = importlib.import_module(f"components.telescope.{telescope_plugin}.telescope")
-        self.telescope = telescopio.Telescope()
+        self.telescope = telescopio.Telescope()  # type: ignore
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
