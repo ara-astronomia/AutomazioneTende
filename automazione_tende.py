@@ -253,7 +253,7 @@ class AutomazioneTende:
     def power_on(self):
         timezone = self.timezone
         ora_leg = self.ora_leg
-        timezone_daylight = timezone + ora_leg
+        timezone_daylight = int(timezone) + int(ora_leg)
         print (timezone_daylight)
         type (timezone_daylight)
         """ on power switch and update the power switch status in CracStatus object """
