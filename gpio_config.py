@@ -34,10 +34,6 @@ class GPIOConfig(metaclass=Singleton):
         else:
             return status
 
-    @DeprecationWarning
-    def status_pull(self, pin):
-        return self.status(pin)
-
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)
 

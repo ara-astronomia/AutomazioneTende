@@ -156,18 +156,18 @@ try:
                     else:
                         Exception("ERRORRRRRREW")
 
-                    #verity roof if open or closed
-                    sor = gpioConfig.status_pull(GPIOPin.VERIFY_OPEN)
-                    scr = gpioConfig.status_pull(GPIOPin.VERIFY_CLOSED)
-                    #verity curtain West open or closed
-                    sow = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-                    scw = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
-                    #verity curtain East open or closed
-                    soe = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-                    sce = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
-                    #number step west east
-                    nwe = "999" #convert_steps(west_curtain.steps)
-                    nee = "666" #convert_steps(east_curtain.steps)
+                    # verity roof if open or closed
+                    sor = gpioConfig.status(GPIOPin.VERIFY_OPEN)
+                    scr = gpioConfig.status(GPIOPin.VERIFY_CLOSED)
+                    # verity curtain West open or closed
+                    sow = gpioConfig.status(GPIOPin.CURTAIN_W_VERIFY_OPEN)
+                    scw = gpioConfig.status(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
+                    # verity curtain East open or closed
+                    soe = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
+                    sce = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+                    # number step west east
+                    nwe = "999"  # convert_steps(west_curtain.steps)
+                    nee = "666"  # convert_steps(east_curtain.steps)
 
                     test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)
