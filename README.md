@@ -118,3 +118,21 @@ ssh -L 59000:localhost:5901 -L 3030:localhost:3030 -C -N remoteIP
 ```
 
 this way you can connect to the server via both vnc (5901) and CRaC server (3030). Or you can decide to run CRaC client/server locally and connect remotely to theSkyX (3040)
+
+
+# Use crac client in a docker container on Mac (Draft)
+https://sourabhbajaj.com/blog/2017/02/07/gui-applications-docker-mac/
+https://medium.com/@SaravSun/running-gui-applications-inside-docker-containers-83d65c0db110
+
+just once
+```
+brew cask install xquartz
+brew cask install docker
+```
+
+right before starting the docker image
+```
+IP=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+export DISPLAY=$IP:0
+xhost +
+```
