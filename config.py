@@ -24,3 +24,8 @@ class Config(metaclass=Singleton):
     def getInt(key, section='automazione'):
         config = Config()
         return config.configparser[section].getint(key)
+
+    @staticmethod
+    def setValue(key, section=''):
+        config = Config()
+        return config.configparser[section][key]

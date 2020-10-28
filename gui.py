@@ -31,13 +31,16 @@ class Gui:
         self.line4_w = None
         self.image = None
 
+
         self.l = 390
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8)
         sg.theme('DarkBlue')
+        #menu_def = [['Edit', ['Setting'], ],
+        #           ['Help', ['About...'], ]]
         layout = [
-                    [sg.Menu([], tearoff=True)],
+                    #[sg.Menu(menu_def, tearoff=True)],
                     [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
                     [
                         sg.Frame(layout=([[
@@ -119,11 +122,66 @@ class Gui:
                             ],
                             [sg.Text(GuiLabel.NO_ALERT, size=(58, 1), justification='center', background_color="#B0C4DE", font=("Helvetica", 12), text_color="#FF0000", key="alert", relief=sg.RELIEF_RIDGE)]
                         ]), title='Status CRaC', relief=sg.RELIEF_GROOVE
-                    )]
+                    )],
+                [sg.Button('Setting')]
                  ]
 
         self.win = sg.Window('CRaC -- Control Roof and Curtains by ARA', layout, grab_anywhere=False, finalize=True)
+
         self.base_draw()
+
+    def gui_parameter(self):
+        sg.theme('DarkBlue')
+        layout1 = [
+                    [sg.Text('setting parametri CRaC', size=(41,1),font=('Arial',20),justification=('center'))],
+                        [sg.Frame(layout=([
+                            [sg.Text('IP', size=(15,1),font=('Arial',9)),sg.InputText(config.Config.getValue('ip', 'server'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('port', size=(15,1),font=('Arial',9)),sg.InputText(config.Config.getInt('port', 'server'), size=(25,1), font=('Arial',9), text_color=('black'))]
+                            ]),title='Setting server', font=('Arial',14), pad=(3, 0)),
+                        ],
+                        [sg.Frame(layout=([
+                            [sg.Text('Longitude', size=(15,1),font=('Arial',9), key ='lon'),sg.InputText(config.Config.getValue('lon', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Latitude', size=(15,1),font=('Arial',9), key ='lat'),sg.InputText(config.Config.getValue('lat', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Height', size=(15,1),font=('Arial',9), key ='hight'),sg.InputText(config.Config.getValue('height', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Timezone', size=(15,1),font=('Arial',9), key='ut'),sg.InputText(config.Config.getInt('timezone', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('daylight', size=(15,1),font=('Arial',9), key='dayl'),sg.InputText(config.Config.getInt('ora_leg', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('equinox', size=(15,1),font=('Arial',9), key='eqx'),sg.InputText(config.Config.getValue('equinox', 'geographic'), size=(25,1), font=('Arial',9), text_color=('black'))]
+                            ]),title='Geographic', font=('Arial',14), pad=(3, 0)),
+                        sg.Frame(layout=([
+                            [sg.Text('Max secure alt', size=(15,1),font=('Arial',9), key ='max_sec_alt'),sg.InputText(config.Config.getInt('max_secure_alt', 'telescope'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Azimuth di park', size=(15,1),font=('Arial',9), key ='park_az'),sg.InputText(config.Config.getValue('park_az', 'telescope'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Altezza di park', size=(15,1),font=('Arial',9), key ='park_alt'),sg.InputText(config.Config.getValue('park_alt', 'telescope'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Azimuth di flat', size=(15,1),font=('Arial',9), key ='flat_az'),sg.InputText(config.Config.getValue('flat_az', 'telescope'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Altezza di flat', size=(15,1),font=('Arial',9), key ='flat_alt'),sg.InputText(config.Config.getValue('flat_alt', 'telescope'), size=(25,1), font=('Arial',9), text_color=('black'))]
+                            ]),title='Telescope', font=('Arial',14), pad=(3, 0)),
+                        ],
+                        [sg.Frame(layout=([
+                            [sg.Text('Azimuth NE', size=(15,1),font=('Arial',9), key ='Az_NE'),sg.InputText(config.Config.getInt('azNE', 'azimut'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Azimuth SE', size=(15,1),font=('Arial',9), key ='Az_SE'),sg.InputText(config.Config.getInt('azSE', 'azimut'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Azimuth SW', size=(15,1),font=('Arial',9), key ='Az_SW'),sg.InputText(config.Config.getInt('azSW', 'azimut'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('Azimuth NW', size=(15,1),font=('Arial',9), key ='Az_NW'),sg.InputText(config.Config.getInt('azNW', 'azimut'), size=(25,1), font=('Arial',9), text_color=('black'))]
+                            ]),title='Curtains', font=('Arial',14), pad=(3, 0)),
+                        sg.Frame(layout=([
+                            [sg.Text('step/giro', size=(15,1),font=('Arial',9)),sg.InputText(config.Config.getInt('n_step', 'encoder_step'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('step totali per corsa', size=(15,1),font=('Arial',9), key ='max_step'),sg.InputText(config.Config.getInt('n_step_corsa', 'encoder_step'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('step max sicurezza', size=(15,1),font=('Arial',9), key ='max_secure_step'),sg.InputText(config.Config.getInt('n_step_sicurezza', 'encoder_step'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('mod count step', size=(15,1),font=('Arial',9), key ='mod_count_step'),sg.InputText(config.Config.getInt('count_steps_simple', 'encoder_step'), size=(25,1), font=('Arial',9), text_color=('black'))],
+                            [sg.Text('step di intervento min', size=(15,1),font=('Arial',9), key ='min_step'),sg.InputText(config.Config.getInt('diff_steps', 'encoder_step'), size=(25,1), font=('Arial',9), text_color=('black'))]
+                            ]),title='Encoders', font=('Arial',14), pad=(3, 0)),
+                        ],
+                        [sg.Button('Write'), sg.Button('Exit')],
+                     ]
+        self.win_param= sg.Window('Setting parametri CRaC -- Control Roof and Curtains by ARA', layout1, grab_anywhere=False, finalize=True)
+        event, values = self.win_param.read()
+        if event is 'Write':
+            print ('scrivi i valori sul file config.ini')
+            pass
+            #config_par.setValue('azNE', 'azimut', 2)
+
+        elif event in (sg.WIN_CLOSED, 'Exit'):
+            self.win_param.close()
+
+
 
     def create_background_image(self) -> None:
 

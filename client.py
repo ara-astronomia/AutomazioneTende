@@ -43,6 +43,9 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
+            elif v is 'Setting':
+                g_ui.gui_parameter()
+
             LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
             s.sendall(v.encode("utf-8"))
 
