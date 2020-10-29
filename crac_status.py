@@ -31,12 +31,12 @@ def __convert_coords__(coords: Dict[str, float]) -> str:
     if az > 36000:
         ValueError("Azimut telescopio non valido")
     Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
-    return f'{alt:04}{az:05}'
+    return f'{alt:05}{az:05}'
 
 
 def __reverse_coords__(value: str) -> Dict:
-    alt = round(float(f"{value[0:2]}.{value[2:4]}"), 2)
-    az = round(float(f"{value[4:7]}.{value[7:9]}"), 2)
+    alt = round(float(f"{value[0:3]}.{value[3:5]}"), 2)
+    az = round(float(f"{value[5:8]}.{value[8:10]}"), 2)
     coords = {"alt": alt, "az": az}
     Logger.getLogger().debug("coords VALUE: %s", coords)
     return coords
@@ -104,7 +104,7 @@ class CracStatus:
     def __check_type__(self, value, name):
         kind = type(self._structure[name]["orig"])
         if not isinstance(value, kind):
-            raise ValueError(f"{name} should be of type {kind}")
+            raise ValueError(f"{name} should be of type {kind} but was {value}")
 
     def __convert__(self, value, name):
         self.__check_type__(value, name)
@@ -226,7 +226,7 @@ class CracStatus:
         return self.curtain_east_status is CurtainsStatus.DISABLED and self.curtain_west_status is CurtainsStatus.DISABLED
 
     def are_curtains_in_danger(self):
-        return self.curtain_east_status is CurtainsStatus.DANGER or wself.curtain_west_status is CurtainsStatus.DANGER
+        return self.curtain_east_status is CurtainsStatus.DANGER or self.curtain_west_status is CurtainsStatus.DANGER
 
     def is_in_anomaly(self):
         self.logger.debug("roof status %s", self.roof_status)
@@ -247,7 +247,7 @@ class CracStatus:
         return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSED
 
     def telescope_in_secure_and_roof_is_closing(self):
-        return telescope_status > TelescopeStatus.PARKED and roof_status is Status.CLOSING
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
 
 
 if __name__ == "__main__":

@@ -64,7 +64,6 @@ class Telescope(telescope.BaseTelescope):
 
     def sync_tele(self, **kwargs):
         Logger.getLogger().info("sincronizzo il telescopio")
-        print(kwargs)
         Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
         self.update_coords(tr=kwargs.get("tr"), alt=kwargs.get("alt"), az=kwargs.get("az"))
 
