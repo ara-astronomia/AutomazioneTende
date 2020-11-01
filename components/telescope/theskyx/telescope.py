@@ -4,7 +4,6 @@ import re
 import socket
 import config
 from components.telescope.telescope import BaseTelescope
-from components.telescope.sync import conv_altaz_to_ardec
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus

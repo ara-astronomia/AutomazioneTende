@@ -60,6 +60,7 @@ class BaseTelescope:
             self.sync_status = SyncStatus.ON
         else:
             self.sync_status = SyncStatus.OFF
+        return data
 
     def nosync(self):
         self.sync_status = SyncStatus.OFF
