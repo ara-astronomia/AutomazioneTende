@@ -1,12 +1,12 @@
 import config
-from enum import IntEnum, unique
 from typing import Dict
 from status import TelescopeStatus, TrackingStatus
-from status import ButtonStatus
 from status import SyncStatus
 from logger import Logger
-import components.telescope.sync
-from components.telescope.sync import conv_altaz_to_ardec
+from astropy.coordinates import EarthLocation
+from astropy.coordinates import AltAz
+from astropy.coordinates import SkyCoord
+from astropy import units as u
 
 
 class BaseTelescope:
@@ -25,13 +25,7 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
-        # geographic SECTION
-        """
-        self.lat = config.Config.getValue("lat", "geographic")
-        self.lon = config.Config.getValue("lon", "geographic")
-        self.height = config.Config.getInt("height", "geographic")
-        self.name_obs = config.Config.getValue("name_obs", "geographic")
-        """
+
     def update_coords(self):
         raise NotImplementedError()
 
@@ -45,18 +39,30 @@ class BaseTelescope:
         raise NotImplementedError()
 
     def sync(self, sync_time):
-        utc_now = sync_time
-        data = conv_altaz_to_ardec(utc_now)
-        Logger.getLogger().debug("tempo UTC di sync in telescope.theskyx.telescope: %s", utc_now)
-        data = {"ar": data[0], "dec": data[1]}
-        Logger.getLogger().debug("valori di sincronizzazione diar e dec al tempo UTC di sync: %s", data)
+        alt_deg = config.Config.getFloat("park_alt", "telescope")
+        az_deg = config.Config.getFloat("park_az", "telescope")
+        lat = config.Config.getValue("lat", "geography")
+        lon = config.Config.getValue("lon", "geography")
+        height = config.Config.getInt("height", "geography")
+        name_obs = config.Config.getValue("name_obs", "geography")
+        equinox = config.Config.getValue("equinox", "geography")
+
+        name_obs = EarthLocation(lat, lon, height * u.m)
+        aa = AltAz(location=name_obs, obstime=sync_time)
+        alt_az = SkyCoord(alt_deg * u.deg, az_deg * u.deg, frame=aa, equinox=equinox)
+        ar_dec = alt_az.transform_to('fk5')
+        ar = float((ar_dec.ra / 15) / u.deg)
+        dec = float(ar_dec.dec / u.deg)
+        Logger.getLogger().debug('ar park (orario decimale): %s', ar)
+        Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
+        data = {"ar": ar, "dec": dec}
         if self.sync_tele(**data):
             self.sync_status = SyncStatus.ON
         else:
             self.sync_status = SyncStatus.OFF
 
     def nosync(self):
-        self.sync_status: SyncStatus = SyncStatus.OFF
+        self.sync_status = SyncStatus.OFF
 
     def __update_status__(self):
 

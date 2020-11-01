@@ -7,9 +7,8 @@ from status import Status
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import CurtainsStatus
-from status import SyncStatus
 from status import Orientation
-from typing import Dict, Any
+from typing import Dict
 from crac_status import CracStatus
 from gpio_pin import GPIOPin
 from components.curtains.factory_curtain import FactoryCurtain
@@ -54,10 +53,7 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
         self.crac_status = CracStatus()
-        self.timezone = config.Config.getValue("timezone", "geographic")
-        self.ora_leg = config.Config.getValue("ora_leg", "geographic")
-        timezone_daylight = None
-        utc_time_sync = None
+        self.sync_time = None
 
     def read(self) -> CracStatus:
 
@@ -92,9 +88,6 @@ class AutomazioneTende:
         self.crac_status.telescope_status = self.telescope.status
 
         return self.telescope.coords
-
-    #def sync_tele():
-    #    pass
 
     def read_altaz_mount_coordinate(self) -> Dict[str, int]:
 
@@ -251,27 +244,22 @@ class AutomazioneTende:
 
     # POWER SWITCH
     def power_on(self):
-        timezone = self.timezone
-        ora_leg = self.ora_leg
-        timezone_daylight = int(timezone) + int(ora_leg)
-        print (timezone_daylight)
-        type (timezone_daylight)
         """ on power switch and update the power switch status in CracStatus object """
+
         self.power_control.on()
-        AutomazioneTende.sync_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=int(timezone_daylight)))
-        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", AutomazioneTende.sync_time)
+        self.sync_time = datetime.datetime.utcnow()
+        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.sync_time)
 
     def power_off(self):
         """ off power switch and update the power switch status in CracStatus object """
 
+        self.telescope.nosync()
         self.power_control.off()
 
     # SYNC SWITCH
     def time_sync(self):
-        if self.power_control.read() is ButtonStatus.ON:
-            time_local_sync = AutomazioneTende.sync_time
-            Logger.getLogger().debug("invio UTC time di conversione al modulo di sincronizzazione %s:", time_local_sync)
-            self.telescope.sync(time_local_sync)
+        if self.power_control.read() is ButtonStatus.ON and self.sync_time:
+            self.telescope.sync(self.sync_time)
 
     # LIGHT DOME
     def light_on(self):
