@@ -53,3 +53,4 @@ class TelescopeTest(unittest.TestCase):
         sync_time = (datetime.datetime.utcnow() + datetime.timedelta(hours=2))
         self.telescopio.sync(sync_time)
         self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
+        # TODO check ardec coordinates giveen the tracking is on or off

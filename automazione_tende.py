@@ -3,7 +3,7 @@ import time
 import importlib
 import config
 from logger import Logger
-from status import Status
+from status import Status, TrackingStatus
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import CurtainsStatus
@@ -258,8 +258,11 @@ class AutomazioneTende:
 
     # SYNC SWITCH
     def time_sync(self):
+        sync_time = self.sync_time
+        if self.telescope.tracking_status == TrackingStatus.OFF:
+            sync_time = datetime.datetime.utcnow()
         if self.power_control.read() is ButtonStatus.ON and self.sync_time:
-            self.telescope.sync(self.sync_time)
+            self.telescope.sync(sync_time)
 
     # LIGHT DOME
     def light_on(self):
