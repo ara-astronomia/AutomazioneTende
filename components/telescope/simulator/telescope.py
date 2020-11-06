@@ -1,4 +1,5 @@
 import configparser
+import datetime
 import os
 from components.telescope import telescope
 from logger import Logger
@@ -60,8 +61,9 @@ class Telescope(telescope.BaseTelescope):
 
     def sync_tele(self, **kwargs):
         Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
-        # TODO convert ardec to altaz
-        self.update_coords(tr=1, alt=0, az=0)
+        coords = self.radec2altaz(datetime.datetime.utcnow(), **kwargs)
+        Logger.getLogger().debug("Coordinate %s %s", coords["alt"], coords["az"])
+        self.update_coords(tr=1, alt=coords["alt"], az=coords["az"])
         return True
 
     def __is_number_or_input__(self, s, message, kind=int, start=0, stop=1):

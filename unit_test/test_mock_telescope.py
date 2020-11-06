@@ -55,8 +55,6 @@ class MockTelescopeTest(unittest.TestCase):
             side_effect = "42d13.76m"
         elif key == "height" and section == "geography":
             side_effect = 465
-        elif key == "name_obs" and section == "geography":
-            side_effect = "157FrassoSabino"
         elif key == "equinox" and section == "geography":
             side_effect = "J2000"
         elif key == "timezone" and section == "geography":
@@ -65,14 +63,19 @@ class MockTelescopeTest(unittest.TestCase):
             side_effect = DEFAULT
         return side_effect
 
-    def test_conv_altaz_to_ardec(self):
+    def test_sync_tele(self):
         date = datetime.datetime(2020, 12, 6, 15, 29, 43, 79060, tzinfo=datetime.timezone.utc)
         config.Config.getInt = MagicMock(side_effect=self.__side_effect_config__)
         config.Config.getFloat = MagicMock(side_effect=self.__side_effect_config__)
         config.Config.getValue = MagicMock(side_effect=self.__side_effect_config__)
         coords = self.telescopio.sync(date)
-        self.assertEqual(coords["ar"], 9.364517932878291)
+        self.assertEqual(coords["ra"], 9.364517932878291)
         self.assertEqual(coords["dec"], 47.96211142851545)
+
+    def test_radec2altaz(self):
+        coords = {"ra": 9.364517932878291, "dec": 47.96211142851545}
+        self.telescopio.radec2altaz(datetime.datetime(2020, 12, 6, 15, 29, 43, 79060, tzinfo=datetime.timezone.utc), **coords)
+        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
 
     def tearDown(self):
         config.Config.getInt = self.configGetInt

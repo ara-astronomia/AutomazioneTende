@@ -41,26 +41,39 @@ class BaseTelescope:
     def sync(self, sync_time):
         alt_deg = config.Config.getFloat("park_alt", "telescope")
         az_deg = config.Config.getFloat("park_az", "telescope")
-        lat = config.Config.getValue("lat", "geography")
-        lon = config.Config.getValue("lon", "geography")
-        height = config.Config.getInt("height", "geography")
-        name_obs = config.Config.getValue("name_obs", "geography")
-        equinox = config.Config.getValue("equinox", "geography")
-
-        name_obs = EarthLocation(lat, lon, height * u.m)
-        aa = AltAz(location=name_obs, obstime=sync_time)
-        alt_az = SkyCoord(alt_deg * u.deg, az_deg * u.deg, frame=aa, equinox=equinox)
-        ar_dec = alt_az.transform_to('fk5')
-        ar = float((ar_dec.ra / 15) / u.deg)
-        dec = float(ar_dec.dec / u.deg)
-        Logger.getLogger().debug('ar park (orario decimale): %s', ar)
-        Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
-        data = {"ar": ar, "dec": dec}
+        data = self.altaz2radec(sync_time, alt=alt_deg, az=az_deg)
         if self.sync_tele(**data):
             self.sync_status = SyncStatus.ON
         else:
             self.sync_status = SyncStatus.OFF
         return data
+
+    def altaz2radec(self, obstime, **kwargs):
+        lat = config.Config.getValue("lat", "geography")
+        lon = config.Config.getValue("lon", "geography")
+        height = config.Config.getInt("height", "geography")
+        equinox = config.Config.getValue("equinox", "geography")
+
+        name_obs = EarthLocation(lat, lon, height * u.m)
+        aa = AltAz(location=name_obs, obstime=obstime)
+        alt_az = SkyCoord(kwargs["alt"] * u.deg, kwargs["az"] * u.deg, frame=aa, equinox=equinox)
+        ar_dec = alt_az.transform_to('fk5')
+        ar = float((ar_dec.ra / 15) / u.deg)
+        dec = float(ar_dec.dec / u.deg)
+        Logger.getLogger().debug('ar park (orario decimale): %s', ar)
+        Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
+        return {"ra": ar, "dec": dec}
+
+    def radec2altaz(self, obstime, **kwargs):
+        height = config.Config.getInt("height", "geography")
+        lat = config.Config.getValue("lat", "geography")
+        lon = config.Config.getValue("lon", "geography")
+        equinox = config.Config.getValue("equinox", "geography")
+        location = EarthLocation(lat, lon, height * u.m)
+        equinox = config.Config.getValue("equinox", "geography")
+        coords = SkyCoord(ra=kwargs["ra"] * u.deg, dec=kwargs["dec"] * u.deg, equinox=equinox, frame="fk5")
+        altaz_coords = coords.transform_to(AltAz(obstime=obstime, location=location))
+        return {"alt": float(altaz_coords.alt / u.deg), "az": float(altaz_coords.az / u.deg)}
 
     def nosync(self):
         self.sync_status = SyncStatus.OFF

@@ -1,6 +1,6 @@
 /* Java Script */
 /* Socket Start Packet */
-var dRa = {ar} /*ra da sinc.py;*/
+var dRa = {ra} /*ra da sinc.py;*/
 var dDec = {dec} /*dec da sinc.py;*/
 var name ="park sync";
 var Out;
