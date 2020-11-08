@@ -1,5 +1,6 @@
 from status import ButtonStatus
 
+
 class ButtonControl():
     def __init__(self, pin):
         self.status = False

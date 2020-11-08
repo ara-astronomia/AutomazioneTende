@@ -24,7 +24,6 @@ class AutomazioneTende:
             from components.button_control import ButtonControl
 
         else:
-            from unittest.mock import patch, MagicMock
             from mock.roof_control import RoofControl  # type: ignore
             from mock.button_control import ButtonControl  # type: ignore
 
@@ -77,7 +76,7 @@ class AutomazioneTende:
 
     def move_tele(self, tr, alt, az) -> Dict[str, int]:
 
-        """ Move the Telescope nd Tracking off """
+        """ Move the Telescope and set Tracking on/off """
 
         Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
@@ -258,11 +257,9 @@ class AutomazioneTende:
 
     # SYNC SWITCH
     def time_sync(self):
-        sync_time = self.sync_time
-        if self.telescope.tracking_status == TrackingStatus.OFF:
-            sync_time = datetime.datetime.utcnow()
-        if self.power_control.read() is ButtonStatus.ON and self.sync_time:
-            self.telescope.sync(sync_time)
+        if self.power_control.read() is ButtonStatus.OFF:
+            self.power_on()
+        self.telescope.sync(self.sync_time)
 
     # LIGHT DOME
     def light_on(self):
