@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.server
+    volumes:
+      - .:/crac
     ports: 
       - 3030:3030
     network_mode: host
@@ -12,8 +14,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.client
+    volumes:
+      - .:/crac
     environment: 
-      DISPLAY: 192.168.0.34:0
+      DISPLAY: ${DISPLAY}
     network_mode: host
     depends_on:
       - "crac_server"
