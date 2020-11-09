@@ -70,7 +70,7 @@ class AutomazioneTende:
         self.crac_status.sync_status = self.telescope.sync_status
         self.crac_status.power_status = self.power_control.read()
         self.crac_status.light_status = self.light_control.read()
-        self.crac_status.aux_status =self.aux_control.read()
+        self.crac_status.aux_status = self.aux_control.read()
 
         return self.crac_status
 
