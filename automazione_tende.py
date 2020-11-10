@@ -233,7 +233,7 @@ class AutomazioneTende:
     def power_on_tele(self):
         """ on power switch and update the power switch status in CracStatus object """
 
-        self.power_control.on()
+        self.power_tele_control.on()
         self.sync_time = datetime.datetime.utcnow()
         Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.sync_time)
 
@@ -241,7 +241,7 @@ class AutomazioneTende:
         """ off power switch and update the power switch status in CracStatus object """
 
         self.telescope.nosync()
-        self.power_control.off()
+        self.power_tele_control.off()
 
     # POWER SWITCH CCD
     def power_on_ccd(self):
@@ -268,8 +268,8 @@ class AutomazioneTende:
 
     # SYNC SWITCH
     def time_sync(self):
-        if self.power_control.read() is ButtonStatus.OFF:
-            self.power_on()
+        if self.power_tele_control.read() is ButtonStatus.OFF:
+            self.power_on_tele()
         self.telescope.sync(self.sync_time)
 
     # LIGHT DOME
