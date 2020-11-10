@@ -169,7 +169,7 @@ try:
                     nwe = "999"  # convert_steps(west_curtain.steps)
                     nee = "666"  # convert_steps(east_curtain.steps)
 
-                    test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
+                    test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", nee)
                     Logger.getLogger().info("Encoder west: %s", nwe)
