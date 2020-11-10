@@ -47,21 +47,21 @@ def create_win():
         ],
         [
             sg.Frame(layout=([[
+                sg.Radio(GuiLabel.ON, "Power tele", key=GuiKey.POWER_ON_TELE, default=False, tooltip="accensione alimentarori"),
+                sg.Radio(GuiLabel.OFF, "Power tele", key=GuiKey.POWER_OFF_TELE, default=False,  tooltip="spegnimento alimentatori"),
+            ]]), title="Power Switch Tele", pad=(3, 10)),
+            sg.Frame(layout=([[
+                sg.Radio(GuiLabel.ON, "Power CCD", key=GuiKey.POWER_ON_CCD, default=False, tooltip="accensione ausiliari"),
+                sg.Radio(GuiLabel.OFF, "Power CCD", key=GuiKey.POWER_OFF_CCD, default=False, tooltip="spegnimento ausiliari"),
+            ]]), title="Power Switch CCD", pad=(3, 10)),
+            sg.Frame(layout=([[
                 sg.Radio(GuiLabel.ON,"Panel", key=GuiKey.PANEL_ON, default=False),
                 sg.Radio(GuiLabel.OFF,"Panel", key=GuiKey.PANEL_OFF, default=False)
             ]]), title="Panel Flat", title_location=sg.TITLE_LOCATION_TOP, pad=(3, 10)),
             sg.Frame(layout=([[
-                sg.Radio(GuiLabel.ON, "PowerS", key=GuiKey.POWER_ON, default=False, tooltip="accensione alimentarori"),
-                sg.Radio(GuiLabel.OFF, "PowerS", key=GuiKey.POWER_OFF, default=False,  tooltip="spegnimento alimentatori"),
-            ]]), title="Power Switch", pad=(3, 10)),
-            sg.Frame(layout=([[
                 sg.Radio(GuiLabel.ON, "Light", key=GuiKey.LIGHT_ON, default= False, tooltip="accensioni luci cupola"),
                 sg.Radio(GuiLabel.OFF, "Light",  key=GuiKey.LIGHT_OFF, default=False, tooltip="spegnimento luci cupola"),
             ]]), title="Light Dome", pad=(3, 10)),
-            sg.Frame(layout=([[
-                sg.Radio(GuiLabel.ON, "Aux", key=GuiKey.AUX_ON, default=False, tooltip="accensione ausiliari"),
-                sg.Radio(GuiLabel.OFF, "Aux", key=GuiKey.AUX_OFF, default=False, tooltip="spegnimento ausiliari"),
-            ]]), title="Auxiliary", pad=(3, 10)),
         ]
     ]
 

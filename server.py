@@ -85,11 +85,11 @@ try:
 
                     elif data == b'W':
                         Logger.getLogger().debug("chiamata al metodo accensione alimentatori")
-                        automazioneTende.power_on()
+                        automazioneTende.power_on_tele()
 
                     elif data == b'X':
                         Logger.getLogger().debug("chiamata al metodo spegnimento alimentatori")
-                        automazioneTende.power_off()
+                        automazioneTende.power_off_tele()
 
                     elif data == b'K':
                         Logger.getLogger().debug("chiamata al metodo accensione luci cupola")
@@ -101,11 +101,11 @@ try:
 
                     elif data == b'A':
                         Logger.getLogger().debug("chiamata al metodo accensione ausiliare")
-                        automazioneTende.aux_on()
+                        automazioneTende.power_on_ccd()
 
                     elif data == b'O':
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
-                        automazioneTende.aux_off()
+                        automazioneTende.power_off_ccd()
 
                     elif data == b'S':
                         Logger.getLogger().debug("chiamata al metodo sincronizzazione")
