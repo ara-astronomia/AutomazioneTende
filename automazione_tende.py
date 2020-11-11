@@ -295,35 +295,37 @@ class AutomazioneTende:
             GPIOConfig().cleanup(n)
 
     def exec(self) -> None:
+        if self.power_tele_control.read() is ButtonStatus.ON:
+            #chiamata ad un metodo js che con un ciclo while resta in attesa dei dati di thesky, forse....
 
-        """ Move the curtains and update the telescope coordinates"""
+            """ Move the curtains and update the telescope coordinates"""
 
-        steps = self.calculate_curtains_steps()
-        Logger.getLogger().debug("calculated steps %s", steps)
-        self.crac_status.curtain_east_status = self.curtain_east.read()
-        self.crac_status.curtain_east_steps = self.curtain_east.steps
-        self.crac_status.curtain_west_status = self.curtain_west.read()
-        self.crac_status.curtain_west_steps = self.curtain_west.steps
-        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
-        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
-        self.read_altaz_mount_coordinate()
+            steps = self.calculate_curtains_steps()
+            Logger.getLogger().debug("calculated steps %s", steps)
+            self.crac_status.curtain_east_status = self.curtain_east.read()
+            self.crac_status.curtain_east_steps = self.curtain_east.steps
+            self.crac_status.curtain_west_status = self.curtain_west.read()
+            self.crac_status.curtain_west_steps = self.curtain_west.steps
+            Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
+            Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
+            self.read_altaz_mount_coordinate()
 
-        if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
-            self.panel_off()
+            if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
+                self.panel_off()
 
-        if not self.started:
-            self.park_curtains()
-            self.curtain_east.is_disabled = True
-            self.curtain_west.is_disabled = True
-            return
+            if not self.started:
+                self.park_curtains()
+                self.curtain_east.is_disabled = True
+                self.curtain_west.is_disabled = True
+                return
 
-        self.curtain_east.is_disabled = False
-        self.curtain_west.is_disabled = False
-        prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
-        if self.is_diff_steps(steps, prevSteps):
-            Logger.getLogger().debug("Differenza steps sufficienti")
-            self.move_curtains_steps(steps)
-            # solo se la differenza è misurabile imposto le coordinate
-            # precedenti uguali a quelle attuali altrimenti muovendosi
-            # a piccoli movimenti le tende non verrebbero mai spostate
-        time.sleep(config.Config.getFloat("sleep", "automazione"))
+            self.curtain_east.is_disabled = False
+            self.curtain_west.is_disabled = False
+            prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
+            if self.is_diff_steps(steps, prevSteps):
+                Logger.getLogger().debug("Differenza steps sufficienti")
+                self.move_curtains_steps(steps)
+                # solo se la differenza è misurabile imposto le coordinate
+                # precedenti uguali a quelle attuali altrimenti muovendosi
+                # a piccoli movimenti le tende non verrebbero mai spostate
+            time.sleep(config.Config.getFloat("sleep", "automazione"))
