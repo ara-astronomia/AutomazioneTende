@@ -19,6 +19,7 @@ class Telescope(BaseTelescope):
         self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
+        self.script_search_link_tele: str = os.path.join(os.path.dirname(__file__), 'search_link_tele.js')
         self.connected: bool = False
         # self.sync = conv_altaz_to_ardec(sync_time)
 
@@ -51,9 +52,16 @@ class Telescope(BaseTelescope):
             self.__update_status__()
             self.coords
 
+    def search_link(self):
+        data = self.__call_thesky__(self.script_search_link_tele)
+        Logger.getLogger().info("connessione: %s", data)
+        self.update_coords()
+        #if time.sleep(60):
+    
     def read(self):
         try:
-            self.update_coords()
+            self.search_link()
+            #self.update_coords()
         except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
             self.__disconnection__()
         else:
