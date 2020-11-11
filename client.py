@@ -5,8 +5,12 @@ import crac_status
 import gui
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, CurtainsStatus, TelescopeStatus
-from status import ButtonStatus, TrackingStatus
+from status import Status
+from status import CurtainsStatus
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import TrackingStatus
+from status import SyncStatus
 
 
 def connection() -> str:
@@ -80,7 +84,7 @@ def connection() -> str:
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
 
             elif cs.telescope_status == TelescopeStatus.LOST:
-                LoggerClient.getLogger().info("telescopio ha perso la conessione con thesky ")
+                LoggerClient.getLogger().info("telescopio ha perso la connessione con thesky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
 
@@ -180,6 +184,12 @@ def connection() -> str:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
             elif cs.tracking_status == TrackingStatus.OFF:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
+
+            # SYNC
+            if cs.sync_status == SyncStatus.ON:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
+            elif cs.sync_status == SyncStatus.OFF:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_OFF, text_color="red", background_color="white")
 
             # ALERT
             if cs.is_in_anomaly():

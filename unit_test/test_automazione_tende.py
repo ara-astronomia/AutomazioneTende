@@ -1,7 +1,7 @@
 import unittest
 import config
 import socket
-from unittest.mock import MagicMock
+from unittest.mock import DEFAULT, MagicMock
 from automazione_tende import AutomazioneTende
 import socket
 from base.singleton import Singleton
@@ -15,8 +15,11 @@ class AutomazioneTendeTest(unittest.TestCase):
         self.original_config_getInt = config.Config.getInt
         self.automazioneTende = AutomazioneTende(telescope_plugin="theskyx")
 
-    def __side_effect_for_diff_steps__(self, key, section):
-        side_effect = 0 if key == "diff_steps" else self.original_config_getInt(key, section)
+    def __side_effect_for_diff_steps__(self, key, section=""):
+        if key == "diff_steps" and section == "encoder_step":
+            side_effect = 0
+        else:
+            side_effect = DEFAULT
         return side_effect
 
     def test_is_diff_steps_enough(self):
@@ -88,3 +91,6 @@ class AutomazioneTendeTest(unittest.TestCase):
         steps = at.calculate_curtains_steps()
         comparison = {"east": 200, "west": at.n_step_corsa}
         self.assertEqual(steps, comparison)
+
+    def tearDown(self):
+        config.Config.getInt = self.original_config_getInt

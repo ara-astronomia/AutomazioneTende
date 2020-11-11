@@ -1,8 +1,9 @@
-import RPi.GPIO as GPIO # type: ignore
+import RPi.GPIO as GPIO  # type: ignore
 from logger import Logger
 from base.singleton import Singleton
 from gpio_pin import GPIOPin
 import config
+
 
 class GPIOConfig(metaclass=Singleton):
 
@@ -17,21 +18,21 @@ class GPIOConfig(metaclass=Singleton):
 
     def wait_for_on(self, switch, timeout=config.Config.getInt("wait_for_timeout", "roof_board")):
         is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.FALLING, timeout=timeout)
-        return is_finished != None
+        return is_finished is not None
 
     def wait_for_off(self, switch, timeout=config.Config.getInt("wait_for_timeout", "roof_board")):
         is_finished = GPIO.wait_for_edge(switch.id_pin, GPIO.RISING, timeout=timeout)
-        return is_finished != None
+        return is_finished is not None
 
     def status(self, pin):
-        return GPIO.input(pin.id_pin) is pin.on_is
-
-    def status_pull(self, pin):
-        if GPIO.input(pin.id_pin) == 0:
-            Logger.getLogger().debug("stato pin: " + str(pin.id_pin) + " chiuso")
-        elif GPIO.input(pin.id_pin) == 1:
-            Logger.getLogger().debug("stato pin: " + str(pin.id_pin) + " aperto")
-        return "1" if GPIO.input(pin.id_pin) else "0"
+        status = GPIO.input(pin.id_pin)
+        if pin.on_is:
+            if status is pin.on_is:
+                return GPIO.HIGH
+            else:
+                return GPIO.LOW
+        else:
+            return status
 
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)
