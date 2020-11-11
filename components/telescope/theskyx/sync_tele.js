@@ -2,7 +2,7 @@
 /* Socket Start Packet */
 var dRa = "{ra}"; 
 var dDec = "{dec}";
-var name ="park sync";
+var name = "park sync";
 var Out;
 /* Make a simpler name for output. */
 var console = RunJavaScriptOutput;

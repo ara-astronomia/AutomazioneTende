@@ -49,6 +49,7 @@ class BaseTelescope:
         return data
 
     def altaz2radec(self, obstime, **kwargs):
+        Logger.getLogger().debug('obstime: %s', obstime)
         lat = config.Config.getValue("lat", "geography")
         lon = config.Config.getValue("lon", "geography")
         height = config.Config.getInt("height", "geography")
@@ -57,12 +58,12 @@ class BaseTelescope:
         name_obs = EarthLocation(lat, lon, height * u.m)
         aa = AltAz(location=name_obs, obstime=obstime)
         alt_az = SkyCoord(kwargs["alt"] * u.deg, kwargs["az"] * u.deg, frame=aa, equinox=equinox)
-        ar_dec = alt_az.transform_to('fk5')
-        ar = float((ar_dec.ra / 15) / u.deg)
-        dec = float(ar_dec.dec / u.deg)
-        Logger.getLogger().debug('ar park (orario decimale): %s', ar)
+        ra_dec = alt_az.transform_to('fk5')
+        ra = float((ra_dec.ra / 15) / u.deg)
+        dec = float(ra_dec.dec / u.deg)
+        Logger.getLogger().debug('ar park (orario decimale): %s', ra)
         Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
-        return {"ra": ar, "dec": dec}
+        return {"ra": ra, "dec": dec}
 
     def radec2altaz(self, obstime, **kwargs):
         height = config.Config.getInt("height", "geography")
