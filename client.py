@@ -140,7 +140,7 @@ def connection() -> str:
                     g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.telescope_status not in [TelescopeStatus.SECURE, TelescopeStatus.FLATTER]:
+            if cs.telescope_status not in [TelescopeStatus.FLATTER]:
                 LoggerClient.getLogger().info("pannello flat disattivato")
                 g_ui.update_disable_panel_all()
 
