@@ -18,6 +18,8 @@ class GuiLabel:
     TELESCOPE_PARKED = "Parked"
     TELESCOPE_FLATTER = "Flatter"
     TELESCOPE_SECURED = "In Sicurezza"
+    TELESCOPE_SYNC_OFF = "No Sync"
+    TELESCOPE_SYNC_ON = "Sync On"
     TELESCOPE_NE = "NordEst"
     TELESCOPE_EE = "Est"
     TELESCOPE_SE = "SudEst"

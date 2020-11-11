@@ -109,7 +109,7 @@ try:
 
                     elif data == b'S':
                         Logger.getLogger().debug("chiamata al metodo sincronizzazione")
-                        pass
+                        automazioneTende.time_sync()
 
                     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     automazioneTende.exec()

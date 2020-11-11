@@ -11,6 +11,7 @@ pycodestyle = "*"
 [packages]
 PySimpleGUI = "*"
 "RPi.GPIO" = {version = "*",platform_machine = "=='armv6l'"}
+astropy = "*"
 
 [requires]
 python_version = "3.7"
