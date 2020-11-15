@@ -69,11 +69,11 @@ class MockTelescopeTest(unittest.TestCase):
         config.Config.getFloat = MagicMock(side_effect=self.__side_effect_config__)
         config.Config.getValue = MagicMock(side_effect=self.__side_effect_config__)
         coords = self.telescopio.sync(date)
-        self.assertEqual(coords["ra"], 9.364517932878291)
-        self.assertEqual(coords["dec"], 47.96211142851545)
+        self.assertEqual(coords["ra"], 9.364493538084828)
+        self.assertEqual(coords["dec"], 47.962112290530065)
 
     def test_radec2altaz(self):
-        coords = {"ra": 9.364517932878291, "dec": 47.96211142851545}
+        coords = {"ra": 9.364493538084828, "dec": 47.962112290530065}
         self.telescopio.radec2altaz(datetime.datetime(2020, 12, 6, 15, 29, 43, 79060, tzinfo=datetime.timezone.utc), **coords)
         self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
 
