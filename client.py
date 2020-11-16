@@ -19,7 +19,8 @@ def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            v, _ = g_ui.win.Read(timeout=5000)
+            timeout = config.Config.getInt("sleep", "automazione")
+            v, _ = g_ui.win.Read(timeout=timeout)
 
             LoggerClient.getLogger().info("e' stato premuto il tasto %s", v)
 

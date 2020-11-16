@@ -326,4 +326,3 @@ class AutomazioneTende:
             # solo se la differenza è misurabile imposto le coordinate
             # precedenti uguali a quelle attuali altrimenti muovendosi
             # a piccoli movimenti le tende non verrebbero mai spostate
-        time.sleep(config.Config.getFloat("sleep", "automazione"))
