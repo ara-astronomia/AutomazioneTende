@@ -6,6 +6,19 @@ services:
       dockerfile: Dockerfile.server
     volumes:
       - .:/crac
+    environment: 
+      AUTOMAZIONE_LOGGINGLEVEL: ${AUTOMAZIONE_LOGGINGLEVEL}
+      AUTOMAZIONE_THESKYX_SERVER: ${AUTOMAZIONE_THESKYX_SERVER}
+      GEOGRAPHY_EQUINOX: ${GEOGRAPHY_EQUINOX}
+      GEOGRAPHY_HEIGHT: ${GEOGRAPHY_HEIGHT}
+      GEOGRAPHY_LAN: ${GEOGRAPHY_LAN}
+      GEOGRAPHY_LON: ${GEOGRAPHY_LON}
+      SERVER_LOOPBACK_IP: ${SERVER_LOOPBACK_IP}
+      TELESCOPE_MAX_SECURE_ALT: ${TELESCOPE_MAX_SECURE_ALT}
+      TELESCOPE_PARK_ALT: ${TELESCOPE_PARK_ALT}
+      TELESCOPE_PARK_AZ: ${TELESCOPE_PARK_AZ}
+      TELESCOPE_FLAT_ALT: ${TELESCOPE_FLAT_ALT}
+      TELESCOPE_FLAT_AZ: ${TELESCOPE_FLAT_AZ}
     ports: 
       - 3030:3030
     network_mode: host
@@ -16,8 +29,15 @@ services:
       dockerfile: Dockerfile.client
     volumes:
       - .:/crac
-    environment: 
+    env_file:
+      - .env
+    environment:
+      AUTOMAZIONE_LOGGINGLEVEL: ${AUTOMAZIONE_LOGGINGLEVEL}
+      AUTOMAZIONE_SLEEP: ${AUTOMAZIONE_SLEEP}
       DISPLAY: ${DISPLAY}
+      SERVER_IP: ${SERVER_IP}
+      SERVER_PORT: ${SERVER_PORT}
+      
     network_mode: host
     depends_on:
       - "crac_server"
