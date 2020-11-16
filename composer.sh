@@ -19,6 +19,9 @@ exit 0
 elif [ "$SERVICE" = "logs" ]; then
 docker-compose logs -f --tail=250 $APP
 exit 0
+elif [ "$SERVICE" = "restart" ]; then
+docker-compose restart $APP
+exit 0
 fi
 
 if [ "$OS" = "mac" ]; then
