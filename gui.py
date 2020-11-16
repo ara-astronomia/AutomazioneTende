@@ -360,6 +360,13 @@ class Gui:
         Logger.getLogger().info('update_status_sync in gui')
         self.win.FindElement('status-sync').Update(status, text_color=text_color, background_color=background_color)
 
+    def update_disable_button_sync(self):
+
+        """ Disable Button Sync """
+
+        Logger.getLogger().info('update_disable_button_sync on gui')
+        self.__toggle_button__(GuiKey.SYNC_TELE, disabled = True)
+
 
     # GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
