@@ -154,7 +154,7 @@ def connection() -> str:
 
             # POWER SWITCH TELESCOPIO
             if cs.power_tele_status == ButtonStatus.ON:
-                LoggerClient.getLogger().info("Alimentari accesi")
+                LoggerClient.getLogger().info("Alimentatori accesi")
                 g_ui.update_disable_button_power_switch_on()
 
             if cs.power_tele_status == ButtonStatus.OFF:
