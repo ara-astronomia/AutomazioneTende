@@ -68,7 +68,8 @@ class MockTelescopeTest(unittest.TestCase):
         config.Config.getInt = MagicMock(side_effect=self.__side_effect_config__)
         config.Config.getFloat = MagicMock(side_effect=self.__side_effect_config__)
         config.Config.getValue = MagicMock(side_effect=self.__side_effect_config__)
-        coords = self.telescopio.sync(date)
+        self.telescopio.sync_time = date
+        coords = self.telescopio.sync()
         self.assertEqual(coords["ra"], 9.364493538084828)
         self.assertEqual(coords["dec"], 47.962112290530065)
 

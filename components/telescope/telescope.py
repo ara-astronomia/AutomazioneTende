@@ -31,6 +31,7 @@ class BaseTelescope:
         self.height = config.Config.getInt("height", "geography")
         self.equinox = config.Config.getValue("equinox", "geography")
         self.observing_location = EarthLocation(lat=self.lat, lon=self.lon, height=self.height*u.m)
+        self.sync_time = None
 
     def update_coords(self):
         raise NotImplementedError()
@@ -44,10 +45,10 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
-    def sync(self, sync_time):
+    def sync(self):
         alt_deg = config.Config.getFloat("park_alt", "telescope")
         az_deg = config.Config.getFloat("park_az", "telescope")
-        data = self.altaz2radec(sync_time, alt=alt_deg, az=az_deg)
+        data = self.altaz2radec(self.sync_time, alt=alt_deg, az=az_deg)
         if self.sync_tele(**data):
             self.sync_status = SyncStatus.ON
         else:
@@ -86,6 +87,7 @@ class BaseTelescope:
 
     def nosync(self):
         self.sync_status = SyncStatus.OFF
+        self.sync_time = None
 
     def __update_status__(self):
 
