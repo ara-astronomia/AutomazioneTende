@@ -10,9 +10,9 @@ from status import ButtonStatus
 
 def change_status(status_switch, key, win):
     if status_switch == "0":
-        win.Find(key).update('Chiuso', text_color='white', background_color='green')
+        win.Find(key).update('On', text_color='white', background_color='green')
     elif status_switch == "1":
-        win.Find(key).update('Aperto', text_color='white', background_color='red')
+        win.Find(key).update('Off', text_color='white', background_color='red')
 
 def change_status_button(status_button, key, win):
     status_button = ButtonStatus
