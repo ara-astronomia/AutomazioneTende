@@ -286,7 +286,7 @@ class AutomazioneTende:
 
         """ Shutdown the server """
 
-        Logger.getLogger().info("Uscita dall'applicazione")
+        Logger.getLogger().info("Uscita dall'applicazione con codice %s", n)
         self.telescope.close_connection()
         if not self.mock:
             Logger.getLogger().debug("Mock: %s", self.mock)

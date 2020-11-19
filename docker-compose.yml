@@ -1,6 +1,7 @@
 version: "3.8"
 services:
   crac_server:
+    container_name: crac_server
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -21,9 +22,9 @@ services:
       TELESCOPE_FLAT_AZ: ${TELESCOPE_FLAT_AZ}
     ports: 
       - 3030:3030
-    network_mode: host
     command: "-m"
   crac_client:
+    container_name: crac_client
     build:
       context: .
       dockerfile: Dockerfile.client
@@ -35,10 +36,8 @@ services:
       AUTOMAZIONE_LOGGINGLEVEL: ${AUTOMAZIONE_LOGGINGLEVEL}
       AUTOMAZIONE_SLEEP: ${AUTOMAZIONE_SLEEP}
       DISPLAY: ${DISPLAY}
-      SERVER_IP: ${SERVER_IP}
+      SERVER_IP: crac_server
       SERVER_PORT: ${SERVER_PORT}
-      
-    network_mode: host
     depends_on:
       - "crac_server"
   

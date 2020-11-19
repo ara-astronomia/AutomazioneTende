@@ -5,8 +5,8 @@ do
 case "${option}"
 in
 o) OS=${OPTARG};; # mac
-s) SERVICE=${OPTARG};; # start, stop, build
-a) APP=${OPTARG};; #crac_server, crac_client
+s) SERVICE=${OPTARG};; # start, stop, build, logs, restart
+a) APP=${OPTARG};; # crac_server, crac_client
 esac
 done
 
