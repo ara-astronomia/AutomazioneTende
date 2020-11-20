@@ -99,29 +99,78 @@ pycodestyle *.py
 
 # Run the app
 
-## Run the server with the hardware mocked
+## run indipendently
+
+### Run the server with the hardware mocked
 
 ```shell
 python server.py -m
 ```
 
-## Run the server with coords looking up on theSkyX
+### Run the server with coords looking up on theSkyX
 
 ```shell
 python server.py -s
 ```
 
-## Of course you can use both hardware mock and theSkyX
+### Of course you can use both hardware mock and theSkyX
 
 ```shell
 python server.py -m -s
 ```
 
-## Run the client
+### Run the client
 
 ```
 python client.py
 ```
+
+### Run via crac.sh both client and server
+
+```
+./crac.sh -s start
+```
+
+### Stop via crac.sh the server (client can be stopped closing its window)
+
+```
+./crac.sh -s stop
+```
+
+### Print logs
+
+```
+./crac.sh -s logs
+```
+
+### Pick only an instance
+
+```
+./crac.sh -s start -a client
+```
+
+### Pass one or more arguments
+
+```
+./crac.sh -s start -a server -p "-m -s"
+```
+
+if you pass just an argument, quotes are not mandatory
+```
+./crac.sh -s start -a server -p -m
+```
+
+```
+./crac.sh -s logs -a server
+```
+
+```
+./crac.sh -s logs -a client
+```
+
+obviously, only the server use arguments
+
+###
 
 # TheSkyX Api Documentation
 

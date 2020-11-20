@@ -3,11 +3,12 @@
 # enable job control
 set -m
 
-while getopts s:a: option; do
+while getopts s:a:p: option; do
 case "${option}"
 in
     s) SERVICE=${OPTARG};; # start, stop, logs
-    a) APP=${OPTARG};; #crac_server, crac_client
+    a) APP=${OPTARG};; # server, client
+    p) ARG=${OPTARG};; # -m -s
 esac; done
 
 # retrieve environmental variables
@@ -30,7 +31,7 @@ elif [ "$SERVICE" = "logs" ]; then
     exit 0
 fi
 
-if [ ! "$APP" ] || [ "$APP" == "crac_server" ]; then
+if [ ! "$APP" ] || [ "$APP" == "server" ]; then
     # remove old crac server instance if any
     if [ -f crac_server.pid ]; then
         CRAC_SERVER_PID=`cat crac_server.pid`
@@ -44,7 +45,7 @@ if [ ! "$APP" ] || [ "$APP" == "crac_server" ]; then
     PS_EXEC=1
     until [ "$PS_EXEC" = "2" ]; do
         # run crac server
-        python server.py -m > /dev/null 2>&1 &
+        python server.py $ARG > /dev/null 2>&1 &
         
         # save pid file
         echo $! > crac_server.pid
@@ -65,6 +66,6 @@ if [ ! "$APP" ] || [ "$APP" == "crac_server" ]; then
 fi
 
 # run crac client
-if [ ! "$APP" ] || [ "$APP" == "crac_client" ]; then
+if [ ! "$APP" ] || [ "$APP" == "client" ]; then
     python client.py > /dev/null 2>&1 &
 fi
