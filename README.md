@@ -1,11 +1,25 @@
 # AutomazioneTende
 this app automates the roof and curtains opening and closing on telescope pointing base
 
-## Prerequisite on linux
+## Prerequisite on linux using default python
 
 ```shell
 sudo apt-get install python3-tk python3-pip
-shell
+```
+
+## Prerequisite on linux using pydev
+
+```shell
+sudo apt-get install tk-dev openssl-dev libffi-dev
+https://pyenv.run | bash
+```
+
+open ~/.bashrc and copy these 3 lines at the bottom of the file
+
+```
+export PATH="/home/alessio/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 ```
 
 ## First time configuration and install dependency:
@@ -14,6 +28,8 @@ shell
 pip3 install pipenv
 pipenv install --dev
 ```
+
+--dev is needed only for development purpose
 
 ## Enter in the CRaC environment
 
