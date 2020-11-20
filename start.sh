@@ -14,10 +14,12 @@ esac; done
 source .env
 
 if [ "$SERVICE" = "stop" ]; then
-    CRAC_SERVER_PID=`cat crac_server.pid`
-    if [ ! -z "$CRAC_SERVER_PID" ]; then
-        kill -9 $CRAC_SERVER_PID
-        rm crac_server.pid
+    if [ -f crac_server.pid ]; then
+        CRAC_SERVER_PID=`cat crac_server.pid`
+        if [ ! -z "$CRAC_SERVER_PID" ]; then
+            kill -9 $CRAC_SERVER_PID
+            rm crac_server.pid
+        fi
     fi
     exit 0
 elif [ "$SERVICE" = "logs" ]; then
@@ -29,34 +31,33 @@ elif [ "$SERVICE" = "logs" ]; then
 fi
 
 # remove old crac server instance if any
-CRAC_SERVER_PID=`cat crac_server.pid`
-if [ ! -z "$CRAC_SERVER_PID" ]; then
-    kill -9 $CRAC_SERVER_PID
-    rm crac_server.pid
+if [ -f crac_server.pid ]; then
+    CRAC_SERVER_PID=`cat crac_server.pid`
+    if [ ! -z "$CRAC_SERVER_PID" ]; then
+        kill -9 $CRAC_SERVER_PID
+        rm crac_server.pid
+    fi
 fi
 
-# run crac server
-python server.py -m > /dev/null 2>&1 &
-#SR=$?
-#echo "Risultato è $SR"
-#if [ "$SR" = "1" ]; then
-#    echo "Porta occupata, riprova"
-#    exit 1
-#fi
+# check if app is still running
+PS_EXEC=1
+until [ "$PS_EXEC" = "2" ]; do
+    # run crac server
+    python server.py -m > /dev/null 2>&1 &
+    
+    # save pid file
+    echo $! > crac_server.pid
+    
+    sleep 5
+    
+    echo "Controllo se il server si è avviato, altrimenti rilancio"
+    PS_EXEC=`ps -fA | grep "ython server" | wc -l | column -t`
+done
 
-#until [ "$SR" = "0" ]; do
-#    echo "Il risultato è $SR"
-#    python server.py -m > /dev/null &
-#    SR=$?
-#done
-
-# save pid file
-echo $! > crac_server.pid
-
-nc -z -v -w5 localhost 3030
-NCR=$?
+# wait for server listening at the port
+NCR=1
 until [ "$NCR" = "0" ]; do
-    echo "Il risultato è $NCR"
+    echo "Aspetto che il server sia in ascolto sulla porta 3030"
     nc -z -w5 localhost 3030
     NCR=$?
 done
