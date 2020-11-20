@@ -57,14 +57,12 @@ class BaseTelescope:
 
     def altaz2radec(self, obstime, alt, az):
         Logger.getLogger().debug('obstime: %s', obstime)
-        equinox = config.Config.getValue("equinox", "geography")
-
         timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
         Logger.getLogger().debug("astropy timestring: %s", timestring)
         time = Time(timestring)
         Logger.getLogger().debug("astropy time: %s", time)
         aa = AltAz(location=self.observing_location, obstime=time)
-        alt_az = SkyCoord(alt * u.deg, az * u.deg, frame=aa, equinox=equinox)
+        alt_az = SkyCoord(alt * u.deg, az * u.deg, frame=aa, equinox=self.equinox)
         ra_dec = alt_az.transform_to('fk5')
         ra = float((ra_dec.ra / 15) / u.deg)
         dec = float(ra_dec.dec / u.deg)
