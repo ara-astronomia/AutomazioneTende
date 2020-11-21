@@ -15,7 +15,7 @@ class Config(metaclass=Singleton):
         config = Config()
         env_value = Config.__check_environ__(key, section=section)
         if env_value:
-            print("Retrieve {key}, {section} from env: {env_value}")
+            print(f"Retrieve {key}, {section} from env: {env_value}")
             return env_value
         return config.configparser[section][key]
 
@@ -24,7 +24,7 @@ class Config(metaclass=Singleton):
         config = Config()
         env_value = Config.__check_environ__(key, section=section)
         if env_value:
-            print("Retrieve {key}, {section} from env: {env_value}")
+            print(f"Retrieve {key}, {section} from env: {env_value}")
             return float(env_value)
         return config.configparser[section].getfloat(key)
 
@@ -33,7 +33,7 @@ class Config(metaclass=Singleton):
         config = Config()
         env_value = Config.__check_environ__(key, section=section)
         if env_value:
-            print("Retrieve {key}, {section} from env: {env_value}")
+            print(f"Retrieve {key}, {section} from env: {env_value}")
             return int(env_value)
         return config.configparser[section].getint(key)
 
