@@ -188,9 +188,10 @@ def connection() -> str:
             # SYNC
             if cs.sync_status == SyncStatus.ON:
                 g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_sync()
+                g_ui.update_button_sync(disabled=True)
             elif cs.sync_status == SyncStatus.OFF:
                 g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_OFF, text_color="red", background_color="white")
+                g_ui.update_button_sync(disabled=False)
 
             # ALERT
             if cs.is_in_anomaly():
