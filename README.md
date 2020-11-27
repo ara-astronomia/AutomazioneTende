@@ -1,3 +1,5 @@
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/ara-astronomia/AutomazioneTende.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ara-astronomia/AutomazioneTende/context:python)
+
 # AutomazioneTende
 this app automates the roof and curtains opening and closing on telescope pointing base
 
