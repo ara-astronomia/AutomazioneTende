@@ -1,25 +1,25 @@
 import socket
-import time
 import config
 from electro_tests import gui
-from gui_constants import GuiKey, GuiLabel
+from gui_constants import GuiKey
 from logger import LoggerClient
-from status import Status
-from status import TelescopeStatus
 from status import ButtonStatus
+
 
 def change_status(status_switch, key, win):
     if status_switch == "0":
-        win.Find(key).update('Chiuso', text_color='white', background_color='green')
+        win.Find(key).update('On', text_color='white', background_color='green')
     elif status_switch == "1":
-        win.Find(key).update('Aperto', text_color='white', background_color='red')
+        win.Find(key).update('Off', text_color='white', background_color='red')
+
 
 def change_status_button(status_button, key, win):
     status_button = ButtonStatus
     if status_button == "S":
         win.Find(key).update(disabled=True, text_color='white', background_color='green')
     elif status_button == "A":
-        win.Find(key).update(disabled=False, text_color = 'yellow', background_color='purple')
+        win.Find(key).update(disabled=False, text_color='yellow', background_color='purple')
+
 
 def change_encoder(count, key, win):
     if count:
@@ -113,8 +113,10 @@ def connection() -> str:
             change_encoder(data[12:], "Count_E", win)
 
 
-HOST = config.Config.getValue("ip", "server")  # The server's hostname or IP address
-PORT = config.Config.getInt("port", "server")  # The port used by the server
+# The server's hostname or IP address
+HOST = config.Config.getValue("ip", "server")
+# The port used by the server
+PORT = config.Config.getInt("port", "server")
 
 while True:
     LoggerClient.getLogger().debug("connessione a: " + HOST + ":" + str(PORT))
