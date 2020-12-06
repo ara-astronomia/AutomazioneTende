@@ -1,9 +1,8 @@
 import datetime
-import time
 import importlib
 import config
 from logger import Logger
-from status import Status, TrackingStatus
+from status import Status
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import CurtainsStatus
