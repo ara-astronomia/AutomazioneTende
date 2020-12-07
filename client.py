@@ -19,7 +19,8 @@ def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            v, _ = g_ui.win.Read(timeout=5000)
+            timeout = config.Config.getInt("sleep", "automazione")
+            v, _ = g_ui.win.Read(timeout=timeout)
 
             LoggerClient.getLogger().info("e' stato premuto il tasto %s", v)
 
@@ -154,7 +155,7 @@ def connection() -> str:
 
             # POWER SWITCH TELESCOPIO
             if cs.power_tele_status == ButtonStatus.ON:
-                LoggerClient.getLogger().info("Alimentari accesi")
+                LoggerClient.getLogger().info("Alimentatori accesi")
                 g_ui.update_disable_button_power_switch_on()
 
             if cs.power_tele_status == ButtonStatus.OFF:
@@ -188,8 +189,10 @@ def connection() -> str:
             # SYNC
             if cs.sync_status == SyncStatus.ON:
                 g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_button_sync(disabled=True)
             elif cs.sync_status == SyncStatus.OFF:
                 g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_OFF, text_color="red", background_color="white")
+                g_ui.update_button_sync(disabled=False)
 
             # ALERT
             if cs.is_in_anomaly():

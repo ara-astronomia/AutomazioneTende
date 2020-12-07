@@ -1,9 +1,8 @@
 import datetime
-import time
 import importlib
 import config
 from logger import Logger
-from status import Status, TrackingStatus
+from status import Status
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import CurtainsStatus
@@ -52,7 +51,6 @@ class AutomazioneTende:
         self.increm_w = (self.alt_max_tend_w-self.alt_min_tend_w)/self.n_step_corsa
 
         self.crac_status = CracStatus()
-        self.sync_time = None
 
     def read(self) -> CracStatus:
 
@@ -234,8 +232,8 @@ class AutomazioneTende:
         """ on power switch and update the power switch status in CracStatus object """
 
         self.power_tele_control.on()
-        self.sync_time = datetime.datetime.utcnow()
-        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.sync_time)
+        self.telescope.sync_time = datetime.datetime.utcnow()
+        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.telescope.sync_time)
 
     def power_off_tele(self):
         """ off power switch and update the power switch status in CracStatus object """
@@ -270,7 +268,7 @@ class AutomazioneTende:
     def time_sync(self):
         if self.power_tele_control.read() is ButtonStatus.OFF:
             self.power_on_tele()
-        self.telescope.sync(self.sync_time)
+        self.telescope.sync()
 
     # LIGHT DOME
     def light_on(self):
@@ -287,7 +285,7 @@ class AutomazioneTende:
 
         """ Shutdown the server """
 
-        Logger.getLogger().info("Uscita dall'applicazione")
+        Logger.getLogger().info("Uscita dall'applicazione con codice %s", n)
         self.telescope.close_connection()
         if not self.mock:
             Logger.getLogger().debug("Mock: %s", self.mock)
@@ -326,4 +324,3 @@ class AutomazioneTende:
             # solo se la differenza è misurabile imposto le coordinate
             # precedenti uguali a quelle attuali altrimenti muovendosi
             # a piccoli movimenti le tende non verrebbero mai spostate
-        time.sleep(config.Config.getFloat("sleep", "automazione"))

@@ -51,6 +51,7 @@ class TelescopeTest(unittest.TestCase):
         self.telescopio.open_connection()
         self.telescopio.s.recv = MagicMock(return_value=b'{"tr":0,"az":0,"alt":0}|No error. Error = 0.')
         sync_time = datetime.datetime.utcnow()
-        self.telescopio.sync(sync_time)
+        self.telescopio.sync_time = sync_time
+        self.telescopio.sync()
         self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
         # TODO check ardec coordinates given the tracking is on or off

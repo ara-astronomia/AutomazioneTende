@@ -20,7 +20,6 @@ class Telescope(BaseTelescope):
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
         self.connected: bool = False
-        # self.sync = conv_altaz_to_ardec(sync_time)
 
     def open_connection(self) -> None:
 

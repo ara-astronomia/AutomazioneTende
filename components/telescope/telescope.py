@@ -6,6 +6,7 @@ from logger import Logger
 from astropy.coordinates import EarthLocation
 from astropy.coordinates import AltAz
 from astropy.coordinates import SkyCoord
+from astropy.time import Time
 from astropy import units as u
 
 
@@ -25,6 +26,12 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
+        self.lat = config.Config.getValue("lat", "geography")
+        self.lon = config.Config.getValue("lon", "geography")
+        self.height = config.Config.getInt("height", "geography")
+        self.equinox = config.Config.getValue("equinox", "geography")
+        self.observing_location = EarthLocation(lat=self.lat, lon=self.lon, height=self.height*u.m)
+        self.sync_time = None
 
     def update_coords(self):
         raise NotImplementedError()
@@ -38,26 +45,24 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
-    def sync(self, sync_time):
+    def sync(self):
         alt_deg = config.Config.getFloat("park_alt", "telescope")
         az_deg = config.Config.getFloat("park_az", "telescope")
-        data = self.altaz2radec(sync_time, alt=alt_deg, az=az_deg)
+        data = self.altaz2radec(self.sync_time, alt=alt_deg, az=az_deg)
         if self.sync_tele(**data):
             self.sync_status = SyncStatus.ON
         else:
             self.sync_status = SyncStatus.OFF
         return data
 
-    def altaz2radec(self, obstime, **kwargs):
+    def altaz2radec(self, obstime, alt, az):
         Logger.getLogger().debug('obstime: %s', obstime)
-        lat = config.Config.getValue("lat", "geography")
-        lon = config.Config.getValue("lon", "geography")
-        height = config.Config.getInt("height", "geography")
-        equinox = config.Config.getValue("equinox", "geography")
-
-        name_obs = EarthLocation(lat, lon, height * u.m)
-        aa = AltAz(location=name_obs, obstime=obstime)
-        alt_az = SkyCoord(kwargs["alt"] * u.deg, kwargs["az"] * u.deg, frame=aa, equinox=equinox)
+        timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
+        Logger.getLogger().debug("astropy timestring: %s", timestring)
+        time = Time(timestring)
+        Logger.getLogger().debug("astropy time: %s", time)
+        aa = AltAz(location=self.observing_location, obstime=time)
+        alt_az = SkyCoord(alt * u.deg, az * u.deg, frame=aa, equinox=self.equinox)
         ra_dec = alt_az.transform_to('fk5')
         ra = float((ra_dec.ra / 15) / u.deg)
         dec = float(ra_dec.dec / u.deg)
@@ -65,19 +70,22 @@ class BaseTelescope:
         Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
         return {"ra": ra, "dec": dec}
 
-    def radec2altaz(self, obstime, **kwargs):
-        height = config.Config.getInt("height", "geography")
-        lat = config.Config.getValue("lat", "geography")
-        lon = config.Config.getValue("lon", "geography")
-        equinox = config.Config.getValue("equinox", "geography")
-        location = EarthLocation(lat, lon, height * u.m)
-        equinox = config.Config.getValue("equinox", "geography")
-        coords = SkyCoord(ra=kwargs["ra"] * u.deg, dec=kwargs["dec"] * u.deg, equinox=equinox, frame="fk5")
-        altaz_coords = coords.transform_to(AltAz(obstime=obstime, location=location))
-        return {"alt": float(altaz_coords.alt / u.deg), "az": float(altaz_coords.az / u.deg)}
+    def radec2altaz(self, obstime, ra, dec):
+        Logger.getLogger().debug("astropy ra received: %s", ra)
+        Logger.getLogger().debug("astropy dec received: %s", dec)
+        timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
+        Logger.getLogger().debug("astropy timestring: %s", timestring)
+        observing_time = Time(timestring)
+        aa = AltAz(location=self.observing_location, obstime=observing_time)
+        coord = SkyCoord(str(ra)+"h", str(dec)+"d", equinox=self.equinox, frame="fk5")
+        altaz_coords = coord.transform_to(aa)
+        altaz_coords = {"alt": float(altaz_coords.alt / u.deg), "az": float(altaz_coords.az / u.deg)}
+        Logger.getLogger().debug("astropy altaz calculated: alt %s az %s", altaz_coords["alt"], altaz_coords["az"])
+        return altaz_coords
 
     def nosync(self):
         self.sync_status = SyncStatus.OFF
+        self.sync_time = None
 
     def __update_status__(self):
 

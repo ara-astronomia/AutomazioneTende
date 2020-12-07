@@ -1,8 +1,9 @@
-import socket, config, getopt, sys
+import socket
+import config
+import getopt
+import sys
 from automazione_tende import AutomazioneTende
 from logger import Logger
-import time
-from status import Status
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -17,7 +18,7 @@ try:
     opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
 except getopt.GetoptError:
     Logger.getLogger().exception("parametri errati")
-    exit(2) #esce dall'applicazione con errore
+    exit(2)  # esce dall'applicazione con errore
 for opt, _1 in opts:
     if opt in ('-m', '--mock'):
         MOCK = True
