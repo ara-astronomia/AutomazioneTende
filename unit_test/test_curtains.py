@@ -2,12 +2,9 @@ import unittest
 from components.curtains.factory_curtain import FactoryCurtain
 from unittest.mock import MagicMock, patch
 from gpio_config import GPIOConfig
-from gpio_pin import GPIOPin
 from base.singleton import Singleton
-from threading import Thread
 import time
 from status import CurtainsStatus, Orientation
-import config
 
 
 def threaded_event_simulation(pin, pin_status, edge, callback, bouncetime=100):

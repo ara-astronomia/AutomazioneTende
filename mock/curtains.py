@@ -8,7 +8,7 @@ class Curtain:
     def __init__(self):
         self.__sub_min_step__ = -5
         self.__min_step__ = 0
-        self.steps = 0
+        self._steps = 0
         self.__max_step__ = config.Config.getInt("n_step_corsa", "encoder_step")
         self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
         self.lockRotary = threading.Lock()
@@ -22,13 +22,13 @@ class Curtain:
         if status != CurtainsStatus.STOPPED and status != CurtainsStatus.DANGER:
             return
 
-        distance_to_min_step = abs(self.steps - self.__min_step__)
-        distance_to_max_step = abs(self.__max_step__ - self.steps)
+        distance_to_min_step = abs(self._steps - self.__min_step__)
+        distance_to_max_step = abs(self.__max_step__ - self._steps)
 
         if distance_to_min_step <= distance_to_max_step:
-            self.steps = self.__min_step__
+            self._steps = self.__min_step__
         else:
-            self.steps = self.__max_step__
+            self._steps = self.__max_step__
 
     def read(self):
 
@@ -36,11 +36,11 @@ class Curtain:
 
         status = None
 
-        if self.steps == self.__max_step__:
+        if self._steps == self.__max_step__:
             status = CurtainsStatus.OPEN
-        elif self.steps == self.__min_step__ and self.is_disabled is True:
+        elif self._steps == self.__min_step__ and self.is_disabled is True:
             status = CurtainsStatus.DISABLED
-        elif self.steps == self.__min_step__:
+        elif self._steps == self.__min_step__:
             status = CurtainsStatus.CLOSED
         else:
             status = CurtainsStatus.STOPPED
@@ -54,7 +54,7 @@ class Curtain:
 
         """ Move the motor in a direction based on the starting and target steps """
 
-        self.steps = step
+        self._steps = step
 
     def open_up(self):
 
@@ -63,7 +63,7 @@ class Curtain:
             It's a shortcut to move()
         """
 
-        self.steps = self.__max_step__
+        self._steps = self.__max_step__
 
     def bring_down(self):
 
@@ -72,7 +72,7 @@ class Curtain:
             It's a shortcut to move()
         """
 
-        self.steps = self.__min_step__
+        self._steps = self.__min_step__
 
     def motor_stop(self):
 
@@ -81,3 +81,6 @@ class Curtain:
         status = None
         status = CurtainsStatus.STOPPED
         return status
+
+    def steps(self):
+        return self._steps
