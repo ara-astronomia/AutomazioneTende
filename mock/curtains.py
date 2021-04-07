@@ -34,7 +34,7 @@ class Curtain:
 
         """ Read the status of the curtain based on the pin of motor, encoder and switches """
 
-        status = None
+        status = CurtainsStatus.ERROR
 
         if self._steps == self.__max_step__:
             status = CurtainsStatus.OPEN
@@ -44,9 +44,6 @@ class Curtain:
             status = CurtainsStatus.CLOSED
         else:
             status = CurtainsStatus.STOPPED
-
-        if not status:
-            status = CurtainsStatus.ERROR
 
         return status
 

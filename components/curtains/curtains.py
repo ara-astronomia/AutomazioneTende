@@ -115,7 +115,7 @@ class Curtain:
         self.is_open = self.gpioconfig.status(self.curtain_open)
         self.is_closed = self.gpioconfig.status(self.curtain_closed)
 
-        status = None
+        status = CurtainsStatus.ERROR
         if (
             self.steps() > self.__max_step__ or self.steps() < self.__min_step__ or
             (self.steps() == self.__max_step__ and not self.is_open and not self.is_closing) or
@@ -134,9 +134,6 @@ class Curtain:
             status = CurtainsStatus.CLOSED
         elif not self.is_enable:
             status = CurtainsStatus.STOPPED
-
-        if not status:
-            status = CurtainsStatus.ERROR
 
         return status
 

@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  crac_server:
+    container_name: crac_server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    volumes:
+      - .:/crac
+    environment: 
+      AUTOMAZIONE_LOGGINGLEVEL: ${AUTOMAZIONE_LOGGINGLEVEL}
+      AUTOMAZIONE_THESKYX_SERVER: ${AUTOMAZIONE_THESKYX_SERVER}
+      GEOGRAPHY_EQUINOX: ${GEOGRAPHY_EQUINOX}
+      GEOGRAPHY_HEIGHT: ${GEOGRAPHY_HEIGHT}
+      GEOGRAPHY_LAN: ${GEOGRAPHY_LAN}
+      GEOGRAPHY_LON: ${GEOGRAPHY_LON}
+      SERVER_LOOPBACK_IP: ${SERVER_LOOPBACK_IP}
+      SERVER_PORT: ${SERVER_PORT}
+      TELESCOPE_MAX_SECURE_ALT: ${TELESCOPE_MAX_SECURE_ALT}
+      TELESCOPE_PARK_ALT: ${TELESCOPE_PARK_ALT}
+      TELESCOPE_PARK_AZ: ${TELESCOPE_PARK_AZ}
+      TELESCOPE_FLAT_ALT: ${TELESCOPE_FLAT_ALT}
+      TELESCOPE_FLAT_AZ: ${TELESCOPE_FLAT_AZ}
+    ports: 
+      - 3030:3030
+    command: "-m"
+  crac_client:
+    container_name: crac_client
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    volumes:
+      - .:/crac
+    env_file:
+      - .env
+    environment:
+      AUTOMAZIONE_LOGGINGLEVEL: ${AUTOMAZIONE_LOGGINGLEVEL}
+      AUTOMAZIONE_SLEEP: ${AUTOMAZIONE_SLEEP}
+      DISPLAY: ${DISPLAY}
+      SERVER_IP: crac_server
+      SERVER_PORT: ${SERVER_PORT}
+    depends_on:
+      - "crac_server"
+  

@@ -1,8 +1,13 @@
 import config
-from enum import IntEnum, unique
 from typing import Dict
 from status import TelescopeStatus, TrackingStatus
+from status import SyncStatus
 from logger import Logger
+from astropy.coordinates import EarthLocation
+from astropy.coordinates import AltAz
+from astropy.coordinates import SkyCoord
+from astropy.time import Time
+from astropy import units as u
 
 
 class BaseTelescope:
@@ -19,7 +24,14 @@ class BaseTelescope:
         self.azimut_nw = config.Config.getInt("azNW", "azimut")
         self.coords: Dict[str, int] = {"alt": 0, "az": 0, "tr": 0, "error": 0}
         self.status: TelescopeStatus = TelescopeStatus.PARKED
+        self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
+        self.lat = config.Config.getValue("lat", "geography")
+        self.lon = config.Config.getValue("lon", "geography")
+        self.height = config.Config.getInt("height", "geography")
+        self.equinox = config.Config.getValue("equinox", "geography")
+        self.observing_location = EarthLocation(lat=self.lat, lon=self.lon, height=self.height*u.m)
+        self.sync_time = None
 
     def update_coords(self):
         raise NotImplementedError()
@@ -30,8 +42,50 @@ class BaseTelescope:
     def flat_tele(self):
         raise NotImplementedError()
 
-    def read(self, ):
+    def read(self):
         raise NotImplementedError()
+
+    def sync(self):
+        alt_deg = config.Config.getFloat("park_alt", "telescope")
+        az_deg = config.Config.getFloat("park_az", "telescope")
+        data = self.altaz2radec(self.sync_time, alt=alt_deg, az=az_deg)
+        if self.sync_tele(**data):
+            self.sync_status = SyncStatus.ON
+        else:
+            self.sync_status = SyncStatus.OFF
+        return data
+
+    def altaz2radec(self, obstime, alt, az):
+        Logger.getLogger().debug('obstime: %s', obstime)
+        timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
+        Logger.getLogger().debug("astropy timestring: %s", timestring)
+        time = Time(timestring)
+        Logger.getLogger().debug("astropy time: %s", time)
+        aa = AltAz(location=self.observing_location, obstime=time)
+        alt_az = SkyCoord(alt * u.deg, az * u.deg, frame=aa, equinox=self.equinox)
+        ra_dec = alt_az.transform_to('fk5')
+        ra = float((ra_dec.ra / 15) / u.deg)
+        dec = float(ra_dec.dec / u.deg)
+        Logger.getLogger().debug('ar park (orario decimale): %s', ra)
+        Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
+        return {"ra": ra, "dec": dec}
+
+    def radec2altaz(self, obstime, ra, dec):
+        Logger.getLogger().debug("astropy ra received: %s", ra)
+        Logger.getLogger().debug("astropy dec received: %s", dec)
+        timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
+        Logger.getLogger().debug("astropy timestring: %s", timestring)
+        observing_time = Time(timestring)
+        aa = AltAz(location=self.observing_location, obstime=observing_time)
+        coord = SkyCoord(str(ra)+"h", str(dec)+"d", equinox=self.equinox, frame="fk5")
+        altaz_coords = coord.transform_to(aa)
+        altaz_coords = {"alt": float(altaz_coords.alt / u.deg), "az": float(altaz_coords.az / u.deg)}
+        Logger.getLogger().debug("astropy altaz calculated: alt %s az %s", altaz_coords["alt"], altaz_coords["az"])
+        return altaz_coords
+
+    def nosync(self):
+        self.sync_status = SyncStatus.OFF
+        self.sync_time = None
 
     def __update_status__(self):
 
@@ -64,7 +118,7 @@ class BaseTelescope:
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))
         Logger.getLogger().debug("Status Telescopio: %s", str(self.status))
         Logger.getLogger().debug("Status Tracking: %s %s", str(self.coords['tr']), str(self.tracking_status))
-
+        Logger.getLogger().debug("Status Sync: %s ", str(self.sync_status))
         return self.status
 
     def is_within_curtains_area(self):
@@ -72,6 +126,9 @@ class BaseTelescope:
             TelescopeStatus.EAST,
             TelescopeStatus.WEST
         ]
+
+    def update_status_sync(self):
+        self.sync_status = SyncStatus.ON
 
     def is_below_curtains_area(self):
         return self.coords["alt"] <= self.max_secure_alt

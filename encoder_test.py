@@ -12,9 +12,9 @@ from status import Status
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
+
 class Encoder:
     def __init__(self):
-        
         self.steps = 0
         self.gpioconfig = GPIOConfig()
         self.gpiopin = GPIOPin
@@ -25,12 +25,11 @@ class Encoder:
         self.dt = None
         self.clk = None
 
-
     def __event_detect__(self):
-        if config.Config.getInt("count_steps_simple", "encoder_step") == 0: 
+        if config.Config.getInt("count_steps_simple", "encoder_step") == 0:
             self.gpioconfig.add_event_detect_both(self.dt, callback=self.__count_steps__)
             self.gpioconfig.add_event_detect_both(self.clk, callback=self.__count_steps__)
-       
+
     def __remove_event_detect__(self):
         self.gpioconfig.remove_event_detect(self.dt)
         self.gpioconfig.remove_event_detect(self.clk)
@@ -38,19 +37,19 @@ class Encoder:
     def __count_steps__(self, dt_or_clk):
         self.encoder_a = (self.gpioconfig.status_enc(self.dt))
         self.encoder_b = (self.gpioconfig.status_enc(self.clk))
-        print ("encoder_a", self.encoder_a)
-        print ("encoder_b", self.encoder_b)        
-        #GPIOPin.CLK_W = GPIO.input(18)
-        #GPIOPin.DT_W = GPIO.input(22)
-        #GPIOPin.CLK_E = GPIO.input(12)
-        #GPIOPin.DT_E = GPIO.input(16)
-        clkLast = (self.clk) 
-        print (clkLast)
-        
+        print("encoder_a", self.encoder_a)
+        print("encoder_b", self.encoder_b)
+        # GPIOPin.CLK_W = GPIO.input(18)
+        # GPIOPin.DT_W = GPIO.input(22)
+        # GPIOPin.CLK_E = GPIO.input(12)
+        # GPIOPin.DT_E = GPIO.input(16)
+        clkLast = (self.clk)
+        print(clkLast)
+
         counter = 0
         if self.encoder_a and self.encoder_b:
             self.lockRotary.acquire()
-            
+
             try:
                 while True:
                     clk = self.clk
@@ -64,19 +63,20 @@ class Encoder:
                         clkLast = clk
                     sleep(0.01)
             finally:
-                GPIO.cleanup() 
+                GPIO.cleanup()
                 self.lockRotary.release()
-                     
+
+
 class WestEncoder(Encoder, metaclass=Singleton):
     def __init__(self):
         super().__init__()
-        self.clk = self.gpiopin.CLK_W.pin.id_pin
-        print (self.clk)
+        self.clk = self.gpiopin.CLK_W
         self.dt = self.gpiopin.DT_W
         self.__event_detect__()
 
+
 class EastEncoder(Encoder, metaclass=Singleton):
-    def __init__ (self):
+    def __init__(self):
         super().__init__()
         self.clk = self.gpiopin.CLK_E
         self.dt = self.gpiopin.DT_E

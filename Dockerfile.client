@@ -1,0 +1,8 @@
+FROM python:3.7
+RUN apt update && apt upgrade -y && apt install python3-tk python3-pip -y
+VOLUME /tmp/.X11-unix:/tmp/.X11-unix
+ENV DISPLAY=:0
+WORKDIR /crac
+COPY . .
+RUN pip install pipenv && pipenv install
+CMD ["pipenv", "run", "python", "client.py"]

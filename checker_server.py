@@ -4,8 +4,7 @@ import config
 from logger import Logger
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from encoder_test import WestEncoder, EastEncoder
-# from components.curtains.factory_curtain import FactoryCurtain
+from components.curtains.factory_curtain import FactoryCurtain
 
 
 # Standard loopback interface address (localhost)
@@ -14,10 +13,9 @@ HOST: str = config.Config.getValue("loopback_ip", "server")
 PORT: str = config.Config.getInt("port", "server")
 error_level: int = 0
 gpioConfig = GPIOConfig()
-# curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
-# curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
-west_encoder = WestEncoder()
-east_encoder = EastEncoder()
+curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
+curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
+
 
 def convert_steps(steps):
     return f'{steps:03}'
@@ -37,9 +35,9 @@ try:
                     if data:
                         roof = data[0]
                         panel = data[1]
-                        power = data[2]
+                        power_tele = data[2]
                         light = data[3]
-                        aux = data[4]
+                        power_ccd = data[4]
                         curtain_west = data[5]
                         curtain_east = data[6]
                     else:
@@ -67,15 +65,15 @@ try:
                         gpioConfig.turn_off(GPIOPin.SWITCH_PANEL)
                         Logger.getLogger().debug("PANEL FLAT: %s", gpioConfig.status(GPIOPin.SWITCH_PANEL))
 
-                    # POWER SWITCH
-                    if power == 'A':
-                        Logger.getLogger().debug("test accensione alimentatori")
-                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER)
-                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
-                    if power == 'S':
-                        Logger.getLogger().debug("test spegnimento alimentatori")
-                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER)
-                        Logger.getLogger().debug("ALIMENTATORI: %s", gpioConfig.status(GPIOPin.SWITCH_POWER))
+                    # POWER SWITCH TELE
+                    if power_tele == 'A':
+                        Logger.getLogger().debug("test accensione alimentatore telescopio")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER_TELE)
+                        Logger.getLogger().debug("ALIMENTATORE TELE: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_TELE))
+                    if power_tele == 'S':
+                        Logger.getLogger().debug("test spegnimento alimentatore telescopio")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER_TELE)
+                        Logger.getLogger().debug("ALIMENTATORE TELE: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_TELE))
 
                     # LIGHT
                     if light == 'A':
@@ -87,15 +85,15 @@ try:
                         gpioConfig.turn_off(GPIOPin.SWITCH_LIGHT)
                         Logger.getLogger().debug("LUCI CUPOLA: %s", gpioConfig.status(GPIOPin.SWITCH_LIGHT))
 
-                    # AUX
-                    if aux == 'A':
-                        Logger.getLogger().debug("test accensione dispositivo ausiliare ")
-                        gpioConfig.turn_on(GPIOPin.SWITCH_AUX)
-                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
-                    if aux == 'S':
-                        Logger.getLogger().debug("test spegnimento dispositivo ausiliare ")
-                        gpioConfig.turn_off(GPIOPin.SWITCH_AUX)
-                        Logger.getLogger().debug("AUSILIARE: %s", gpioConfig.status(GPIOPin.SWITCH_AUX))
+                    # POWER SWITCH CCD
+                    if power_ccd == 'A':
+                        Logger.getLogger().debug("test accensione alimentatore CCD ")
+                        gpioConfig.turn_on(GPIOPin.SWITCH_POWER_CCD)
+                        Logger.getLogger().debug("ALIMENTATORE CCD: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_CCD))
+                    if power_ccd == 'S':
+                        Logger.getLogger().debug("test spegnimento alimentatore CCD ")
+                        gpioConfig.turn_off(GPIOPin.SWITCH_POWER_CCD)
+                        Logger.getLogger().debug("ALIMENTATORE CCD: %s", gpioConfig.status(GPIOPin.SWITCH_POWER_CCD))
 
 
                     if curtain_west == 'O':
@@ -158,23 +156,20 @@ try:
                     else:
                         Exception("ERRORRRRRREW")
 
-                    #verity roof if open or closed
-                    sor = gpioConfig.status_pull(GPIOPin.VERIFY_OPEN)
-                    scr = gpioConfig.status_pull(GPIOPin.VERIFY_CLOSED)
-                    #verity curtain West open or closed
-                    sow = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_OPEN)
-                    scw = gpioConfig.status_pull(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
-                    #verity curtain East open or closed
-                    soe = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_OPEN)
-                    sce = gpioConfig.status_pull(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
-                    #number step west east
-                    #print (west_encoder.steps)
-                    #print (east_encoder.steps)
-                    print (west_encoder)
-                    nwe = convert_steps(west_encoder.steps)
-                    nee = convert_steps(east_encoder.steps)
+                    # verity roof if open or closed
+                    sor = gpioConfig.status(GPIOPin.VERIFY_OPEN)
+                    scr = gpioConfig.status(GPIOPin.VERIFY_CLOSED)
+                    # verity curtain West open or closed
+                    sow = gpioConfig.status(GPIOPin.CURTAIN_W_VERIFY_OPEN)
+                    scw = gpioConfig.status(GPIOPin.CURTAIN_W_VERIFY_CLOSED)
+                    # verity curtain East open or closed
+                    soe = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
+                    sce = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
+                    # number step west east
+                    nwe = "999"  # convert_steps(curtain_west.steps())
+                    nee = "666"  # convert_steps(curtain_east.steps())
 
-                    test_status = roof + curtain_west + curtain_east + sor + scr + sow + scw + soe + sce + nwe + nee
+                    test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + nwe + nee
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", nee)
                     Logger.getLogger().info("Encoder west: %s", nwe)

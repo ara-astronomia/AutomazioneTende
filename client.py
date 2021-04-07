@@ -5,8 +5,12 @@ import crac_status
 import gui
 from gui_constants import GuiLabel, GuiKey
 from logger import LoggerClient
-from status import Status, CurtainsStatus, TelescopeStatus
-from status import ButtonStatus, TrackingStatus
+from status import Status
+from status import CurtainsStatus
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import TrackingStatus
+from status import SyncStatus
 
 
 def connection() -> str:
@@ -15,7 +19,8 @@ def connection() -> str:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         while True:
-            v, _ = g_ui.win.Read(timeout=5000)
+            timeout = config.Config.getInt("sleep", "automazione")
+            v, _ = g_ui.win.Read(timeout=timeout)
 
             LoggerClient.getLogger().info("e' stato premuto il tasto %s", v)
 
@@ -80,7 +85,7 @@ def connection() -> str:
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_SECURED, text_color="red", background_color="white")
 
             elif cs.telescope_status == TelescopeStatus.LOST:
-                LoggerClient.getLogger().info("telescopio ha perso la conessione con thesky ")
+                LoggerClient.getLogger().info("telescopio ha perso la connessione con thesky ")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ANOMALY)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_LOST)
 
@@ -136,7 +141,7 @@ def connection() -> str:
                     g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.telescope_status not in [TelescopeStatus.SECURE, TelescopeStatus.FLATTER]:
+            if cs.telescope_status not in [TelescopeStatus.FLATTER]:
                 LoggerClient.getLogger().info("pannello flat disattivato")
                 g_ui.update_disable_panel_all()
 
@@ -148,12 +153,12 @@ def connection() -> str:
                 LoggerClient.getLogger().info("pannello flat spento")
                 g_ui.update_disable_panel_off()
 
-            # POWER SWITCH
-            if cs.power_status == ButtonStatus.ON:
-                LoggerClient.getLogger().info("Alimentari accesi")
+            # POWER SWITCH TELESCOPIO
+            if cs.power_tele_status == ButtonStatus.ON:
+                LoggerClient.getLogger().info("Alimentatori accesi")
                 g_ui.update_disable_button_power_switch_on()
 
-            if cs.power_status == ButtonStatus.OFF:
+            if cs.power_tele_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("Alimentatori spenti")
                 g_ui.update_disable_button_power_switch_off()
 
@@ -166,20 +171,28 @@ def connection() -> str:
                 LoggerClient.getLogger().info("Luci cupola spente")
                 g_ui.update_disable_button_light_off()
 
-            # AUXILIARY
-            if cs.aux_status == ButtonStatus.ON:
+            # POWER SWITCH CCD
+            if cs.power_ccd_status == ButtonStatus.ON:
                 LoggerClient.getLogger().info("ausiliare acceso")
-                g_ui.update_disable_button_aux_on()
+                g_ui.update_disable_button_power_on_ccd()
 
-            if cs.aux_status == ButtonStatus.OFF:
+            if cs.power_ccd_status == ButtonStatus.OFF:
                 LoggerClient.getLogger().info("ausiliare spento")
-                g_ui.update_disable_button_aux_off()
+                g_ui.update_disable_button_power_off_ccd()
 
             # TRACKING
             if cs.tracking_status == TrackingStatus.ON:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
             elif cs.tracking_status == TrackingStatus.OFF:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
+
+            # SYNC
+            if cs.sync_status == SyncStatus.ON:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
+                g_ui.update_button_sync(disabled=True)
+            elif cs.sync_status == SyncStatus.OFF:
+                g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_OFF, text_color="red", background_color="white")
+                g_ui.update_button_sync(disabled=False)
 
             # ALERT
             if cs.is_in_anomaly():
