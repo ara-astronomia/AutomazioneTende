@@ -1,10 +1,9 @@
 import socket
-from status import Orientation
 import config
 from logger import Logger
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
-from components.curtains.factory_curtain import FactoryCurtain
+from gpiozero import RotaryEncoder
 
 
 # Standard loopback interface address (localhost)
@@ -13,8 +12,16 @@ HOST: str = config.Config.getValue("loopback_ip", "server")
 PORT: str = config.Config.getInt("port", "server")
 error_level: int = 0
 gpioConfig = GPIOConfig()
-curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST)
-curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST)
+east_rotary_encoder = RotaryEncoder(
+                GPIOPin.CLK_E,
+                GPIOPin.DT_E,
+                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+            )
+west_rotary_encoder = RotaryEncoder(
+                GPIOPin.CLK_W,
+                GPIOPin.DT_W,
+                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+            )
 
 
 def convert_steps(steps):
@@ -166,10 +173,10 @@ try:
                     soe = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
                     # number step west east
-                    nwe = "999"  # convert_steps(curtain_west.steps())
-                    nee = "666"  # convert_steps(curtain_east.steps())
+                    nwe = east_rotary_encoder.steps
+                    nee = west_rotary_encoder.steps
 
-                    test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + nwe + nee
+                    test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + str(nwe) + str(nee)
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", nee)
                     Logger.getLogger().info("Encoder west: %s", nwe)

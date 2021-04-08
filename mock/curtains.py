@@ -1,6 +1,4 @@
 import config
-from base.singleton import Singleton
-import threading
 from status import CurtainsStatus
 
 
@@ -11,7 +9,6 @@ class Curtain:
         self._steps = 0
         self.__max_step__ = config.Config.getInt("n_step_corsa", "encoder_step")
         self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
-        self.lockRotary = threading.Lock()
         self.is_disabled = True
 
     def manual_reset(self):

@@ -1,13 +1,11 @@
 import config
 from RPi import GPIO
 from time import sleep
-import time
 from gpio_pin import GPIOPin
 from gpio_pin import Pin
 from gpio_config import GPIOConfig
 from base.singleton import Singleton
 import threading
-from status import Status
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
