@@ -5,6 +5,7 @@ from status import CurtainsStatus
 from status import TelescopeStatus
 from status import ButtonStatus
 from status import TrackingStatus
+from status import SyncStatus
 
 from logger import Logger
 APP = "SERVER"
@@ -12,6 +13,10 @@ APP = "SERVER"
 
 def init():
     global APP
+    if APP == "SERVER":
+        from logger import Logger
+    else:
+        from logger import LoggerClient as Logger
 
 
 def __convert_steps__(steps: SupportsRound) -> str:
@@ -26,12 +31,12 @@ def __convert_coords__(coords: Dict[str, float]) -> str:
     if az > 36000:
         ValueError("Azimut telescopio non valido")
     Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
-    return f'{alt:04}{az:05}'
+    return f'{alt:05}{az:05}'
 
 
 def __reverse_coords__(value: str) -> Dict:
-    alt = round(float(f"{value[0:2]}.{value[2:4]}"), 2)
-    az = round(float(f"{value[4:7]}.{value[7:9]}"), 2)
+    alt = round(float(f"{value[0:3]}.{value[3:5]}"), 2)
+    az = round(float(f"{value[5:8]}.{value[8:10]}"), 2)
     coords = {"alt": alt, "az": az}
     Logger.getLogger().debug("coords VALUE: %s", coords)
     return coords
@@ -44,6 +49,7 @@ def __structure__():
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
     button = ButtonStatus.OFF
+    sync = SyncStatus.OFF
 
     data = {}
     data["roof_status"] = {"orig": status, "trans": repr, "reverse": status.get_value}
@@ -55,9 +61,10 @@ def __structure__():
     data["curtain_west_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["tracking_status"] = {"orig": tracking, "trans": repr, "reverse": tracking.get_value}
     data["panel_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
-    data["power_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["power_tele_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
-    data["aux_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["power_ccd_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
+    data["sync_status"] = {"orig": sync, "trans": repr, "reverse": sync.get_value}
     return data
 
 
@@ -66,10 +73,6 @@ class CracStatus:
     _structure = __structure__()
 
     def __init__(self, code: str = None):
-        if APP == "SERVER":
-            from logger import Logger
-        else:
-            from logger import LoggerClient as Logger
         self.logger = Logger.getLogger()
 
         self.length = 0
@@ -101,7 +104,7 @@ class CracStatus:
     def __check_type__(self, value, name):
         kind = type(self._structure[name]["orig"])
         if not isinstance(value, kind):
-            raise ValueError(f"{name} should be of type {kind}")
+            raise ValueError(f"{name} should be of type {kind} but was {value}")
 
     def __convert__(self, value, name):
         self.__check_type__(value, name)
@@ -148,7 +151,7 @@ class CracStatus:
         self.__assign__(value, "curtain_east_status")
 
     @property
-    def curtain_east_steps(self) -> str:
+    def curtain_east_steps(self):
         return self._curtain_east_steps
 
     @curtain_east_steps.setter
@@ -164,7 +167,7 @@ class CracStatus:
         self.__assign__(value, "curtain_west_status")
 
     @property
-    def curtain_west_steps(self) -> str:
+    def curtain_west_steps(self):
         return self._curtain_west_steps
 
     @curtain_west_steps.setter
@@ -180,6 +183,14 @@ class CracStatus:
         self.__assign__(value, "tracking_status")
 
     @property
+    def sync_status(self):
+        return self._sync_status
+
+    @sync_status.setter
+    def sync_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "sync_status")
+
+    @property
     def panel_status(self):
         return self._panel_status
 
@@ -188,12 +199,12 @@ class CracStatus:
         self.__assign__(value, "panel_status")
 
     @property
-    def power_status(self):
-        return self._power_status
+    def power_tele_status(self):
+        return self._power_tele_status
 
-    @power_status.setter
-    def power_status(self, value: Dict[str, int]) -> None:
-        self.__assign__(value, "power_status")
+    @power_tele_status.setter
+    def power_tele_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "power_tele_status")
 
     @property
     def light_status(self):
@@ -204,18 +215,18 @@ class CracStatus:
         self.__assign__(value, "light_status")
 
     @property
-    def aux_status(self):
-        return self._aux_status
+    def power_ccd_status(self):
+        return self._power_ccd_status
 
-    @aux_status.setter
-    def aux_status(self, value: Dict[str, int]) -> None:
-        self.__assign__(value, "aux_status")
+    @power_ccd_status.setter
+    def power_ccd_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "power_ccd_status")
 
     def are_curtains_disabled(self):
         return self.curtain_east_status is CurtainsStatus.DISABLED and self.curtain_west_status is CurtainsStatus.DISABLED
 
     def are_curtains_in_danger(self):
-        return self.curtain_east_status is CurtainsStatus.DANGER or wself.curtain_west_status is CurtainsStatus.DANGER
+        return self.curtain_east_status is CurtainsStatus.DANGER or self.curtain_west_status is CurtainsStatus.DANGER
 
     def is_in_anomaly(self):
         self.logger.debug("roof status %s", self.roof_status)
@@ -236,7 +247,7 @@ class CracStatus:
         return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSED
 
     def telescope_in_secure_and_roof_is_closing(self):
-        return telescope_status > TelescopeStatus.PARKED and roof_status is Status.CLOSING
+        return self.telescope_status > TelescopeStatus.PARKED and self.roof_status is Status.CLOSING
 
 
 if __name__ == "__main__":
@@ -245,27 +256,29 @@ if __name__ == "__main__":
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
+    print(cs.sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
     print(cs.panel_status)
-    print(cs.power_status)
+    print(cs.power_tele_status)
     print(cs.light_status)
-    print(cs.aux_status)
+    print(cs.power_ccd_status)
     print(cs.length)
     cs = CracStatus("CPP100012045D000D000TSSSS")
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
+    print(cs.sync_status)
     print(cs.curtain_east_status)
     print(cs.curtain_east_steps)
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
     print(cs.panel_status)
-    print(cs.power_status)
+    print(cs.power_tele_status)
     print(cs.light_status)
-    print(cs.aux_status)
+    print(cs.power_ccd_status)
     print(cs.length)

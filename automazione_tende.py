@@ -1,10 +1,13 @@
-import time
+import datetime
 import importlib
 import config
 from logger import Logger
-from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus
+from status import Status
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import CurtainsStatus
 from status import Orientation
-from typing import Dict, Any
+from typing import Dict
 from crac_status import CracStatus
 from gpio_pin import GPIOPin
 from components.curtains.factory_curtain import FactoryCurtain
@@ -20,20 +23,19 @@ class AutomazioneTende:
             from components.button_control import ButtonControl
 
         else:
-            from unittest.mock import patch, MagicMock
-            from mock.roof_control import RoofControl
-            from mock.button_control import ButtonControl
+            from mock.roof_control import RoofControl  # type: ignore
+            from mock.button_control import ButtonControl  # type: ignore
 
         telescopio = importlib.import_module(f"components.telescope.{telescope_plugin}.telescope")
-        self.telescope = telescopio.Telescope()
+        self.telescope = telescopio.Telescope()  # type: ignore
         self.roof_control = RoofControl()
         self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
         self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
         self.curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST, mock=self.mock)
         self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
-        self.power_control = ButtonControl(GPIOPin.SWITCH_POWER)
+        self.power_tele_control = ButtonControl(GPIOPin.SWITCH_POWER_TELE)
         self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
-        self.aux_control = ButtonControl(GPIOPin.SWITCH_AUX)
+        self.power_ccd_control = ButtonControl(GPIOPin.SWITCH_POWER_CCD)
 
         self.started = False
 
@@ -63,15 +65,16 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
-        self.crac_status.power_status = self.power_control.read()
+        self.crac_status.sync_status = self.telescope.sync_status
+        self.crac_status.power_tele_status = self.power_tele_control.read()
         self.crac_status.light_status = self.light_control.read()
-        self.crac_status.aux_status =self.aux_control.read()
+        self.crac_status.power_ccd_status = self.power_ccd_control.read()
 
         return self.crac_status
 
     def move_tele(self, tr, alt, az) -> Dict[str, int]:
 
-        """ Move the Telescope nd Tracking off """
+        """ Move the Telescope and set Tracking on/off """
 
         Logger.getLogger().debug("tr %s, alt: %s, az: %s", tr, alt, az)
 
@@ -224,6 +227,31 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
+    # POWER SWITCH TELE
+    def power_on_tele(self):
+        """ on power switch and update the power switch status in CracStatus object """
+
+        self.power_tele_control.on()
+        self.telescope.sync_time = datetime.datetime.utcnow()
+        Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.telescope.sync_time)
+
+    def power_off_tele(self):
+        """ off power switch and update the power switch status in CracStatus object """
+
+        self.telescope.nosync()
+        self.power_tele_control.off()
+
+    # POWER SWITCH CCD
+    def power_on_ccd(self):
+        """ on auxiliary and update the auxiliary status in CracStatus object """
+
+        self.power_ccd_control.on()
+
+    def power_off_ccd(self):
+        """ off auxiliary and update the auxiliary status in CracStatus object """
+
+        self.power_ccd_control.off()
+
     # PANEL FLAT
     def panel_on(self):
         """ on panel flat and update the panel status in CracStatus object """
@@ -236,16 +264,11 @@ class AutomazioneTende:
 
         self.panel_control.off()
 
-    # POWER SWITCH
-    def power_on(self):
-        """ on power switch and update the power switch status in CracStatus object """
-
-        self.power_control.on()
-
-    def power_off(self):
-        """ off power switch and update the power switch status in CracStatus object """
-
-        self.power_control.off()
+    # SYNC SWITCH
+    def time_sync(self):
+        if self.power_tele_control.read() is ButtonStatus.OFF:
+            self.power_on_tele()
+        self.telescope.sync()
 
     # LIGHT DOME
     def light_on(self):
@@ -258,22 +281,11 @@ class AutomazioneTende:
 
         self.light_control.off()
 
-    # AUXILIARY
-    def aux_on(self):
-        """ on auxiliary and update the auxiliary status in CracStatus object """
-
-        self.aux_control.on()
-
-    def aux_off(self):
-        """ off auxiliary and update the auxiliary status in CracStatus object """
-
-        self.aux_control.off()
-
     def exit_program(self, n: int = 0) -> None:
 
         """ Shutdown the server """
 
-        Logger.getLogger().info("Uscita dall'applicazione")
+        Logger.getLogger().info("Uscita dall'applicazione con codice %s", n)
         self.telescope.close_connection()
         if not self.mock:
             Logger.getLogger().debug("Mock: %s", self.mock)
@@ -312,4 +324,3 @@ class AutomazioneTende:
             # solo se la differenza è misurabile imposto le coordinate
             # precedenti uguali a quelle attuali altrimenti muovendosi
             # a piccoli movimenti le tende non verrebbero mai spostate
-        time.sleep(config.Config.getFloat("sleep", "automazione"))

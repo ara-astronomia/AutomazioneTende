@@ -1,10 +1,8 @@
 import configparser
-import json
+import datetime
 import os
-import socket
 from components.telescope import telescope
 from logger import Logger
-from status import TrackingStatus
 
 
 class Telescope(telescope.BaseTelescope):
@@ -60,6 +58,13 @@ class Telescope(telescope.BaseTelescope):
     def read(self):
         self.coords = self.update_coords()
         self.__update_status__()
+
+    def sync_tele(self, **kwargs):
+        Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
+        coords = self.radec2altaz(datetime.datetime.utcnow(), **kwargs)
+        Logger.getLogger().debug("Coordinate %s %s", coords["alt"], coords["az"])
+        self.update_coords(tr=1, alt=coords["alt"], az=coords["az"])
+        return True
 
     def __is_number_or_input__(self, s, message, kind=int, start=0, stop=1):
         if self.__is_number__(s, kind, start, stop):

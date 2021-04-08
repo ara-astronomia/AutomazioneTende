@@ -1,5 +1,7 @@
 from gpio_pin import GPIOPin
-from status import Orientation, CurtainsStatus
+from status import Orientation
+from gpiozero import RotaryEncoder
+import config
 
 
 class BuilderCurtain:
@@ -7,6 +9,7 @@ class BuilderCurtain:
     def __init__(self) -> None:
         self._clk = None
         self._dt = None
+        self._rotary_encoder = None
         self._pin_verify_closed = None
         self._pin_verify_open = None
         self._motor_a = None
@@ -14,20 +17,12 @@ class BuilderCurtain:
         self._motor_e = None
 
     @property
-    def clk(self):
-        return self._clk
+    def rotary_encoder(self):
+        return self._rotary_encoder
 
-    @clk.setter
-    def clk(self, clk):
-        self._clk = clk
-
-    @property
-    def dt(self):
-        return self._dt
-
-    @dt.setter
-    def dt(self, dt):
-        self._dt = dt
+    @rotary_encoder.setter
+    def rotary_encoder(self, rotary_encoder):
+        self._rotary_encoder = rotary_encoder
 
     @property
     def pin_verify_closed(self):
@@ -71,7 +66,7 @@ class BuilderCurtain:
 
     def build(self):
         from components.curtains.curtains import Curtain
-        return Curtain(self.clk, self.dt, self.pin_verify_closed, self.pin_verify_open, self.motor_a, self.motor_b, self.motor_e)
+        return Curtain(self.rotary_encoder, self.pin_verify_closed, self.pin_verify_open, self.motor_a, self.motor_b, self.motor_e)
 
 
 class FactoryCurtain:
@@ -84,23 +79,30 @@ class FactoryCurtain:
 
         if orientation is Orientation.EAST:
             builder_curtain = BuilderCurtain()
-            builder_curtain.clk = GPIOPin.CLK_E
-            builder_curtain.dt = GPIOPin.DT_E
             builder_curtain.pin_verify_closed = GPIOPin.CURTAIN_E_VERIFY_CLOSED
             builder_curtain.pin_verify_open = GPIOPin.CURTAIN_E_VERIFY_OPEN
             builder_curtain.motor_a = GPIOPin.MOTORE_A
             builder_curtain.motor_b = GPIOPin.MOTORE_B
             builder_curtain.motor_e = GPIOPin.MOTORE_E
+            builder_curtain.rotary_encoder = RotaryEncoder(
+                GPIOPin.CLK_E,
+                GPIOPin.DT_E,
+                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+            )
             curtain = builder_curtain.build()
+
         elif orientation is Orientation.WEST:
             builder_curtain = BuilderCurtain()
-            builder_curtain.clk = GPIOPin.CLK_W
-            builder_curtain.dt = GPIOPin.DT_W
             builder_curtain.pin_verify_closed = GPIOPin.CURTAIN_W_VERIFY_CLOSED
             builder_curtain.pin_verify_open = GPIOPin.CURTAIN_W_VERIFY_OPEN
             builder_curtain.motor_a = GPIOPin.MOTORW_A
             builder_curtain.motor_b = GPIOPin.MOTORW_B
             builder_curtain.motor_e = GPIOPin.MOTORW_E
+            builder_curtain.rotary_encoder = RotaryEncoder(
+                GPIOPin.CLK_W,
+                GPIOPin.DT_W,
+                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+            )
             curtain = builder_curtain.build()
         else:
             raise ValueError("Orientation invalid")

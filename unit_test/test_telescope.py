@@ -1,9 +1,8 @@
 import unittest
-import config
+import datetime
 import socket
-from unittest.mock import MagicMock
+from unittest.mock import DEFAULT, MagicMock
 from components.telescope.theskyx.telescope import Telescope
-import socket
 from base.singleton import Singleton
 
 
@@ -47,3 +46,12 @@ class TelescopeTest(unittest.TestCase):
         data = b'{Error = 234.|No error. Error = 0.'.decode("utf-8")
         self.telescopio.__parse_result__(data)
         self.assertEqual(234, self.telescopio.coords["error"])
+
+    def test_sync_tele(self):
+        self.telescopio.open_connection()
+        self.telescopio.s.recv = MagicMock(return_value=b'{"tr":0,"az":0,"alt":0}|No error. Error = 0.')
+        sync_time = datetime.datetime.utcnow()
+        self.telescopio.sync_time = sync_time
+        self.telescopio.sync()
+        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
+        # TODO check ardec coordinates given the tracking is on or off

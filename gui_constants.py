@@ -18,6 +18,8 @@ class GuiLabel:
     TELESCOPE_PARKED = "Parked"
     TELESCOPE_FLATTER = "Flatter"
     TELESCOPE_SECURED = "In Sicurezza"
+    TELESCOPE_SYNC_OFF = "No Sync"
+    TELESCOPE_SYNC_ON = "Sync On"
     TELESCOPE_NE = "NordEst"
     TELESCOPE_EE = "Est"
     TELESCOPE_SE = "SudEst"
@@ -38,6 +40,7 @@ class GuiLabel:
 class GuiKey:
 
     OPEN_ROOF = "R"
+    SYNC_TELE = "S"
     PARK_TELE = "P"
     FLAT_TELE = "F"
     CLOSE_ROOF = "T"
@@ -52,7 +55,7 @@ class GuiKey:
     PANEL_OFF = "D"
     LIGHT_ON = "K"
     LIGHT_OFF = "J"
-    POWER_ON = "W"
-    POWER_OFF = "X"
-    AUX_ON = "A"
-    AUX_OFF = "O"
+    POWER_ON_TELE = "W"
+    POWER_OFF_TELE = "X"
+    POWER_ON_CCD = "A"
+    POWER_OFF_CCD = "O"

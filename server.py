@@ -1,8 +1,9 @@
-import socket, config, getopt, sys
+import socket
+import config
+import getopt
+import sys
 from automazione_tende import AutomazioneTende
 from logger import Logger
-import time
-from status import Status
 
 HOST: str = config.Config.getValue("loopback_ip", "server")  # Standard loopback interface address (localhost)
 PORT: str = config.Config.getInt("port", "server")           # Port to listen on (non-privileged ports are > 1023)
@@ -17,7 +18,7 @@ try:
     opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
 except getopt.GetoptError:
     Logger.getLogger().exception("parametri errati")
-    exit(2) #esce dall'applicazione con errore
+    exit(2)  # esce dall'applicazione con errore
 for opt, _1 in opts:
     if opt in ('-m', '--mock'):
         MOCK = True
@@ -85,11 +86,11 @@ try:
 
                     elif data == b'W':
                         Logger.getLogger().debug("chiamata al metodo accensione alimentatori")
-                        automazioneTende.power_on()
+                        automazioneTende.power_on_tele()
 
                     elif data == b'X':
                         Logger.getLogger().debug("chiamata al metodo spegnimento alimentatori")
-                        automazioneTende.power_off()
+                        automazioneTende.power_off_tele()
 
                     elif data == b'K':
                         Logger.getLogger().debug("chiamata al metodo accensione luci cupola")
@@ -101,11 +102,15 @@ try:
 
                     elif data == b'A':
                         Logger.getLogger().debug("chiamata al metodo accensione ausiliare")
-                        automazioneTende.aux_on()
+                        automazioneTende.power_on_ccd()
 
                     elif data == b'O':
                         Logger.getLogger().debug("chiamata al metodo spegnimento ausiliare")
-                        automazioneTende.aux_off()
+                        automazioneTende.power_off_ccd()
+
+                    elif data == b'S':
+                        Logger.getLogger().debug("chiamata al metodo sincronizzazione")
+                        automazioneTende.time_sync()
 
                     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     automazioneTende.exec()

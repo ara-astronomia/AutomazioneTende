@@ -124,6 +124,13 @@ class ButtonStatus(OrderedEnum):
 
 
 @unique
+class SyncStatus(OrderedEnum):
+
+    OFF = (0, "N")  # TELESCOPIO NON SINCRONIZZATO
+    ON = (1, "S")  # TELESCOPIO SINCRONIZZATO
+
+
+@unique
 class TrackingStatus(OrderedEnum):
 
     OFF = (0, "T")  # VELOCITÀ TERRESTRE
