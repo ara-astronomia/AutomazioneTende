@@ -49,11 +49,6 @@ class GPIOPin(Pin, Enum):
     MOTORW_B = Pin(Config.getInt("motorW_B", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
     MOTORW_E = Pin(Config.getInt("motorW_E", "motor_board"), GPIO.OUT, on_is=Config.getInt("switch_roof_open", "roof_board"))
 
-    CLK_E = Pin(Config.getInt("clk_e", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
-    DT_E = Pin(Config.getInt("dt_e", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
-    CLK_W = Pin(Config.getInt("clk_w", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
-    DT_W = Pin(Config.getInt("dt_w", "encoder_board"), GPIO.IN, pull=GPIO.PUD_UP)
-
     @staticmethod
     def setup():
         import RPi.GPIO  # type: ignore

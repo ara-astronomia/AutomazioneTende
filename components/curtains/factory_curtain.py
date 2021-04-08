@@ -1,7 +1,7 @@
 from gpio_pin import GPIOPin
 from status import Orientation
 from gpiozero import RotaryEncoder
-import config
+from config import Config
 
 
 class BuilderCurtain:
@@ -85,9 +85,9 @@ class FactoryCurtain:
             builder_curtain.motor_b = GPIOPin.MOTORE_B
             builder_curtain.motor_e = GPIOPin.MOTORE_E
             builder_curtain.rotary_encoder = RotaryEncoder(
-                GPIOPin.CLK_E,
-                GPIOPin.DT_E,
-                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+                Config.getInt("clk_e", "encoder_board"),
+                Config.getInt("dt_e", "encoder_board"),
+                max_steps=Config.getInt("n_step_corsa", "encoder_step")
             )
             curtain = builder_curtain.build()
 
@@ -99,9 +99,9 @@ class FactoryCurtain:
             builder_curtain.motor_b = GPIOPin.MOTORW_B
             builder_curtain.motor_e = GPIOPin.MOTORW_E
             builder_curtain.rotary_encoder = RotaryEncoder(
-                GPIOPin.CLK_W,
-                GPIOPin.DT_W,
-                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+                Config.getInt("clk_w", "encoder_board"),
+                Config.getInt("dt_w", "encoder_board"),
+                max_steps=Config.getInt("n_step_corsa", "encoder_step")
             )
             curtain = builder_curtain.build()
         else:
