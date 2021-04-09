@@ -1,5 +1,5 @@
 import socket
-import config
+from config import Config
 from logger import Logger
 from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
@@ -7,20 +7,20 @@ from gpiozero import RotaryEncoder
 
 
 # Standard loopback interface address (localhost)
-HOST: str = config.Config.getValue("loopback_ip", "server")
+HOST: str = Config.getValue("loopback_ip", "server")
 # Port to listen on (non-privileged ports are > 1023)
-PORT: str = config.Config.getInt("port", "server")
+PORT: str = Config.getInt("port", "server")
 error_level: int = 0
 gpioConfig = GPIOConfig()
 east_rotary_encoder = RotaryEncoder(
-                GPIOPin.CLK_E,
-                GPIOPin.DT_E,
-                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+                Config.getInt("clk_e", "encoder_board"),
+                Config.getInt("dt_e", "encoder_board"),
+                max_steps=Config.getInt("n_step_corsa", "encoder_step")
             )
 west_rotary_encoder = RotaryEncoder(
-                GPIOPin.CLK_W,
-                GPIOPin.DT_W,
-                max_steps=config.Config.getInt("n_step_corsa", "encoder_step")
+                Config.getInt("clk_w", "encoder_board"),
+                Config.getInt("dt_w", "encoder_board"),
+                max_steps=Config.getInt("n_step_corsa", "encoder_step")
             )
 
 
