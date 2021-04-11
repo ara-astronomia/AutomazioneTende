@@ -5,6 +5,17 @@ from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from gpiozero import RotaryEncoder
 
+step_sicurezza = Config.getInt("n_step_sicurezza", "encoder_step")
+
+
+def convert_steps(steps):
+    return f'{steps+step_sicurezza:03}'
+
+
+def when_rotated(rotary_encoder):
+    Logger.getLogger().info(f"Step: %s", rotary_encoder.steps)
+
+
 # Standard loopback interface address (localhost)
 HOST: str = Config.getValue("loopback_ip", "server")
 # Port to listen on (non-privileged ports are > 1023)
@@ -14,26 +25,21 @@ gpioConfig = GPIOConfig()
 east_rotary_encoder = RotaryEncoder(
                 Config.getInt("clk_e", "encoder_board"),
                 Config.getInt("dt_e", "encoder_board"),
-                max_steps=Config.getInt("n_step_corsa", "encoder_step"),
+                max_steps=step_sicurezza,
                 wrap=True
             )
 west_rotary_encoder = RotaryEncoder(
                 Config.getInt("clk_w", "encoder_board"),
                 Config.getInt("dt_w", "encoder_board"),
-                max_steps=Config.getInt("n_step_corsa", "encoder_step"),
+                max_steps=step_sicurezza,
                 wrap=True
             )
 
-east_rotary_encoder.steps = 0 - Config.getInt("n_step_corsa", "encoder_step")
-west_rotary_encoder.steps = 0 - Config.getInt("n_step_corsa", "encoder_step")
+east_rotary_encoder.steps = 0 - step_sicurezza
+west_rotary_encoder.steps = 0 - step_sicurezza
 
-east_rotary_encoder.when_rotated = lambda: print("ciao east")
-west_rotary_encoder.when_rotated = lambda: print("ciao west")
-
-
-def convert_steps(steps):
-    return f'{steps+Config.getInt("n_step_corsa", "encoder_step"):03}'
-
+east_rotary_encoder.when_rotated = when_rotated
+west_rotary_encoder.when_rotated = when_rotated
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
