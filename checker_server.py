@@ -5,7 +5,6 @@ from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from gpiozero import RotaryEncoder
 
-
 # Standard loopback interface address (localhost)
 HOST: str = Config.getValue("loopback_ip", "server")
 # Port to listen on (non-privileged ports are > 1023)
@@ -15,17 +14,25 @@ gpioConfig = GPIOConfig()
 east_rotary_encoder = RotaryEncoder(
                 Config.getInt("clk_e", "encoder_board"),
                 Config.getInt("dt_e", "encoder_board"),
-                max_steps=Config.getInt("n_step_corsa", "encoder_step")
+                max_steps=Config.getInt("n_step_corsa", "encoder_step"),
+                wrap=True
             )
 west_rotary_encoder = RotaryEncoder(
                 Config.getInt("clk_w", "encoder_board"),
                 Config.getInt("dt_w", "encoder_board"),
-                max_steps=Config.getInt("n_step_corsa", "encoder_step")
+                max_steps=Config.getInt("n_step_corsa", "encoder_step"),
+                wrap=True
             )
+
+east_rotary_encoder.steps = 0 - Config.getInt("n_step_corsa", "encoder_step")
+west_rotary_encoder.steps = 0 - Config.getInt("n_step_corsa", "encoder_step")
+
+east_rotary_encoder.when_rotated = lambda: print("ciao east")
+west_rotary_encoder.when_rotated = lambda: print("ciao west")
 
 
 def convert_steps(steps):
-    return f'{steps:03}'
+    return f'{steps+Config.getInt("n_step_corsa", "encoder_step"):03}'
 
 
 try:
@@ -173,8 +180,8 @@ try:
                     soe = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_OPEN)
                     sce = gpioConfig.status(GPIOPin.CURTAIN_E_VERIFY_CLOSED)
                     # number step west east
-                    nwe = east_rotary_encoder.steps
-                    nee = west_rotary_encoder.steps
+                    nee = convert_steps(east_rotary_encoder.steps)
+                    nwe = convert_steps(west_rotary_encoder.steps)
 
                     test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + str(nwe) + str(nee)
                     Logger.getLogger().info("test_status: %s", test_status)

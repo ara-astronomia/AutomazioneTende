@@ -43,9 +43,6 @@ class GPIOConfig(metaclass=Singleton):
     def add_event_detect_on(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.FALLING, callback, bouncetime)
 
-    def add_event_detect_off(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
-        self.add_event_detect(switch, GPIO.RISING, callback, bouncetime)
-
     def add_event_detect_both(self, switch, callback, bouncetime=config.Config.getInt("event_bouncetime", "roof_board")):
         self.add_event_detect(switch, GPIO.BOTH, callback, bouncetime)
 
