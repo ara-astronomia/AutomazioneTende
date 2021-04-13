@@ -7,8 +7,6 @@ from config import Config
 class BuilderCurtain:
 
     def __init__(self) -> None:
-        self._clk = None
-        self._dt = None
         self._rotary_encoder = None
         self._pin_verify_closed = None
         self._pin_verify_open = None

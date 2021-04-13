@@ -57,6 +57,6 @@ class GPIOPin(Pin, Enum):
             if pin.pull:
                 RPi.GPIO.setup(pin.id_pin, pin.pin_setup, pull_up_down=pin.pull)
                 if pin.pin_setup == GPIO.IN:
-                    print (pin, pin.id_pin, pin.pin_setup)
+                    print(pin, pin.id_pin, pin.pin_setup)
             else:
                 RPi.GPIO.setup(pin.id_pin, pin.pin_setup)

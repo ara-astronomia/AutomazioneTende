@@ -31,12 +31,12 @@ class Curtain:
     def __event_detect__(self):
         self.gpioconfig.add_event_detect_on(self.curtain_open, callback=self.__reset_steps__)
         self.gpioconfig.add_event_detect_on(self.curtain_closed, callback=self.__reset_steps__)
-        self.rotary_encoder.when_rotated(self.__check_and_stop__)
+        self.rotary_encoder.when_rotated = self.__check_and_stop__
 
     def __remove_event_detect__(self):
-        self.rotary_encoder.when_rotated(None)
         self.gpioconfig.remove_event_detect(self.curtain_open)
         self.gpioconfig.remove_event_detect(self.curtain_closed)
+        self.rotary_encoder.when_rotated = None
 
     def __open__(self):
         self.gpioconfig.turn_on(self.pin_opening)
