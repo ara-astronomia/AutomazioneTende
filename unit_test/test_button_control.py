@@ -1,12 +1,9 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from components.button_control import ButtonControl
-from gpio_config import GPIOConfig
 from gpio_pin import GPIOPin
 from base.singleton import Singleton
 from status import ButtonStatus
-import time
-import config
 
 
 class TestButtonControl(unittest.TestCase):
