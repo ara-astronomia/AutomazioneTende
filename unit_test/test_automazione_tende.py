@@ -37,7 +37,7 @@ class AutomazioneTendeTest(unittest.TestCase):
         telescopio = MagicMock()
         at = self.automazioneTende
         at.telescope = telescopio
-        comparison = {"east": at.curtain_east.steps, "west": at.curtain_west.steps}
+        comparison = {"east": at.curtain_east.steps(), "west": at.curtain_west.steps()}
 
         telescopio.status = TelescopeStatus.ERROR
         steps = at.calculate_curtains_steps()

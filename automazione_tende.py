@@ -23,8 +23,15 @@ class AutomazioneTende:
             from components.button_control import ButtonControl
 
         else:
+            from gpiozero import Device
+            from gpiozero.pins.mock import MockFactory
+
             from mock.roof_control import RoofControl  # type: ignore
             from mock.button_control import ButtonControl  # type: ignore
+
+            if Device.pin_factory is not None:
+                Device.pin_factory.reset()
+            Device.pin_factory = MockFactory()
 
         telescopio = importlib.import_module(f"components.telescope.{telescope_plugin}.telescope")
         self.telescope = telescopio.Telescope()  # type: ignore
@@ -60,9 +67,9 @@ class AutomazioneTende:
         self.crac_status.telescope_status = self.telescope.status
         self.crac_status.telescope_coords = self.telescope.coords
         self.crac_status.curtain_east_status = self.curtain_east.read()
-        self.crac_status.curtain_east_steps = self.curtain_east.steps
+        self.crac_status.curtain_east_steps = self.curtain_east.steps()
         self.crac_status.curtain_west_status = self.curtain_west.read()
-        self.crac_status.curtain_west_steps = self.curtain_west.steps
+        self.crac_status.curtain_west_steps = self.curtain_west.steps()
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
         self.crac_status.sync_status = self.telescope.sync_status
@@ -113,20 +120,21 @@ class AutomazioneTende:
             Change the height of the curtains to based
             on the given Coordinates
         """
+        if not self.curtain_east.motor.is_active:
+            if steps["east"] is self.n_step_corsa:
+                self.curtain_east.open_up()
+            elif steps["east"] == 0:
+                self.curtain_east.bring_down()
+            else:
+                self.curtain_east.move(steps["east"])
 
-        if steps["east"] is self.n_step_corsa:
-            self.curtain_east.open_up()
-        elif steps["east"] == 0:
-            self.curtain_east.bring_down()
-        else:
-            self.curtain_east.move(steps["east"])
-
-        if steps["west"] is self.n_step_corsa:
-            self.curtain_west.open_up()
-        elif steps["west"] == 0:
-            self.curtain_west.bring_down()
-        else:
-            self.curtain_west.move(steps["west"])
+        if not self.curtain_west.motor.is_active:
+            if steps["west"] is self.n_step_corsa:
+                self.curtain_west.open_up()
+            elif steps["west"] == 0:
+                self.curtain_west.bring_down()
+            else:
+                self.curtain_west.move(steps["west"])
 
     def calculate_curtains_steps(self):
 
@@ -141,8 +149,8 @@ class AutomazioneTende:
         # TODO verify tele height:
         # if less than east_min_height e ovest_min_height
         if telescope.status is TelescopeStatus.LOST or telescope.status is TelescopeStatus.ERROR:
-            steps["west"] = self.curtain_west.steps
-            steps["east"] = self.curtain_east.steps
+            steps["west"] = self.curtain_west.steps()
+            steps["east"] = self.curtain_east.steps()
 
         if telescope.is_below_curtains_area():
             #   keep both curtains to 0
@@ -184,9 +192,9 @@ class AutomazioneTende:
         self.curtain_west.bring_down()
 
         self.crac_status.curtain_east_status = self.curtain_east.read()
-        self.crac_status.curtain_east_steps = self.curtain_east.steps
+        self.crac_status.curtain_east_steps = self.curtain_east.steps()
         self.crac_status.curtain_west_status = self.curtain_west.read()
-        self.crac_status.curtain_west_steps = self.curtain_west.steps
+        self.crac_status.curtain_west_steps = self.curtain_west.steps()
 
     def motor_stop(self):
 
@@ -299,11 +307,11 @@ class AutomazioneTende:
         steps = self.calculate_curtains_steps()
         Logger.getLogger().debug("calculated steps %s", steps)
         self.crac_status.curtain_east_status = self.curtain_east.read()
-        self.crac_status.curtain_east_steps = self.curtain_east.steps
+        self.crac_status.curtain_east_steps = self.curtain_east.steps()
         self.crac_status.curtain_west_status = self.curtain_west.read()
-        self.crac_status.curtain_west_steps = self.curtain_west.steps
-        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps)
-        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps)
+        self.crac_status.curtain_west_steps = self.curtain_west.steps()
+        Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps())
+        Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps())
         self.read_altaz_mount_coordinate()
 
         if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
@@ -317,7 +325,7 @@ class AutomazioneTende:
 
         self.curtain_east.is_disabled = False
         self.curtain_west.is_disabled = False
-        prevSteps = {"east": self.curtain_east.steps, "west": self.curtain_west.steps}
+        prevSteps = {"east": self.curtain_east.steps(), "west": self.curtain_west.steps()}
         if self.is_diff_steps(steps, prevSteps):
             Logger.getLogger().debug("Differenza steps sufficienti")
             self.move_curtains_steps(steps)

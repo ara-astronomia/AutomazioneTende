@@ -1,62 +1,53 @@
-import config
-from gpio_config import GPIOConfig
+from gpiozero import RotaryEncoder, DigitalInputDevice, Motor
+from gpiozero.input_devices import RotaryEncoder
+
+from config import Config
+from logger import Logger
 from status import CurtainsStatus
 
 
 class Curtain:
-    def __init__(self, rotary_encoder, pin_verify_closed, pin_verify_open, motor_a, motor_b, motor_e):
-        self.__sub_min_step__ = -5
-        self.__min_step__ = 0
-        self.__max_step__ = config.Config.getInt("n_step_corsa", "encoder_step")
-        self.__security_step__ = config.Config.getInt("n_step_sicurezza", "encoder_step")
-        self.target = None
-        self.gpioconfig = GPIOConfig()
-        self.encoder_a = False
-        self.encoder_b = False
-        self.is_opening = False
-        self.is_closing = False
-        self.is_enable = False
-        self.is_open = False
-        self.is_closed = False
-        self.rotary_encoder = rotary_encoder
-        self.is_disabled = True
-
-        self.curtain_closed = pin_verify_closed
-        self.curtain_open = pin_verify_open
-        self.pin_opening = motor_a
-        self.pin_closing = motor_b
-        self.pin_enabling_motor = motor_e
+    def __init__(self, rotary_encoder, curtain_closed, curtain_open, motor):
+        self.__base__()
+        self.rotary_encoder = RotaryEncoder(**rotary_encoder)
+        self.curtain_closed = DigitalInputDevice(**curtain_closed)
+        self.curtain_open = DigitalInputDevice(**curtain_open)
+        self.motor = Motor(**motor)
         self.__event_detect__()
 
+    def __base__(self):
+        self.__sub_min_step__ = -5
+        self.__min_step__ = 0
+        self.__max_step__ = Config.getInt("n_step_corsa", "encoder_step")
+        self.__security_step__ = Config.getInt("n_step_sicurezza", "encoder_step")
+        self.target = None
+        self.is_disabled = True
+
     def __event_detect__(self):
-        self.gpioconfig.add_event_detect_on(self.curtain_open, callback=self.__reset_steps__)
-        self.gpioconfig.add_event_detect_on(self.curtain_closed, callback=self.__reset_steps__)
+        self.curtain_closed.when_activated = self.__reset_steps__
+        self.curtain_open.when_activated = self.__reset_steps__
         self.rotary_encoder.when_rotated = self.__check_and_stop__
 
     def __remove_event_detect__(self):
-        self.gpioconfig.remove_event_detect(self.curtain_open)
-        self.gpioconfig.remove_event_detect(self.curtain_closed)
         self.rotary_encoder.when_rotated = None
+        self.curtain_closed.when_activated = None
+        self.curtain_open.when_activated = None
 
     def __open__(self):
-        self.gpioconfig.turn_on(self.pin_opening)
-        self.gpioconfig.turn_off(self.pin_closing)
-        self.gpioconfig.turn_on(self.pin_enabling_motor)
+        self.motor.forward()
 
     def __close__(self):
-        self.gpioconfig.turn_off(self.pin_opening)
-        self.gpioconfig.turn_on(self.pin_closing)
-        self.gpioconfig.turn_on(self.pin_enabling_motor)
+        self.motor.backward()
 
     def __stop__(self):
-        self.gpioconfig.turn_off(self.pin_enabling_motor)
-        self.gpioconfig.turn_off(self.pin_opening)
-        self.gpioconfig.turn_off(self.pin_closing)
+        self.motor.stop()
 
     def __check_and_stop__(self):
+        Logger.getLogger().debug("Number of steps: %s", self.steps())
+        Logger.getLogger().debug("target: %s", self.target)
         if (
-            self.steps() == self.target or
             self.target is None or
+            self.steps() == self.target or
             self.steps() >= self.__security_step__ or
             self.steps() <= self.__sub_min_step__
         ):
@@ -71,6 +62,31 @@ class Curtain:
         elif open_or_closed == self.curtain_closed:
             self.rotary_encoder.steps = self.__min_step__
 
+    def __is_danger__(self):
+        return (
+            self.steps() > self.__max_step__ or self.steps() < self.__min_step__ or
+            (self.steps() == self.__max_step__ and not self.curtain_open.is_active and self.motor.value == 1) or
+            (self.steps() == self.__min_step__ and not self.curtain_closed.is_active and self.motor.value == -1)
+        )
+
+    def __is_disabled__(self):
+        self.curtain_closed.is_active and not self.motor.is_active and self.is_disabled
+
+    def __is_opening__(self):
+        return self.motor.value == 1 and self.motor.is_active and not self.motor.value == -1
+
+    def __is_closing__(self):
+        return self.motor.is_active and self.motor.value == -1 and not self.motor.value == 1
+
+    def __is_open__(self):
+        return self.curtain_open.is_active and not self.curtain_closed.is_active and not self.motor.is_active
+
+    def __is_closed__(self):
+        return self.curtain_closed.is_active and not self.curtain_open.is_active and not self.motor.is_active
+
+    def __is_stopped__(self):
+        return not self.motor.is_active and not self.curtain_closed.is_active and not self.curtain_open.is_active
+
     def manual_reset(self):
 
         """ Reset the steps counter with the help of the edge switchers """
@@ -84,21 +100,21 @@ class Curtain:
         distance_to_max_step = abs(self.__max_step__ - self.steps())
 
         if distance_to_min_step <= distance_to_max_step:
-            self.__close__()
-            pin = self.gpioconfig.wait_for_on(self.curtain_closed)
-            self.__stop__()
-            if pin:
-                self.rotary_encoder.steps = self.__min_step__
+            if self.steps() > self.__min_step__:
+                self.__close__()
             else:
-                self.rotary_encoder.steps = self.__sub_min_step__
+                self.__open__()
+            self.curtain_closed.wait_for_active()
+            self.__stop__()
+            self.rotary_encoder.steps = self.__min_step__
         else:
-            self.__open__()
-            pin = self.gpioconfig.wait_for_on(self.curtain_open)
-            self.__stop__()
-            if pin:
-                self.rotary_encoder.steps = self.__max_step__
+            if self.steps() > self.__max_step__:
+                self.__close__()
             else:
-                self.rotary_encoder.steps = self.__security_step__
+                self.__open__()
+            self.curtain_open.wait_for_active()
+            self.__stop__()
+            self.rotary_encoder.steps = self.__max_step__
 
         self.__event_detect__()
 
@@ -109,30 +125,21 @@ class Curtain:
 
         """ Read the status of the curtain based on the pin of motor, encoder and switches """
 
-        self.is_opening = self.gpioconfig.status(self.pin_opening)
-        self.is_closing = self.gpioconfig.status(self.pin_closing)
-        self.is_enable = self.gpioconfig.status(self.pin_enabling_motor)
-        self.is_open = self.gpioconfig.status(self.curtain_open)
-        self.is_closed = self.gpioconfig.status(self.curtain_closed)
-
         status = CurtainsStatus.ERROR
-        if (
-            self.steps() > self.__max_step__ or self.steps() < self.__min_step__ or
-            (self.steps() == self.__max_step__ and not self.is_open and not self.is_closing) or
-            (self.steps() == self.__min_step__ and not self.is_closed and not self.is_opening)
-        ):
+
+        if self.__is_danger__():
             status = CurtainsStatus.DANGER
-        elif self.is_opening and self.is_enable and not self.is_closing and not self.is_open and not self.is_closed:
-            status = CurtainsStatus.OPENING
-        elif self.is_enable and self.is_closing and not self.is_opening and not self.is_open and not self.is_closed:
-            status = CurtainsStatus.CLOSING
-        elif self.is_open and not self.is_enable:
-            status = CurtainsStatus.OPEN
-        elif self.is_closed and not self.is_enable and self.is_disabled:
+        elif self.__is_disabled__():
             status = CurtainsStatus.DISABLED
-        elif self.is_closed and not self.is_enable:
+        elif self.__is_opening__():
+            status = CurtainsStatus.OPENING
+        elif self.__is_closing__():
+            status = CurtainsStatus.CLOSING
+        elif self.__is_open__():
+            status = CurtainsStatus.OPEN
+        elif self.__is_closed__():
             status = CurtainsStatus.CLOSED
-        elif not self.is_enable:
+        elif self.__is_stopped__():
             status = CurtainsStatus.STOPPED
 
         return status
@@ -141,8 +148,10 @@ class Curtain:
 
         """ Move the motor in a direction based on the starting and target steps """
 
+        status = self.read()
+        Logger.getLogger().debug("Status in move method: %s", status)
         # while the motors are moving we don't want to start another movement
-        if (self.read() > CurtainsStatus.OPEN):
+        if status > CurtainsStatus.OPEN or self.motor.is_active:
             return
 
         self.target = step
@@ -150,7 +159,7 @@ class Curtain:
         # deciding the movement direction
         if self.steps() < self.target:
             self.__open__()
-        if self.steps() > self.target:
+        elif self.steps() > self.target:
             self.__close__()
 
     def open_up(self):
@@ -174,7 +183,7 @@ class Curtain:
     def motor_stop(self):
 
         """
-            disable pin motor
+            disable motor
         """
 
         self.__stop__()
