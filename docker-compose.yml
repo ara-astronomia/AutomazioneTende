@@ -23,7 +23,6 @@ services:
       TELESCOPE_FLAT_AZ: ${TELESCOPE_FLAT_AZ}
     ports: 
       - 3030:3030
-    command: "-m"
   crac_client:
     container_name: crac_client
     build:
