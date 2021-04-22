@@ -28,13 +28,11 @@ class MockCurtain(Curtain):
     def __open__(self):
         super().__open__()
         while self.motor.is_active:
-            Logger.getLogger().debug("Eccomi %s %s", self.rotary_encoder.a.pin.number, self.rotary_encoder.b.pin.number)
             self.__rotate_cw__(self.rotary_encoder.a, self.rotary_encoder.b)
             self.__check_curtains_limit__()
 
     def __close__(self):
         super().__close__()
         while self.motor.is_active:
-            Logger.getLogger().debug("Eccomi %s %s", self.rotary_encoder.a.pin.number, self.rotary_encoder.b.pin.number)
             self.__rotate_ccw__(self.rotary_encoder.a, self.rotary_encoder.b)
             self.__check_curtains_limit__()
