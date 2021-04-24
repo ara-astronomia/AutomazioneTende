@@ -82,6 +82,7 @@ class TestCurtain(unittest.TestCase):
 
         # when
         curtain.open_up()
+        curtain.t.join()
 
         # then
         self.assertEqual(curtain.__max_step__, curtain.steps())
@@ -91,12 +92,14 @@ class TestCurtain(unittest.TestCase):
         # given
         curtain = self.east_curtain()
         curtain.is_disabled = False
+        curtain.curtain_closed.pin.drive_high()
         curtain.curtain_open.pin.drive_low()
         curtain.rotary_encoder.steps = curtain.__max_step__
         self.assertEqual(curtain.read(), CurtainsStatus.OPEN)
 
         # when
         curtain.bring_down()
+        curtain.t.join()
 
         # then
         self.assertEqual(curtain.__min_step__, curtain.steps())
@@ -109,6 +112,7 @@ class TestCurtain(unittest.TestCase):
 
         # when
         curtain.move(final_step)
+        curtain.t.join()
 
         # then
         self.assertEqual(final_step, curtain.steps())
@@ -122,6 +126,7 @@ class TestCurtain(unittest.TestCase):
 
         # when
         curtain.move(final_step)
+        curtain.t.join()
 
         # then
         self.assertEqual(final_step, curtain.steps())

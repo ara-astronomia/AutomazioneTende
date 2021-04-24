@@ -202,7 +202,7 @@ class Gui:
 
         """ Update disable button close roof"""
 
-        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        Logger.getLogger().info('disable close roof button in gui')
         # self.win.FindElement('close-roof').Update(disabled=True)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, disabled=True)
 
@@ -210,7 +210,7 @@ class Gui:
 
         """ Update enable button open roof"""
 
-        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        Logger.getLogger().info('enable close roof button in gui and the other components')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
@@ -243,11 +243,11 @@ class Gui:
 
         """ Update Curtain West Status """
 
-        Logger.getLogger().info('update_status_curtain_west in gui')
+        Logger.getLogger().info('update_status_curtain_west in gui %s', status)
         self.win.FindElement('status-curtain-west').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
-
+ 
         """ Update curtains angular values """
 
         alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e)))  # from steps to degree for east

@@ -70,7 +70,7 @@ class Curtain:
         )
 
     def __is_disabled__(self):
-        self.curtain_closed.is_active and not self.motor.is_active and self.is_disabled
+        return self.curtain_closed.is_active and not self.motor.is_active and self.is_disabled
 
     def __is_opening__(self):
         return self.motor.value == 1 and self.motor.is_active and not self.motor.value == -1

@@ -26,7 +26,7 @@ class AutomazioneTende:
             from gpiozero import Device
             from gpiozero.pins.mock import MockFactory
 
-            from mock.roof_control import RoofControl  # type: ignore
+            from mock.roof_control import MockRoofControl as RoofControl  # type: ignore
             from mock.button_control import ButtonControl  # type: ignore
 
             if Device.pin_factory is not None:
@@ -311,7 +311,9 @@ class AutomazioneTende:
         self.crac_status.curtain_west_status = self.curtain_west.read()
         self.crac_status.curtain_west_steps = self.curtain_west.steps()
         Logger.getLogger().debug("curtain_east_steps %s", self.curtain_east.steps())
+        Logger.getLogger().debug("curtain_east_status %s", self.curtain_east.read())
         Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps())
+        Logger.getLogger().debug("curtain_west_status %s", self.curtain_west.read())
         self.read_altaz_mount_coordinate()
 
         if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
