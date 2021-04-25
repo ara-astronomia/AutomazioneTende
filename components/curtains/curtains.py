@@ -1,5 +1,4 @@
 from gpiozero import RotaryEncoder, DigitalInputDevice, Motor
-from gpiozero.input_devices import RotaryEncoder
 
 from config import Config
 from logger import Logger
@@ -7,7 +6,7 @@ from status import CurtainsStatus
 
 
 class Curtain:
-    def __init__(self, rotary_encoder, curtain_closed, curtain_open, motor):
+    def __init__(self, rotary_encoder: RotaryEncoder, curtain_closed, curtain_open, motor):
         self.__base__()
         self.rotary_encoder = RotaryEncoder(**rotary_encoder)
         self.curtain_closed = DigitalInputDevice(**curtain_closed)

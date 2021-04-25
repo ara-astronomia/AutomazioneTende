@@ -1,5 +1,7 @@
 import socket
+
 import config
+
 from electro_tests import gui
 from gui_constants import GuiKey
 from logger import LoggerClient
@@ -32,7 +34,7 @@ def connection() -> str:
         win = gui.create_win()
 
         while True:
-            v, values = win.Read(timeout=5000)
+            v, values = win.Read(timeout=500)
 
             if not v:
                 s.close()
@@ -92,7 +94,7 @@ def connection() -> str:
 
             s.sendall(code.encode("UTF-8"))
 
-            rcv = s.recv(15)
+            rcv = s.recv(17)
 
             data = rcv.decode("UTF-8")
             LoggerClient.getLogger().debug("Data: %s", data)
@@ -109,8 +111,8 @@ def connection() -> str:
             change_status(data[7], "Curtain_E_is_open", win)
             change_status(data[8], "Curtain_E_is_closed", win)
 
-            change_encoder(data[9:12], "Count_W", win)
-            change_encoder(data[12:], "Count_E", win)
+            change_encoder(data[9:13], "Count_W", win)
+            change_encoder(data[13:], "Count_E", win)
 
 
 # The server's hostname or IP address

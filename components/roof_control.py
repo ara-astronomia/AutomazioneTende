@@ -8,7 +8,7 @@ from status import Status
 class RoofControl():
 
     def __init__(self):
-        self.motor = OutputDevice(Config.getInt("switch_roof_open", "roof_board"))
+        self.motor = OutputDevice(Config.getInt("switch_roof", "roof_board"))
         self.roof_closed_switch = Button(Config.getInt("roof_verify_closed", "roof_board"), pull_up=True)
         self.roof_open_switch = Button(Config.getInt("roof_verify_open", "roof_board"), pull_up=True)
 

@@ -1,16 +1,13 @@
 import datetime
 import importlib
-import config
-from logger import Logger
-from status import Status
-from status import TelescopeStatus
-from status import ButtonStatus
-from status import CurtainsStatus
-from status import Orientation
 from typing import Dict
-from crac_status import CracStatus
-from gpio_pin import GPIOPin
+
+from components.button_control import ButtonControl
 from components.curtains.factory_curtain import FactoryCurtain
+from config import Config
+from crac_status import CracStatus
+from logger import Logger
+from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus, Orientation
 
 
 class AutomazioneTende:
@@ -20,14 +17,12 @@ class AutomazioneTende:
 
         if not mock:
             from components.roof_control import RoofControl
-            from components.button_control import ButtonControl
 
         else:
             from gpiozero import Device
             from gpiozero.pins.mock import MockFactory
 
             from mock.roof_control import MockRoofControl as RoofControl  # type: ignore
-            from mock.button_control import ButtonControl  # type: ignore
 
             if Device.pin_factory is not None:
                 Device.pin_factory.reset()
@@ -36,20 +31,22 @@ class AutomazioneTende:
         telescopio = importlib.import_module(f"components.telescope.{telescope_plugin}.telescope")
         self.telescope = telescopio.Telescope()  # type: ignore
         self.roof_control = RoofControl()
-        self.n_step_corsa = config.Config.getInt('n_step_corsa', "encoder_step")
+        self.n_step_corsa = Config.getInt('n_step_corsa', "encoder_step")
+
+        # TODO: factory shouldn't be aware of the mock
         self.curtain_east = FactoryCurtain.curtain(orientation=Orientation.EAST, mock=self.mock)
         self.curtain_west = FactoryCurtain.curtain(orientation=Orientation.WEST, mock=self.mock)
-        self.panel_control = ButtonControl(GPIOPin.SWITCH_PANEL)
-        self.power_tele_control = ButtonControl(GPIOPin.SWITCH_POWER_TELE)
-        self.light_control = ButtonControl(GPIOPin.SWITCH_LIGHT)
-        self.power_ccd_control = ButtonControl(GPIOPin.SWITCH_POWER_CCD)
+        self.panel_control = ButtonControl(Config.getInt("switch_panel", "panel_board"))
+        self.power_tele_control = ButtonControl(Config.getInt("switch_power", "panel_board"))
+        self.light_control = ButtonControl(Config.getInt("switch_light", "panel_board"))
+        self.power_ccd_control = ButtonControl(Config.getInt("switch_aux", "panel_board"))
 
         self.started = False
 
-        self.alt_max_tend_e = config.Config.getInt("max_est", "tende")
-        self.alt_max_tend_w = config.Config.getInt("max_west", "tende")
-        self.alt_min_tend_e = config.Config.getInt("park_est", "tende")
-        self.alt_min_tend_w = config.Config.getInt("park_west", "tende")
+        self.alt_max_tend_e = Config.getInt("max_est", "tende")
+        self.alt_max_tend_w = Config.getInt("max_west", "tende")
+        self.alt_min_tend_e = Config.getInt("park_est", "tende")
+        self.alt_min_tend_w = Config.getInt("park_west", "tende")
         self.prevSteps = {'east': self.alt_min_tend_e, 'west': self.alt_min_tend_w}
 
         # stabilisco il valore di increm per ogni tenda, increm corrisponde al
@@ -205,7 +202,7 @@ class AutomazioneTende:
 
     def is_diff_steps(self, cs: Dict[str, int], ps: Dict[str, int]) -> bool:
 
-        minDiffSteps = config.Config.getInt("diff_steps", "encoder_step")
+        minDiffSteps = Config.getInt("diff_steps", "encoder_step")
         is_east = abs(cs["east"] - ps["east"]) > minDiffSteps
         is_west = abs(cs["west"] - ps["west"]) > minDiffSteps
 
@@ -295,10 +292,11 @@ class AutomazioneTende:
 
         Logger.getLogger().info("Uscita dall'applicazione con codice %s", n)
         self.telescope.close_connection()
-        if not self.mock:
-            Logger.getLogger().debug("Mock: %s", self.mock)
-            from gpio_config import GPIOConfig
-            GPIOConfig().cleanup(n)
+        self.curtain_east.bring_down()
+        self.curtain_west.bring_down()
+        self.curtain_east.curtain_closed.wait_for_active()
+        self.curtain_west.curtain_closed.wait_for_active()
+        self.roof_control.close()
 
     def exec(self) -> None:
 

@@ -1,27 +1,33 @@
 import unittest
+
+from gpiozero import Device
+from gpiozero import OutputDevice
+from gpiozero.pins.mock import MockFactory
 from unittest.mock import MagicMock, patch
+
 from components.button_control import ButtonControl
-from gpio_pin import GPIOPin
-from base.singleton import Singleton
+from config import Config
 from status import ButtonStatus
 
 
 class TestButtonControl(unittest.TestCase):
+    def setUp(self):
+        if Device.pin_factory is not None:
+            Device.pin_factory.reset()
+
+        Device.pin_factory = MockFactory()
 
     def panel_control(self):
-        return ButtonControl(GPIOPin.SWITCH_PANEL)
+        return ButtonControl(Config.getInt("switch_panel", "panel_board"))
 
     def power_tele_control(self):
-        return ButtonControl(GPIOPin.SWITCH_POWER_TELE)
+        return ButtonControl(Config.getInt("switch_power", "panel_board"))
 
     def light_control(self):
-        return ButtonControl(GPIOPin.SWITCH_LIGHT)
+        return ButtonControl(Config.getInt("switch_light", "panel_board"))
 
     def power_ccd_control(self):
-        return ButtonControl(GPIOPin.SWITCH_POWER_CCD)
-
-    def setUp(self):
-        Singleton._instances = {}
+        return ButtonControl(Config.getInt("switch_aux", "panel_board"))
 
     def test_panel_control(self):
         self.__check_button__(self.panel_control())
@@ -36,15 +42,16 @@ class TestButtonControl(unittest.TestCase):
         self.__check_button__(self.power_ccd_control())
 
     def __check_button__(self, button):
-        button.gpioconfig = MagicMock()
-        button.on()
-        button.gpioconfig.turn_on.assert_called_once()
-        button.off()
-        button.gpioconfig.turn_off.assert_called_once()
+        with patch.object(OutputDevice, 'on', return_value=None) as mock_method:
+            button.on()
+            mock_method.assert_called_once()
+        with patch.object(OutputDevice, 'off', return_value=None) as mock_method:
+            button.off()
+            mock_method.assert_called_once()
 
     def test_read_button(self):
         button = self.panel_control()
-        button.gpioconfig.status = MagicMock(return_value=True)
+        button.on()
         self.assertEqual(button.read(), ButtonStatus.ON)
-        button.gpioconfig.status = MagicMock(return_value=False)
+        button.off()
         self.assertEqual(button.read(), ButtonStatus.OFF)

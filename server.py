@@ -117,11 +117,10 @@ try:
 
                     conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
 
-except (KeyboardInterrupt, SystemExit):
-    Logger.getLogger().info("Intercettato CTRL+C")
+except (KeyboardInterrupt, SystemExit) as e:
+    Logger.getLogger().info("Intercettato CTRL+C: " + str(e))
 except Exception as e:
-    Logger.getLogger().exception("altro errore: ")
+    Logger.getLogger().exception("altro errore: " + str(e))
     error_level = -1
-    raise
 finally:
     automazioneTende.exit_program(error_level)
