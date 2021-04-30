@@ -4,7 +4,7 @@ import sys
 from threading import Thread
 from unittest import mock
 
-from gpiozero import RotaryEncoder, OutputDevice, Motor, DigitalInputDevice, Button
+from gpiozero import RotaryEncoder, OutputDevice, Motor, DigitalInputDevice
 from time import sleep
 
 from config import Config
@@ -121,8 +121,8 @@ if MOCK:
     thread_west = Thread(target=__motor_thread__, args=(motor_west, west_rotary_encoder.a, west_rotary_encoder.b))
     thread_west.start()
 
-roof_closed_switch = Button(Config.getInt("roof_verify_closed", "roof_board"), pull_up=True)
-roof_open_switch = Button(Config.getInt("roof_verify_open", "roof_board"), pull_up=True)
+roof_closed_switch = DigitalInputDevice(Config.getInt("roof_verify_closed", "roof_board"), pull_up=True)
+roof_open_switch = DigitalInputDevice(Config.getInt("roof_verify_open", "roof_board"), pull_up=True)
 
 east_curtain_closed = DigitalInputDevice(Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), pull_up=True)
 east_curtain_open = DigitalInputDevice(Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), pull_up=True)
@@ -256,8 +256,8 @@ try:
                         Exception("ERROR EAST CURTAIN")
 
                     # verity roof if open or closed
-                    sor = 1 if roof_open_switch.is_pressed else 0
-                    scr = 1 if roof_closed_switch.is_pressed else 0
+                    sor = 1 if roof_open_switch.is_active else 0
+                    scr = 1 if roof_closed_switch.is_active else 0
                     # verity curtain West open or closed
                     sow = 1 if west_curtain_open.is_active else 0
                     scw = 1 if west_curtain_closed.is_active else 0
