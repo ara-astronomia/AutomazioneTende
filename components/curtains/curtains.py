@@ -69,22 +69,22 @@ class Curtain:
         )
 
     def __is_disabled__(self):
-        return self.curtain_closed.is_active and not self.motor.is_active and self.is_disabled
+        return self.curtain_closed.is_active and not self.motor.value and self.is_disabled
 
     def __is_opening__(self):
-        return self.motor.value == 1 and self.motor.is_active and not self.motor.value == -1
+        return self.motor.value == 1
 
     def __is_closing__(self):
-        return self.motor.is_active and self.motor.value == -1 and not self.motor.value == 1
+        return self.motor.value == -1
 
     def __is_open__(self):
-        return self.curtain_open.is_active and not self.curtain_closed.is_active and not self.motor.is_active
+        return self.curtain_open.is_active and not self.curtain_closed.is_active and not self.motor.value
 
     def __is_closed__(self):
-        return self.curtain_closed.is_active and not self.curtain_open.is_active and not self.motor.is_active
+        return self.curtain_closed.is_active and not self.curtain_open.is_active and not self.motor.value
 
     def __is_stopped__(self):
-        return not self.motor.is_active and not self.curtain_closed.is_active and not self.curtain_open.is_active
+        return not self.curtain_closed.is_active and not self.curtain_open.is_active and not self.motor.value
 
     def manual_reset(self):
 
@@ -150,7 +150,7 @@ class Curtain:
         status = self.read()
         Logger.getLogger().debug("Status in move method: %s", status)
         # while the motors are moving we don't want to start another movement
-        if status > CurtainsStatus.OPEN or self.motor.is_active:
+        if status > CurtainsStatus.OPEN or self.motor.value:
             return
 
         self.target = step

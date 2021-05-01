@@ -254,7 +254,12 @@ try:
                         curtain_east = "S"
                     else:
                         Exception("ERROR EAST CURTAIN")
-
+                    # verify root status
+                    roof_status = 1 if motor_roof.is_active else 0
+                    # verify motor West status
+                    motor_west_status = 2 if motor_west.value == -1 else motor_west.value
+                    # verify motor East status
+                    motor_east_status = 2 if motor_east.value == -1 else motor_east.value
                     # verity roof if open or closed
                     sor = 1 if roof_open_switch.is_active else 0
                     scr = 1 if roof_closed_switch.is_active else 0
@@ -268,7 +273,7 @@ try:
                     nee = convert_steps(east_rotary_encoder.steps)
                     nwe = convert_steps(west_rotary_encoder.steps)
 
-                    test_status = roof + curtain_west + curtain_east + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + str(nwe) + str(nee)
+                    test_status = str(roof_status) + str(motor_west_status) + str(motor_east_status) + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + str(nwe) + str(nee)
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", nee)
                     Logger.getLogger().info("Encoder west: %s", nwe)

@@ -5,7 +5,6 @@ import config
 from electro_tests import gui
 from gui_constants import GuiKey
 from logger import LoggerClient
-from status import ButtonStatus
 
 
 def change_status(status_switch, key, win):
@@ -16,11 +15,33 @@ def change_status(status_switch, key, win):
 
 
 def change_status_button(status_button, key, win):
-    status_button = ButtonStatus
     if status_button == "S":
         win.Find(key).update(disabled=True, text_color='white', background_color='green')
     elif status_button == "A":
         win.Find(key).update(disabled=False, text_color='yellow', background_color='purple')
+
+
+def change_status_radio(status_radio, keyOn, keyOff, win):
+    LoggerClient.getLogger().debug("Roof status: %s", status_radio)
+    if status_radio == "1":
+        LoggerClient.getLogger().debug("Roof status is open: %s", keyOn)
+        win.Element(keyOn).Update(value=True)
+    elif status_radio == "0":
+        LoggerClient.getLogger().debug("Roof status is closed: %s", keyOff)
+        win.Element(keyOff).Update(value=True)
+
+
+def change_status_radio_3(status_radio, keyOpen, keyClosed, keyStop, win):
+    LoggerClient.getLogger().debug("Curtain motor: %s", status_radio)
+    if status_radio == "1":
+        LoggerClient.getLogger().debug("Curtain motor status is open: %s", keyOpen)
+        win.Element(keyOpen).Update(value=True)
+    elif status_radio == "0":
+        LoggerClient.getLogger().debug("Curtain motor is closed: %s", keyStop)
+        win.Element(keyStop).Update(value=True)
+    else:
+        LoggerClient.getLogger().debug("Curtain motor is stopped: %s", keyClosed)
+        win.Element(keyClosed).Update(value=True)
 
 
 def change_encoder(count, key, win):
@@ -41,8 +62,8 @@ def connection() -> str:
                 return GuiKey.EXIT
 
             roof = "S"
-            curtain_west = "S"
-            curtain_east = "S"
+            curtain_west = "D"
+            curtain_east = "D"
             panel = "S"
             power_tele = "S"
             light = "S"
@@ -99,15 +120,24 @@ def connection() -> str:
             data = rcv.decode("UTF-8")
             LoggerClient.getLogger().debug("Data: %s", data)
 
-            # # ROOF
+            # ROOF STATUS
+            change_status_radio(data[0], "RO", "RC", win)
+
+            # MOTOR WEST STATUS
+            change_status_radio_3(data[1], "WO", "WC", "WS", win)
+
+            # MOTOR EAST STATUS
+            change_status_radio_3(data[2], "EO", "EC", "ES", win)
+
+            # ROOF LIMIT
             change_status(data[3], "Roof_open", win)
             change_status(data[4], "Roof_closed", win)
 
-            # #CURTAINS W
+            # CURTAINS W
             change_status(data[5], "Curtain_W_is_open", win)
             change_status(data[6], "Curtain_W_is_closed", win)
 
-            # #CURTAINS W
+            # CURTAINS W
             change_status(data[7], "Curtain_E_is_open", win)
             change_status(data[8], "Curtain_E_is_closed", win)
 
