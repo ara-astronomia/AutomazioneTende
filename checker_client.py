@@ -64,10 +64,10 @@ def connection() -> str:
             roof = "S"
             curtain_west = "D"
             curtain_east = "D"
-            panel = "S"
-            power_tele = "S"
-            light = "S"
-            power_ccd = "S"
+            panel = "D"
+            power_tele = "D"
+            light = "D"
+            power_ccd = "D"
 
             for k, value in values.items():
                 if value:
@@ -115,7 +115,7 @@ def connection() -> str:
 
             s.sendall(code.encode("UTF-8"))
 
-            rcv = s.recv(17)
+            rcv = s.recv(21)
 
             data = rcv.decode("UTF-8")
             LoggerClient.getLogger().debug("Data: %s", data)
@@ -141,8 +141,15 @@ def connection() -> str:
             change_status(data[7], "Curtain_E_is_open", win)
             change_status(data[8], "Curtain_E_is_closed", win)
 
+            # STEP CURTAINS
             change_encoder(data[9:13], "Count_W", win)
-            change_encoder(data[13:], "Count_E", win)
+            change_encoder(data[13:17], "Count_E", win)
+
+            # RELE'
+            change_status_radio(data[17], "L", "D", win)
+            change_status_radio(data[18], "W", "X", win)
+            change_status_radio(data[19], "K", "J", win)
+            change_status_radio(data[20], "A", "O", win)
 
 
 # The server's hostname or IP address

@@ -273,7 +273,25 @@ try:
                     nee = convert_steps(east_rotary_encoder.steps)
                     nwe = convert_steps(west_rotary_encoder.steps)
 
-                    test_status = str(roof_status) + str(motor_west_status) + str(motor_east_status) + str(sor) + str(scr) + str(sow) + str(scw) + str(soe) + str(sce) + str(nwe) + str(nee)
+                    panel_status = 1 if panel_flat.is_active else 0
+                    power_tele_status = 1 if switch_power_tele.is_active else 0
+                    light_status = 1 if switch_light.is_active else 0
+                    switch_aux_status = 1 if switch_aux.is_active else 0
+
+                    test_status = (
+                        str(roof_status) +
+                        str(motor_west_status) +
+                        str(motor_east_status) +
+                        str(sor) + str(scr) +
+                        str(sow) + str(scw) +
+                        str(soe) + str(sce) +
+                        str(nwe) + str(nee) +
+                        str(panel_status) +
+                        str(power_tele_status) +
+                        str(light_status) +
+                        str(switch_aux_status)
+                    )
+
                     Logger.getLogger().info("test_status: %s", test_status)
                     Logger.getLogger().info("Encoder est: %s", nee)
                     Logger.getLogger().info("Encoder west: %s", nwe)
