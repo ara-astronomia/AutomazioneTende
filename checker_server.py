@@ -124,10 +124,10 @@ if MOCK:
 roof_closed_switch = DigitalInputDevice(Config.getInt("roof_verify_closed", "roof_board"), pull_up=True)
 roof_open_switch = DigitalInputDevice(Config.getInt("roof_verify_open", "roof_board"), pull_up=True)
 
-east_curtain_closed = DigitalInputDevice(Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), pull_up=True)
-east_curtain_open = DigitalInputDevice(Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), pull_up=True)
-west_curtain_closed = DigitalInputDevice(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), pull_up=True)
-west_curtain_open = DigitalInputDevice(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), pull_up=True)
+east_curtain_closed = DigitalInputDevice(Config.getInt("curtain_E_verify_closed", "curtains_limit_switch"), pull_up=True)
+east_curtain_open = DigitalInputDevice(Config.getInt("curtain_E_verify_open", "curtains_limit_switch"), pull_up=True)
+west_curtain_closed = DigitalInputDevice(Config.getInt("curtain_W_verify_closed", "curtains_limit_switch"), pull_up=True)
+west_curtain_open = DigitalInputDevice(Config.getInt("curtain_W_verify_open", "curtains_limit_switch"), pull_up=True)
 
 try:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
