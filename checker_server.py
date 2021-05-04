@@ -2,7 +2,6 @@ import getopt
 import socket
 import sys
 from threading import Thread
-from unittest import mock
 
 from gpiozero import RotaryEncoder, OutputDevice, Motor, DigitalInputDevice
 from time import sleep
@@ -17,14 +16,6 @@ def convert_steps(steps):
 
 def when_rotated(rotary_encoder):
     Logger.getLogger().info(f"Step: %s", rotary_encoder.steps)
-    # if rotary_encoder.steps <= 0:
-    #     curtain_closed.pin.drive_low()
-    # else:
-    #     curtain_closed.pin.drive_high()
-    # if rotary_encoder.steps >= Config.getInt("n_step_corsa", "encoder_step"):
-    #     curtain_open.pin.drive_low()
-    # else:
-    #     curtain_open.pin.drive_high()
 
 
 def __rotate__(*inputs):
