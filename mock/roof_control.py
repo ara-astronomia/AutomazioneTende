@@ -1,19 +1,34 @@
-import config
-from status import Status
-from base.singleton import Singleton
+from threading import Thread
+from time import sleep
 
-class RoofControl(metaclass=Singleton):
+from components.roof_control import RoofControl
+
+
+class MockRoofControl(RoofControl):
 
     def __init__(self):
-        self.is_open = Status.CLOSED
+        super().__init__()
+        self.roof_open_switch.pin.drive_high()
+        self.roof_closed_switch.pin.drive_low()
 
     def open(self):
-        self.is_open = Status.OPEN
-        return self.is_open
+        self.roof_open_switch.pin.drive_high()
+        self.roof_closed_switch.pin.drive_high()
+        t = Thread(target=self.__wait_for_open__, args=(self.roof_open_switch.pin,))
+        t.start()
+        super().open()
+        t.join()
+        return True
 
     def close(self):
-        self.is_open = Status.CLOSED
-        return self.is_open
+        self.roof_open_switch.pin.drive_high()
+        self.roof_closed_switch.pin.drive_high()
+        t = Thread(target=self.__wait_for_open__, args=(self.roof_closed_switch.pin,))
+        t.start()
+        super().close()
+        t.join()
+        return True
 
-    def read(self):
-        return self.is_open
+    def __wait_for_open__(self, pin):
+        sleep(10)
+        pin.drive_low()

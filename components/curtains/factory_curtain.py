@@ -1,107 +1,112 @@
-from gpio_pin import GPIOPin
-from status import Orientation, CurtainsStatus
+from config import Config
+from status import Orientation
 
 
 class BuilderCurtain:
 
     def __init__(self) -> None:
-        self._clk = None
-        self._dt = None
-        self._pin_verify_closed = None
-        self._pin_verify_open = None
-        self._motor_a = None
-        self._motor_b = None
-        self._motor_e = None
+        self._rotary_encoder = None
+        self._verify_closed = None
+        self._verify_open = None
+        self._motor = None
 
     @property
-    def clk(self):
-        return self._clk
+    def rotary_encoder(self):
+        return self._rotary_encoder
 
-    @clk.setter
-    def clk(self, clk):
-        self._clk = clk
-
-    @property
-    def dt(self):
-        return self._dt
-
-    @dt.setter
-    def dt(self, dt):
-        self._dt = dt
+    @rotary_encoder.setter
+    def rotary_encoder(self, rotary_encoder):
+        self._rotary_encoder = rotary_encoder
 
     @property
-    def pin_verify_closed(self):
-        return self._pin_verify_closed
+    def verify_open(self):
+        return self._verify_open
 
-    @pin_verify_closed.setter
-    def pin_verify_closed(self, pin_verify_closed):
-        self._pin_verify_closed = pin_verify_closed
-
-    @property
-    def pin_verify_open(self):
-        return self._pin_verify_open
-
-    @pin_verify_open.setter
-    def pin_verify_open(self, pin_verify_open):
-        self._pin_verify_open = pin_verify_open
+    @verify_open.setter
+    def verify_open(self, verify_open):
+        self._verify_open = verify_open
 
     @property
-    def motor_a(self):
-        return self._motor_a
+    def verify_closed(self):
+        return self._verify_closed
 
-    @motor_a.setter
-    def motor_a(self, motor_a):
-        self._motor_a = motor_a
-
-    @property
-    def motor_b(self):
-        return self._motor_b
-
-    @motor_b.setter
-    def motor_b(self, motor_b):
-        self._motor_b = motor_b
+    @verify_closed.setter
+    def verify_closed(self, verify_closed):
+        self._verify_closed = verify_closed
 
     @property
-    def motor_e(self):
-        return self._motor_e
+    def motor(self):
+        return self._motor
 
-    @motor_e.setter
-    def motor_e(self, motor_e):
-        self._motor_e = motor_e
+    @motor.setter
+    def motor(self, motor):
+        self._motor = motor
 
-    def build(self):
-        from components.curtains.curtains import Curtain
-        return Curtain(self.clk, self.dt, self.pin_verify_closed, self.pin_verify_open, self.motor_a, self.motor_b, self.motor_e)
+    def build(self, mock):
+        if mock:
+            from mock.curtains import MockCurtain as Curtain
+        else:
+            from components.curtains.curtains import Curtain
+
+        return Curtain(
+            self.rotary_encoder,
+            self.verify_closed,
+            self.verify_open,
+            self.motor
+        )
 
 
 class FactoryCurtain:
 
     @staticmethod
-    def curtain(orientation: Orientation, mock=False):
-        if mock:
-            from mock.curtains import Curtain
-            return Curtain()
+    def __builder__(forward, backward, enable, a, b, pin_open, pin_closed):
+        builder_curtain = BuilderCurtain()
+        builder_curtain.motor = {
+            "forward": forward,
+            "backward": backward,
+            "enable": enable,
+            "pwm": False
+        }
+        builder_curtain.rotary_encoder = {
+            "a": a,
+            "b": b,
+            "max_steps": Config.getInt("n_step_sicurezza", "encoder_step")
+        }
+        builder_curtain.verify_open = {
+            "pin": pin_open,
+            "pull_up": True
+        }
+        builder_curtain.verify_closed = {
+            "pin": pin_closed,
+            "pull_up": True
+        }
+        return builder_curtain
 
+    @staticmethod
+    def curtain(orientation: Orientation, mock=False):
         if orientation is Orientation.EAST:
-            builder_curtain = BuilderCurtain()
-            builder_curtain.clk = GPIOPin.CLK_E
-            builder_curtain.dt = GPIOPin.DT_E
-            builder_curtain.pin_verify_closed = GPIOPin.CURTAIN_E_VERIFY_CLOSED
-            builder_curtain.pin_verify_open = GPIOPin.CURTAIN_E_VERIFY_OPEN
-            builder_curtain.motor_a = GPIOPin.MOTORE_A
-            builder_curtain.motor_b = GPIOPin.MOTORE_B
-            builder_curtain.motor_e = GPIOPin.MOTORE_E
-            curtain = builder_curtain.build()
+            builder_curtain = FactoryCurtain.__builder__(
+                Config.getInt("motorE_A", "motor_board"),
+                Config.getInt("motorE_B", "motor_board"),
+                Config.getInt("motorE_E", "motor_board"),
+                Config.getInt("clk_e", "encoder_board"),
+                Config.getInt("dt_e", "encoder_board"),
+                Config.getInt("curtain_E_verify_open", "curtains_limit_switch"),
+                Config.getInt("curtain_E_verify_closed", "curtains_limit_switch")
+            )
+            curtain = builder_curtain.build(mock)
+
         elif orientation is Orientation.WEST:
-            builder_curtain = BuilderCurtain()
-            builder_curtain.clk = GPIOPin.CLK_W
-            builder_curtain.dt = GPIOPin.DT_W
-            builder_curtain.pin_verify_closed = GPIOPin.CURTAIN_W_VERIFY_CLOSED
-            builder_curtain.pin_verify_open = GPIOPin.CURTAIN_W_VERIFY_OPEN
-            builder_curtain.motor_a = GPIOPin.MOTORW_A
-            builder_curtain.motor_b = GPIOPin.MOTORW_B
-            builder_curtain.motor_e = GPIOPin.MOTORW_E
-            curtain = builder_curtain.build()
+            builder_curtain = FactoryCurtain.__builder__(
+                Config.getInt("motorW_A", "motor_board"),
+                Config.getInt("motorW_B", "motor_board"),
+                Config.getInt("motorW_E", "motor_board"),
+                Config.getInt("clk_w", "encoder_board"),
+                Config.getInt("dt_w", "encoder_board"),
+                Config.getInt("curtain_W_verify_open", "curtains_limit_switch"),
+                Config.getInt("curtain_W_verify_closed", "curtains_limit_switch")
+            )
+            curtain = builder_curtain.build(mock)
         else:
             raise ValueError("Orientation invalid")
 

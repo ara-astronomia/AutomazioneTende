@@ -4,5 +4,5 @@ VOLUME /tmp/.X11-unix:/tmp/.X11-unix
 ENV DISPLAY=:0
 WORKDIR /crac
 COPY . .
-RUN pip install pipenv && pipenv install
+RUN pip install pipenv && pipenv install --dev
 CMD ["pipenv", "run", "python", "client.py"]

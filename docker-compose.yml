@@ -23,7 +23,7 @@ services:
       TELESCOPE_FLAT_AZ: ${TELESCOPE_FLAT_AZ}
     ports: 
       - 3030:3030
-    command: "-m"
+    command: "pipenv run python checker_server.py -m"
   crac_client:
     container_name: crac_client
     build:
@@ -41,4 +41,5 @@ services:
       SERVER_PORT: ${SERVER_PORT}
     depends_on:
       - "crac_server"
+    command: "pipenv run python checker_client.py"
   

@@ -1,20 +1,20 @@
+from gpiozero import OutputDevice
+
 from status import ButtonStatus
-from gpio_config import GPIOConfig
 
 
 class ButtonControl():
     def __init__(self, pin):
-        self.pin = pin
-        self.gpioconfig = GPIOConfig()
+        self.output = OutputDevice(pin)
 
     def on(self):
-        self.gpioconfig.turn_on(self.pin)
+        self.output.on()
 
     def off(self):
-        self.gpioconfig.turn_off(self.pin)
+        self.output.off()
 
     def read(self):
-        if self.gpioconfig.status(self.pin):
+        if self.output.value:
             return ButtonStatus.ON
         else:
             return ButtonStatus.OFF

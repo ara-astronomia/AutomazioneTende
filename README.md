@@ -5,8 +5,16 @@ this app automates the roof and curtains opening and closing on telescope pointi
 
 ## Prerequisite on ubuntu linux using default python
 
+on crac client
 ```shell
 sudo apt-get install python3-tk python3-pip
+```
+
+on crac server
+```shell
+sudo apt-get install python3-pip
+# for raspberry pi
+sudo apt-get install libatlas-base-dev 
 ```
 
 ## Prerequisite on linux using pydev
@@ -28,6 +36,7 @@ eval "$(pyenv virtualenv-init -)"
 
 ```shell
 pip3 install pipenv
+pipenv shell
 pipenv install --dev
 ```
 
