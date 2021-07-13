@@ -35,7 +35,7 @@ class Gui:
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8)
-        sg.theme('DarkBlue')
+#        sg.theme('DarkBlue')
         layout = [
                     [sg.Menu([], tearoff=True)],
                     [sg.Text('Monitor Tende e Tetto ', size=(50, 1), justification='center', font=("Helvetica", 15))],
@@ -58,19 +58,19 @@ class Gui:
                     [
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_TELE, disabled=False, size=(4, 1), tooltip="accensione alimentarore telescopio"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_TELE, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatore telescopio"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_TELE, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento alimentatore telescopio"),
                         ]]), title="Power Switch Tele", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.POWER_ON_CCD, disabled=False, size=(4, 1), tooltip="accensione alimentatore CCD"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_CCD, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento alimentatore CCD"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.POWER_OFF_CCD, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento alimentatore CCD"),
                         ]]), title="Power Switch CCD", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.PANEL_ON, disabled=False, size=(4, 1), tooltip="accensione pannnello del flat"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento pannello flat")
+                            sg.Button(GuiLabel.OFF, key=GuiKey.PANEL_OFF, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento pannello flat")
                         ]]), title="Panel Flat", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=["black", "red"], tooltip="spegnimento luci cupola"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento luci cupola"),
                         ]]), title="Light Dome", pad=(3, 10))
                     ],
                     [
@@ -202,7 +202,7 @@ class Gui:
 
         """ Update disable button close roof"""
 
-        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        Logger.getLogger().info('disable close roof button in gui')
         # self.win.FindElement('close-roof').Update(disabled=True)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, disabled=True)
 
@@ -210,7 +210,7 @@ class Gui:
 
         """ Update enable button open roof"""
 
-        Logger.getLogger().info('update_enable_disable_button_close_roof in gui')
+        Logger.getLogger().info('enable close roof button in gui and the other components')
         self.__toggle_button__(GuiKey.OPEN_ROOF, disabled=False)
         self.__toggle_button__(GuiKey.CLOSE_ROOF, GuiKey.ENABLED_CURTAINS, GuiKey.DISABLED_CURTAINS, GuiKey.CALIBRATE_CURTAINS, disabled=True)
 
@@ -243,11 +243,11 @@ class Gui:
 
         """ Update Curtain West Status """
 
-        Logger.getLogger().info('update_status_curtain_west in gui')
+        Logger.getLogger().info('update_status_curtain_west in gui %s', status)
         self.win.FindElement('status-curtain-west').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
-
+ 
         """ Update curtains angular values """
 
         alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e)))  # from steps to degree for east
@@ -275,23 +275,23 @@ class Gui:
         """ Update enable button on panel flat"""
 
         Logger.getLogger().info('update_disable_button_panel_flat_all')
-        self.__toggle_button__(GuiKey.PANEL_ON, GuiKey.PANEL_OFF, disabled=True, button_color=["black", "red"]) #, tooltip="aridaje!! è già acceso!!")
+        self.__toggle_button__(GuiKey.PANEL_ON, GuiKey.PANEL_OFF, disabled=True, button_color=('black', 'red')) #, tooltip="aridaje!! è già acceso!!")
 
     def update_disable_panel_on(self):  # status: str, disabeld: str =''):
 
         """ Update enable button on panel flat"""
 
         Logger.getLogger().info('update_disable_button_panel_flat_on')
-        self.__toggle_button__(GuiKey.PANEL_ON, disabled=True, button_color=["white", "green"]) #, tooltip="aridaje!! è già acceso!!")
-        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=False, button_color=["black", "white"]) #, tooltip="premi per spegnere il pannello dei flat")
+        self.__toggle_button__(GuiKey.PANEL_ON, disabled=True, button_color=('white', 'green')) #, tooltip="aridaje!! è già acceso!!")
+        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=False, button_color=('black', 'white')) #, tooltip="premi per spegnere il pannello dei flat")
 
     def update_disable_panel_off(self):  # status: str, disabeld: str =''):
 
         """ Update disable button off panel flat"""
 
         Logger.getLogger().info('update_disable_button_panel_flat_off')
-        self.__toggle_button__(GuiKey.PANEL_ON, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.PANEL_ON, disabled=False, button_color=('black', 'white'))
+        self.__toggle_button__(GuiKey.PANEL_OFF, disabled=True, button_color=('black', 'red'))
 
     # POWER SWITCH
     def update_disable_button_power_switch_on(self):  # status: str, disabeld: str =''):
@@ -299,16 +299,16 @@ class Gui:
         """ Update enable button on power switch"""
 
         Logger.getLogger().info('update_disable_button_power_switch_on')
-        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=True, button_color=["white", "green"])
-        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=True, button_color=('white', 'green'))
+        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=False, button_color=('black', 'white'))
 
     def update_disable_button_power_switch_off(self):  # status: str, disabeld: str =''):
 
         """ Update disable button off power switch"""
 
         Logger.getLogger().info('update_disable_button_power_switch_off')
-        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.POWER_ON_TELE, disabled=False, button_color=('black', 'white'))
+        self.__toggle_button__(GuiKey.POWER_OFF_TELE, disabled=True, button_color=('black', 'red'))
 
     # LIGHT DOME
     def update_disable_button_light_on(self):  # status: str, disabeld: str =''):
@@ -316,16 +316,16 @@ class Gui:
         """ Update enable button on light dome"""
 
         Logger.getLogger().info('update_disable_button_light_dome_on')
-        self.__toggle_button__(GuiKey.LIGHT_ON, disabled=True, button_color=["white", "green"])
-        self.__toggle_button__(GuiKey.LIGHT_OFF, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.LIGHT_ON, disabled=True, button_color=('white', 'green'))
+        self.__toggle_button__(GuiKey.LIGHT_OFF, disabled=False, button_color=('black', 'white'))
 
     def update_disable_button_light_off(self):  # status: str, disabeld: str =''):
 
         """ Update enable button off light dome"""
 
         Logger.getLogger().info('update_disable_button_light_dome_off')
-        self.__toggle_button__(GuiKey.LIGHT_ON, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.LIGHT_OFF, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.LIGHT_ON, disabled=False, button_color=('black', 'white'))
+        self.__toggle_button__(GuiKey.LIGHT_OFF, disabled=True, button_color=('black', 'red'))
 
     # AUXILIARY
     def update_disable_button_power_on_ccd(self):  # status: str, disabeld: str =''):
@@ -333,16 +333,16 @@ class Gui:
         """ Update enable button on auxiliary"""
 
         Logger.getLogger().info('update_disable_button_auxiliary_on')
-        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=True, button_color=["white", "green"])
-        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=False, button_color=["black", "white"])
+        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=True, button_color=('white', 'green'))
+        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=False, button_color=('black', 'white'))
 
     def update_disable_button_power_off_ccd(self):  # status: str, disabeld: str =''):
 
         """ Update enable button off auxiliary"""
 
         Logger.getLogger().info('update_disable_button_auxiliary_off')
-        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=False, button_color=["black", "white"])
-        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=True, button_color=["black", "red"])
+        self.__toggle_button__(GuiKey.POWER_ON_CCD, disabled=False, button_color=('black', 'white'))
+        self.__toggle_button__(GuiKey.POWER_OFF_CCD, disabled=True, button_color=('black', 'red'))
 
     # STATUS TRACKING
     def update_status_tracking(self, status, text_color: str = 'white', background_color: str = 'red') -> None:

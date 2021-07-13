@@ -13,7 +13,7 @@ class AutomazioneTendeTest(unittest.TestCase):
     def setUp(self):
         Singleton._instances = {}
         self.original_config_getInt = config.Config.getInt
-        self.automazioneTende = AutomazioneTende(telescope_plugin="theskyx")
+        self.automazioneTende = AutomazioneTende(telescope_plugin="theskyx", mock=True)
 
     def __side_effect_for_diff_steps__(self, key, section=""):
         if key == "diff_steps" and section == "encoder_step":
@@ -37,7 +37,7 @@ class AutomazioneTendeTest(unittest.TestCase):
         telescopio = MagicMock()
         at = self.automazioneTende
         at.telescope = telescopio
-        comparison = {"east": at.curtain_east.steps, "west": at.curtain_west.steps}
+        comparison = {"east": at.curtain_east.steps(), "west": at.curtain_west.steps()}
 
         telescopio.status = TelescopeStatus.ERROR
         steps = at.calculate_curtains_steps()

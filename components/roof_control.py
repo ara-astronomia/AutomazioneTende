@@ -1,28 +1,29 @@
-import config
-from time import sleep
+from gpiozero import OutputDevice, DigitalInputDevice
+
+from config import Config
+from logger import Logger
 from status import Status
-from gpio_pin import GPIOPin
-from base.singleton import Singleton
-from gpio_config import GPIOConfig
 
 
-class RoofControl(metaclass=Singleton):
+class RoofControl():
 
     def __init__(self):
-        self.gpioconfig = GPIOConfig()
+        self.motor = OutputDevice(Config.getInt("switch_roof", "roof_board"))
+        self.roof_closed_switch = DigitalInputDevice(Config.getInt("roof_verify_closed", "roof_board"), pull_up=True)
+        self.roof_open_switch = DigitalInputDevice(Config.getInt("roof_verify_open", "roof_board"), pull_up=True)
 
     def open(self):
-        self.gpioconfig.turn_on(GPIOPin.SWITCH_ROOF)
-        return self.gpioconfig.wait_for_off(GPIOPin.VERIFY_OPEN)
+        self.motor.on()
+        return self.roof_open_switch.wait_for_active()
 
     def close(self):
-        self.gpioconfig.turn_off(GPIOPin.SWITCH_ROOF)
-        return self.gpioconfig.wait_for_off(GPIOPin.VERIFY_CLOSED)
+        self.motor.off()
+        return self.roof_closed_switch.wait_for_active()
 
     def read(self):
-        is_roof_closed = self.gpioconfig.status(GPIOPin.VERIFY_CLOSED)
-        is_roof_open = self.gpioconfig.status(GPIOPin.VERIFY_OPEN)
-        is_switched_on = self.gpioconfig.status(GPIOPin.SWITCH_ROOF)
+        is_roof_closed = self.roof_closed_switch.is_active
+        is_roof_open = self.roof_open_switch.is_active
+        is_switched_on = self.motor.value
 
         if is_roof_closed and is_roof_open:
             return Status.ERROR

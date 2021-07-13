@@ -4,9 +4,14 @@ import socket
 from unittest.mock import DEFAULT, MagicMock
 from components.telescope.theskyx.telescope import Telescope
 from base.singleton import Singleton
+from astropy.utils.iers import conf
 
 
 class TelescopeTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        conf.auto_max_age = None
 
     def setUp(self):
         Singleton._instances = {}
