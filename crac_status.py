@@ -6,6 +6,7 @@ from status import TelescopeStatus
 from status import ButtonStatus
 from status import TrackingStatus
 from status import SyncStatus
+from status import SlewingStatus
 
 from logger import Logger
 APP = "SERVER"
@@ -48,6 +49,7 @@ def __structure__():
     parked = TelescopeStatus.PARKED
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
+    slewing =SlewingStatus.OFF
     button = ButtonStatus.OFF
     sync = SyncStatus.OFF
 
@@ -60,6 +62,7 @@ def __structure__():
     data["curtain_west_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
     data["curtain_west_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["tracking_status"] = {"orig": tracking, "trans": repr, "reverse": tracking.get_value}
+    data["slewing_status"] = {"orig": slewing, "trans": repr, "reverse": slewing.get_value}
     data["panel_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["power_tele_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
@@ -133,6 +136,14 @@ class CracStatus:
     @telescope_status.setter
     def telescope_status(self, value):
         self.__assign__(value, "telescope_status")
+
+    @property
+    def slewing_status(self):
+        return self._slewing_status
+
+    @slewing_status.setter
+    def slewing_status(self, value):
+        self.__assign__(value, "slewing_status")
 
     @property
     def telescope_coords(self):
@@ -262,12 +273,13 @@ if __name__ == "__main__":
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
+    print(cs.slewing_status)
     print(cs.panel_status)
     print(cs.power_tele_status)
     print(cs.light_status)
     print(cs.power_ccd_status)
     print(cs.length)
-    cs = CracStatus("CPP100012045D000D000TSSSS")
+    cs = CracStatus("CPP100012045D000D000NTSSSS")
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
@@ -277,6 +289,7 @@ if __name__ == "__main__":
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
+    print(cs.slewing_status)
     print(cs.panel_status)
     print(cs.power_tele_status)
     print(cs.light_status)

@@ -105,6 +105,7 @@ class Gui:
                                     [
                                         sg.Text(GuiLabel.TELESCOPE_PARKED, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tele', background_color="white", text_color="red"),
                                         sg.Text(GuiLabel.TELESCOPE_TRACKING_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-tracking', background_color="white", text_color="red"),
+                                        sg.Text(GuiLabel.TELESCOPE_SLEWING, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-slewing', background_color="white", text_color="red"),
                                         sg.Text(GuiLabel.TELESCOPE_SYNC_OFF, size=(8, 1), justification='center', font=("Helvetica", 12), key='status-sync', background_color="white", text_color="red")
                                     ]
                                 )),
@@ -247,7 +248,7 @@ class Gui:
         self.win.FindElement('status-curtain-west').Update(status, text_color=text_color, background_color=background_color)
 
     def update_curtains_text(self, e_e: int, e_w: int) -> Tuple[int, int]:
- 
+
         """ Update curtains angular values """
 
         alpha_e = int(e_e * float("{0:.3f}".format(self.increm_e)))  # from steps to degree for east
@@ -359,6 +360,24 @@ class Gui:
 
         Logger.getLogger().info('update_status_sync in gui')
         self.win.FindElement('status-sync').Update(status, text_color=text_color, background_color=background_color)
+
+    # STATUS SLEWING
+    def update_tele_slewing(self, coords: Dict[str, str]) -> None:
+
+        """ Update telescope status slewing """
+
+        slewing = int(coords["sl"])
+        if slewing == 0:
+            self.__toggle_button__(GuiKey.LIGHT_ON, enable_event=True)
+            def update_status_slewing(self, status, text_color: str = 'white', background_color: str = 'red') -> None:
+
+                """ Update Slewing Status """
+
+                Logger.getLogger().info('update_status_slewing in gui')
+                self.win.FindElement('status-slewing').Update(status, text_color=text_color, background_color=background_color)
+                # aggiungere comando accensione luci cupola
+        else:
+            pass
 
     def update_button_sync(self, disabled):
 

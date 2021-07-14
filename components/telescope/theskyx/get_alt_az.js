@@ -14,7 +14,8 @@ else
 	obj = {
 		az: sky6RASCOMTele.dAz,
 		alt: sky6RASCOMTele.dAlt,
-		tr: sky6RASCOMTele.IsTracking
+		tr: sky6RASCOMTele.IsTracking,
+		sl: sky6RASCOMTele.IsSlewComplete
 	};
 
 	Out = JSON.stringify(obj);

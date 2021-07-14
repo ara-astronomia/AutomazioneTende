@@ -135,3 +135,9 @@ class TrackingStatus(OrderedEnum):
 
     OFF = (0, "T")  # VELOCITÀ TERRESTRE
     ON = (1, "S")  # VELOCITÀ SIDERALE
+
+@unique
+class SlewingStatus(OrderedEnum):
+
+    OFF = (0, "N")  # NON IN PUNTAMENTO
+    ON = (1, "P")  # IN PUNTAMENTO

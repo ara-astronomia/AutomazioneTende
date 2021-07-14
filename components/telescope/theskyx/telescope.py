@@ -108,6 +108,7 @@ class Telescope(BaseTelescope):
             self.coords["alt"] = round(coords["alt"], 2)
             self.coords["az"] = round(coords["az"], 2)
             self.coords["tr"] = coords["tr"]
+            self.coords["sl"] = coords["sl"]
         Logger.getLogger().debug("Coords Telescopio: %s", str(self.coords))
 
     def __is_error__(self, input_str, search_reg="Error = ([1-9][^\\d]|\\d{2,})") -> int:
@@ -118,4 +119,3 @@ class Telescope(BaseTelescope):
             if r2:
                 error_code = int(r2.group(0))
         return error_code
-

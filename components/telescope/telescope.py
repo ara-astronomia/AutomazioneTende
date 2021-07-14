@@ -1,7 +1,9 @@
 import config
 from typing import Dict
-from status import TelescopeStatus, TrackingStatus
+from status import TelescopeStatus
+from status import TrackingStatus
 from status import SyncStatus
+from status import SlewingStatus
 from logger import Logger
 from astropy.coordinates import EarthLocation
 from astropy.coordinates import AltAz
@@ -26,6 +28,7 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
+        self.slewing_status: SlewingStatus = SlewingStatus.OFF
         self.lat = config.Config.getValue("lat", "geography")
         self.lon = config.Config.getValue("lon", "geography")
         self.height = config.Config.getInt("height", "geography")
