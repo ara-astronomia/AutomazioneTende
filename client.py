@@ -94,6 +94,10 @@ def connection() -> str:
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_ERROR)
                 g_ui.status_alert(GuiLabel.ALERT_THE_SKY_ERROR)
 
+            elif cs.telescope_status == TelescopeStatus.SLEWING:
+                LoggerClient.getLogger().info("telescopio in fasse si puntamento ")
+                g_ui.update_status_tele(GuiLabel.TELESCOPE_SLEWING)
+                
             else:
                 cardinal = vars(GuiLabel).get(f"TELESCOPE_{cs.telescope_status.abbr}")
                 LoggerClient.getLogger().info("telescopio operativo: %s", cardinal)
