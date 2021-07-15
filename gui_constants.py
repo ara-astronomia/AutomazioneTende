@@ -17,6 +17,7 @@ class GuiLabel:
     CURTAINS_ANOMALY = "Anomalia"
     TELESCOPE_PARKED = "Parked"
     TELESCOPE_FLATTER = "Flatter"
+    TELESCOPE_SLEWING = "Slewing"
     TELESCOPE_SECURED = "In Sicurezza"
     TELESCOPE_SYNC_OFF = "No Sync"
     TELESCOPE_SYNC_ON = "Sync On"
