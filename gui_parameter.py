@@ -9,6 +9,7 @@ sg.theme('Dark Brown')
 layout = [
             [sg.Text('setting parametri CRaC', size=(41,1),font=('Arial',20),justification=('center'))],
                 [sg.Frame(layout=([
+                    [sg.Text('ip', size=(15,1),font=('Arial',9)),sg.InputText('', size=(25,1), font=('Arial',9), text_color=('black'))],
                     [sg.Text('server', size=(15,1),font=('Arial',9)),sg.InputText('', size=(25,1), font=('Arial',9), text_color=('black'))],
                     [sg.Text('port', size=(15,1),font=('Arial',9)),sg.InputText('', size=(25,1), font=('Arial',9), text_color=('black'))]
                     ]),title='Setting server', font=('Arial',14), pad=(3, 0)),
