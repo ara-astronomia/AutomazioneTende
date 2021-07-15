@@ -139,5 +139,5 @@ class TrackingStatus(OrderedEnum):
 @unique
 class SlewingStatus(OrderedEnum):
 
-    OFF = (0, "N")  # NON IN SLWEING
-    ON = (1, "S")  # IN SLEWING
+    ON = (0, "S")  # IN SLEWING
+    OFF = (1, "N")  # NON IN SLEWING
