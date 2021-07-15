@@ -1,7 +1,9 @@
 import config
 from typing import Dict
-from status import TelescopeStatus, TrackingStatus
+from status import TelescopeStatus
+from status import TrackingStatus
 from status import SyncStatus
+from status import SlewingStatus
 from logger import Logger
 from astropy.coordinates import EarthLocation
 from astropy.coordinates import AltAz
@@ -26,6 +28,7 @@ class BaseTelescope:
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
+        self.slewing_status: SlewingStatus = SlewingStatus.OFF
         self.lat = config.Config.getValue("lat", "geography")
         self.lon = config.Config.getValue("lon", "geography")
         self.height = config.Config.getInt("height", "geography")
@@ -113,11 +116,13 @@ class BaseTelescope:
                 self.status = TelescopeStatus.EAST
 
         self.tracking_status = TrackingStatus.from_value(self.coords["tr"])
+        self.slewing_status = SlewingStatus.from_value(self.coords["sl"])
 
         Logger.getLogger().debug("Altezza Telescopio: %s", str(self.coords['alt']))
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))
         Logger.getLogger().debug("Status Telescopio: %s", str(self.status))
         Logger.getLogger().debug("Status Tracking: %s %s", str(self.coords['tr']), str(self.tracking_status))
+        Logger.getLogger().debug("Status slewing: %s %s", str(self.coords['sl']), str(self.slewing_status))
         Logger.getLogger().debug("Status Sync: %s ", str(self.sync_status))
         return self.status
 
