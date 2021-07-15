@@ -7,7 +7,12 @@ from components.curtains.factory_curtain import FactoryCurtain
 from config import Config
 from crac_status import CracStatus
 from logger import Logger
-from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus, Orientation
+from status import Status
+from status import TelescopeStatus
+from status import SlewingStatus
+from status import ButtonStatus
+from status import CurtainsStatus
+from status import Orientation
 
 
 class AutomazioneTende:
@@ -69,6 +74,7 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps()
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
+        self.crac_status.slewing_status = self.telescope.slewing_status
         self.crac_status.sync_status = self.telescope.sync_status
         self.crac_status.power_tele_status = self.power_tele_control.read()
         self.crac_status.light_status = self.light_control.read()
@@ -285,6 +291,8 @@ class AutomazioneTende:
         """ off light dome and update the light status in CracStatus object """
 
         self.light_control.off()
+
+    # EXIT PROGRAM
 
     def exit_program(self, n: int = 0) -> None:
 
