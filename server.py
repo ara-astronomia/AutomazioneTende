@@ -115,6 +115,8 @@ try:
                     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     automazioneTende.exec()
 
+                    Logger.getLogger().info(automazioneTende.read())
+
                     conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
 
 except (KeyboardInterrupt, SystemExit) as e:
