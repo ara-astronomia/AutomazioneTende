@@ -122,7 +122,7 @@ class BaseTelescope:
         Logger.getLogger().debug("Azimut Telescopio: %s", str(self.coords['az']))
         Logger.getLogger().debug("Status Telescopio: %s", str(self.status))
         Logger.getLogger().debug("Status Tracking: %s %s", str(self.coords['tr']), str(self.tracking_status))
-        Logger.getLogger().debug("Status slewing: %s %s", str(self.coords['sl']), str(self.slewing_status))
+        Logger.getLogger().info("Status slewing: %s %s", str(self.coords['sl']), str(self.slewing_status))
         Logger.getLogger().debug("Status Sync: %s ", str(self.sync_status))
         return self.status
 
