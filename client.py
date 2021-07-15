@@ -11,6 +11,7 @@ from status import TelescopeStatus
 from status import ButtonStatus
 from status import TrackingStatus
 from status import SyncStatus
+from status import SlewingStatus
 
 
 def connection() -> str:
@@ -50,7 +51,7 @@ def connection() -> str:
             rcv = s.recv(cs.length)
             data = rcv.decode("utf-8")
             cs = crac_status.CracStatus(data)
-            LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
+            LoggerClient.getLogger().info("Data cs in the middle of connection method: %s", cs)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
@@ -75,10 +76,6 @@ def connection() -> str:
             elif cs.telescope_status == TelescopeStatus.FLATTER:
                 LoggerClient.getLogger().info("telescopio in flat")
                 g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER, text_color="red", background_color="white")
-
-            elif cs.telescope_status == TelescopeStatus.FLATTER:
-                LoggerClient.getLogger().info("telescopio in flat")
-                g_ui.update_status_tele(GuiLabel.TELESCOPE_FLATTER)
 
             elif cs.telescope_status == TelescopeStatus.SECURE:
                 LoggerClient.getLogger().info("telescopio in sicurezza ")
@@ -185,6 +182,12 @@ def connection() -> str:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_ON, text_color="#2c2825", background_color="green")
             elif cs.tracking_status == TrackingStatus.OFF:
                 g_ui.update_status_tracking(GuiLabel.TELESCOPE_TRACKING_OFF, text_color="red", background_color="white")
+
+            # SLEWING
+            if cs.slewing_status == SlewingStatus.ON:
+                g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_ON, text_color="#2c2825", background_color="green")
+            elif cs.slewing_status == SlewingStatus.OFF:
+                g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_OFF, text_color="red", background_color="white")
 
             # SYNC
             if cs.sync_status == SyncStatus.ON:
