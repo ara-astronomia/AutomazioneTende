@@ -31,7 +31,7 @@ class GuiLabel:
     TELESCOPE_TRACKING_ON = "Track On"
     TELESCOPE_TRACKING_OFF = "Track Off"
     TELESCOPE_SLEWING_ON = "Slewing"
-    TELESCOPE_SLEWING_OFF = "NO Slewing"
+    TELESCOPE_SLEWING_OFF = "NO Slew"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
     ON = "On"
