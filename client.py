@@ -189,7 +189,7 @@ def connection() -> str:
                 g_ui.update_disable_button_light_on()
             elif cs.slewing_status == SlewingStatus.OFF:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_OFF, text_color="red", background_color="white")
-                g_ui.update_disable_button_light_off()
+                #g_ui.update_disable_button_light_on()
 
             # SYNC
             if cs.sync_status == SyncStatus.ON:
