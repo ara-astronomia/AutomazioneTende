@@ -38,9 +38,9 @@ class TelescopeTest(unittest.TestCase):
 
     def test_move_tele(self):
         self.telescopio.open_connection()
-        self.telescopio.s.recv = MagicMock(return_value=b'{"tr":0,"az":0,"alt":0}|No error. Error = 0.')
-        self.telescopio.move_tele()
-        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
+        self.telescopio.s.recv = MagicMock(return_value=b'{"sl":1,"tr":0,"az":0,"alt":0}|No error. Error = 0.')
+        self.telescopio.move_tele(sl=1, tr=0, alt=30, az=120)
+        self.assertEqual(self.telescopio.coords, {"sl": 1, "tr": 0, "alt": 0, "az": 0, "error": 0})
 
     def test_parse_result_success(self):
         data = b'{"sl":0,"tr":1,"az":95.2017082212961,"alt":61.949386909452107}|No error. Error = 0.'.decode("utf-8")

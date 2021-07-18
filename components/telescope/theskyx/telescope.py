@@ -48,6 +48,7 @@ class Telescope(BaseTelescope):
             Logger.getLogger().debug("Parking %s", data)
             self.coords["error"] = self.__is_error__(data.decode("utf-8"))
             Logger.getLogger().info("data error per il move_tele: %s", self.coords["error"])
+            self.update_coords()
             self.__update_status__()
             self.coords
 

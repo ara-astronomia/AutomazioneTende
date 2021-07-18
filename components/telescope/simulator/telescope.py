@@ -19,6 +19,7 @@ class Telescope(telescope.BaseTelescope):
         alt = kwargs.get("alt")
         az = kwargs.get("az")
         tr = kwargs.get("tr")
+        sl = kwargs.get("sl")
         error = kwargs.get("error")
 
         configpath = os.path.join(os.path.dirname(__file__), 'telescope.ini')
@@ -31,18 +32,21 @@ class Telescope(telescope.BaseTelescope):
                 az = self.configparser.get("coords", "az", fallback=0)
             if not self.__is_number__(tr):
                 tr = self.configparser.get("coords", "tr", fallback=0)
+            if not self.__is_number__(sl):
+                sl = self.configparser.get("coords", "sl", fallback=0)
             if not self.__is_number__(error, int, 0, 999):
                 error = self.configparser.get("coords", "error", fallback=0)
 
         alt = self.__is_number_or_input__(alt, "l'altezza del telescopio", float, -90, 90)
         az = self.__is_number_or_input__(az, "l'azimut del telescopio", float, 0, 360)
-        tr = self.__is_number_or_input__(tr, "la situazione del tracking")
+        tr = self.__is_number_or_input__(tr, "la situazione del tracking (0 no, 1 sì)")
+        sl = self.__is_number_or_input__(sl, "telescopio in slewing? (0 sì, 1 no")
         error = self.__is_number_or_input__(error, "il codice di errore (0 non ci sono errori)", int, 0, 999)
 
-        self.coords = {'tr': tr, 'alt': round(alt, 2), 'az': round(az, 2), 'error': error}
+        self.coords = {'tr': tr, 'alt': round(alt, 2), 'az': round(az, 2), 'error': error, 'sl': self.coords["sl"]}
 
         config = configparser.ConfigParser()
-        config["coords"] = {'alt': str(alt), 'az': str(az), 'tr': str(tr), 'error': str(error)}
+        config["coords"] = {'alt': str(alt), 'az': str(az), 'tr': str(tr), 'sl': str(sl), 'error': str(error)}
 
         with open(configpath, 'w') as configfile:
             config.write(configfile)
@@ -51,8 +55,8 @@ class Telescope(telescope.BaseTelescope):
         return self.coords
 
     def move_tele(self, **kwargs):
-        Logger.getLogger().debug("In park tele %s %s %s %s", kwargs.get("tr"), kwargs.get("alt"), kwargs.get("az"), self.max_secure_alt)
-        self.update_coords(tr=kwargs.get("tr"), alt=kwargs.get("alt"), az=kwargs.get("az"))
+        Logger.getLogger().debug("In park tele %s %s %s %s %s", kwargs.get("tr"), kwargs.get("sl"), kwargs.get("alt"), kwargs.get("az"), self.max_secure_alt)
+        self.update_coords(sl=kwargs.get("sl"), tr=kwargs.get("tr"), alt=kwargs.get("alt"), az=kwargs.get("az"))
         self.__update_status__()
 
     def read(self):

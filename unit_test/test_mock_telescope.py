@@ -37,12 +37,12 @@ class MockTelescopeTest(unittest.TestCase):
         self.assertEqual(False, self.telescopio.connected)
 
     def test_read_coords(self):
-        self.telescopio.update_coords(az=106.2017082212961, alt=22.049386909452107, tr=1, error=0)
-        self.assertEqual({"az": 106.20, "alt": 22.05, "tr": 1, "error": 0}, self.telescopio.coords)
+        self.telescopio.update_coords(az=106.2017082212961, alt=22.049386909452107, tr=1, sl=0, error=0)
+        self.assertEqual({"az": 106.20, "alt": 22.05, "tr": 1, "sl": 0, "error": 0}, self.telescopio.coords)
 
     def test_move_tele(self):
-        self.telescopio.move_tele(tr=0, az=0, alt=0)
-        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
+        self.telescopio.move_tele(sl=0, tr=0, az=0, alt=0)
+        self.assertEqual(self.telescopio.coords, {"sl": 0, "tr": 0, "alt": 0, "az": 0, "error": 0})
 
     def __side_effect_config__(self, key, section="automazione"):
         if key == "park_alt" and section == "telescope":
@@ -78,7 +78,7 @@ class MockTelescopeTest(unittest.TestCase):
     def test_radec2altaz(self):
         coords = {"ra": 9.364493538084828, "dec": 47.962112290530065}
         self.telescopio.radec2altaz(datetime.datetime(2020, 12, 6, 15, 29, 43, 79060, tzinfo=datetime.timezone.utc), **coords)
-        self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
+        self.assertEqual(self.telescopio.coords, {"tr": 0, "sl": 0, "alt": 0, "az": 0, "error": 0})
 
     def tearDown(self):
         config.Config.getInt = self.configGetInt

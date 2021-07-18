@@ -24,7 +24,7 @@ class BaseTelescope:
         self.azimut_se = config.Config.getInt("azSE", "azimut")
         self.azimut_sw = config.Config.getInt("azSW", "azimut")
         self.azimut_nw = config.Config.getInt("azNW", "azimut")
-        self.coords: Dict[str, int] = {"alt": 0, "az": 0, "tr": 0, "error": 0}
+        self.coords: Dict[str, int] = {"alt": 0, "az": 0, "tr": 0, "sl": 0, "error": 0}
         self.status: TelescopeStatus = TelescopeStatus.PARKED
         self.sync_status: SyncStatus = SyncStatus.OFF
         self.tracking_status: TrackingStatus = TrackingStatus.OFF
