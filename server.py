@@ -15,15 +15,18 @@ flat_alt = config.Config.getValue("flat_alt", "telescope")
 flat_az = config.Config.getValue("flat_az", "telescope")
 
 try:
-    opts, _ = getopt.getopt(sys.argv[1:], "ms", ["mock", "sky"])
+    opts, _ = getopt.getopt(sys.argv[1:], "mst:", ["mock", "sky", "telescope"])
 except getopt.GetoptError:
     Logger.getLogger().exception("parametri errati")
     exit(2)  # esce dall'applicazione con errore
-for opt, _1 in opts:
+for opt, arg in opts:
     if opt in ('-m', '--mock'):
         MOCK = True
     elif opt in ('-s', '--sky'):
+        Logger.getLogger().warn("-s and --sky flags are deprecated, please use -t theskyx or --telescope theskyx")
         TELESCOPE_PLUGIN = "theskyx"
+    elif opt in ('-t', '--telescope'):
+        TELESCOPE_PLUGIN = arg
 
 automazioneTende: AutomazioneTende = AutomazioneTende(TELESCOPE_PLUGIN, mock=MOCK)
 error_level: int = 0
