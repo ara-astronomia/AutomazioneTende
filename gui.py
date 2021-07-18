@@ -369,7 +369,6 @@ class Gui:
         Logger.getLogger().info('update_disable_button_sync on gui')
         self.__toggle_button__(GuiKey.SYNC_TELE, disabled=disabled)
 
-    # GRAPHIC
     def update_curtains_graphic(self, alpha_e: int, alpha_w: int) -> None:
 
         """ Draw curtains position with canvas """
