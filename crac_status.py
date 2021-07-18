@@ -31,7 +31,7 @@ def __convert_coords__(coords: Dict[str, float]) -> str:
     az = int(coords["az"] * 100)
     if az > 36000:
         ValueError("Azimut telescopio non valido")
-    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
+    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:05}{az:05}')
     return f'{alt:05}{az:05}'
 
 
@@ -45,8 +45,8 @@ def __reverse_coords__(value: str) -> Dict:
 
 def __structure__():
     status = Status.CLOSED
-    coords = {"alt": 0.00, "az": 0.00}
     parked = TelescopeStatus.PARKED
+    coords = {"alt": 0.00, "az": 0.00}
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
     slewing = SlewingStatus.OFF
@@ -56,7 +56,7 @@ def __structure__():
     data = {}
     data["roof_status"] = {"orig": status, "trans": repr, "reverse": status.get_value}
     data["telescope_status"] = {"orig": parked, "trans": repr, "reverse": parked.get_value}
-    data["telescope_coords"] = {"len": 9, "orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
+    data["telescope_coords"] = {"len": 10, "orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
     data["curtain_east_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
     data["curtain_east_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["curtain_west_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}

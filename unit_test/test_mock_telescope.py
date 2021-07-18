@@ -44,7 +44,7 @@ class MockTelescopeTest(unittest.TestCase):
         self.telescopio.move_tele(tr=0, az=0, alt=0)
         self.assertEqual(self.telescopio.coords, {"tr": 0, "alt": 0, "az": 0, "error": 0})
 
-    def __side_effect_config__(self, key, section=""):
+    def __side_effect_config__(self, key, section="automazione"):
         if key == "park_alt" and section == "telescope":
             side_effect = 0.2
         elif key == "park_az" and section == "telescope":
@@ -59,6 +59,8 @@ class MockTelescopeTest(unittest.TestCase):
             side_effect = "J2000"
         elif key == "timezone" and section == "geography":
             side_effect = "Europe/Rome"
+        elif key == "loggingLevel" and section == "automazione":
+            side_effect = 10
         else:
             side_effect = DEFAULT
         return side_effect

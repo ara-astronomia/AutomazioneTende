@@ -238,40 +238,43 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
-    # POWER SWITCH TELE
     def power_on_tele(self):
-        """ on power switch and update the power switch status in CracStatus object """
+
+        """ turn on the power switch and update its status in CracStatus object """
 
         self.power_tele_control.on()
         self.telescope.sync_time = datetime.datetime.utcnow()
         Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.telescope.sync_time)
 
     def power_off_tele(self):
-        """ off power switch and update the power switch status in CracStatus object """
+
+        """ turn off power switch and update its status in CracStatus object """
 
         self.telescope.nosync()
         self.power_tele_control.off()
 
-    # POWER SWITCH CCD
     def power_on_ccd(self):
-        """ on auxiliary and update the auxiliary status in CracStatus object """
+
+        """ turn on ccd and update its status in CracStatus object """
 
         self.power_ccd_control.on()
 
     def power_off_ccd(self):
-        """ off auxiliary and update the auxiliary status in CracStatus object """
+
+        """ turn off ccd and update its status in CracStatus object """
 
         self.power_ccd_control.off()
 
-    # PANEL FLAT
     def panel_on(self):
-        """ on panel flat and update the panel status in CracStatus object """
+
+        """ turn on panel flat and update its status in CracStatus object """
 
         self.panel_control.on()
         self.telescope.move_tele(tr=1)
 
     def panel_off(self):
-        """ off panel flat and update the panel status in CracStatus object """
+
+        """ turn off panel flat and update its status in CracStatus object """
 
         self.panel_control.off()
 
@@ -281,18 +284,16 @@ class AutomazioneTende:
             self.power_on_tele()
         self.telescope.sync()
 
-    # LIGHT DOME
     def light_on(self):
-        """ on light dome and update the light status in CracStatus object """
+
+        """ turn on light on dome and update its status in CracStatus object """
 
         self.light_control.on()
 
     def light_off(self):
-        """ off light dome and update the light status in CracStatus object """
+        """ turn off light on dome and update its status in CracStatus object """
 
         self.light_control.off()
-
-    # EXIT PROGRAM
 
     def exit_program(self, n: int = 0) -> None:
 
