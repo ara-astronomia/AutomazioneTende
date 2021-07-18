@@ -9,7 +9,6 @@ from crac_status import CracStatus
 from logger import Logger
 from status import Status
 from status import TelescopeStatus
-from status import SlewingStatus
 from status import ButtonStatus
 from status import CurtainsStatus
 from status import Orientation
