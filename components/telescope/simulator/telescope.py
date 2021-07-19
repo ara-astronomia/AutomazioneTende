@@ -30,20 +30,20 @@ class Telescope(telescope.BaseTelescope):
                 alt = self.configparser.get("coords", "alt", fallback=0)
             if not self.__is_number__(az, float, 0, 360):
                 az = self.configparser.get("coords", "az", fallback=0)
-            if not self.__is_number__(tr):
+            if not self.__is_number__(tr, int, 0, 1):
                 tr = self.configparser.get("coords", "tr", fallback=0)
-            if not self.__is_number__(sl):
-                sl = self.configparser.get("coords", "sl", fallback=0)
+            if not self.__is_number__(sl, int, 0, 1):
+                sl = self.configparser.get("coords", "sl", fallback=1)
             if not self.__is_number__(error, int, 0, 999):
                 error = self.configparser.get("coords", "error", fallback=0)
 
         alt = self.__is_number_or_input__(alt, "l'altezza del telescopio", float, -90, 90)
         az = self.__is_number_or_input__(az, "l'azimut del telescopio", float, 0, 360)
-        tr = self.__is_number_or_input__(tr, "la situazione del tracking (0 no, 1 sì)")
-        sl = self.__is_number_or_input__(sl, "telescopio in slewing? (0 sì, 1 no")
+        tr = self.__is_number_or_input__(tr, "la situazione del tracking (0 no, 1 sì)", int, 0, 1)
+        sl = self.__is_number_or_input__(sl, "telescopio in slewing? (0 sì, 1 no", int, 0, 1)
         error = self.__is_number_or_input__(error, "il codice di errore (0 non ci sono errori)", int, 0, 999)
 
-        self.coords = {'tr': tr, 'alt': round(alt, 2), 'az': round(az, 2), 'error': error, 'sl': self.coords["sl"]}
+        self.coords = {'tr': tr, 'alt': round(alt, 2), 'az': round(az, 2), 'error': error, 'sl': sl}
 
         config = configparser.ConfigParser()
         config["coords"] = {'alt': str(alt), 'az': str(az), 'tr': str(tr), 'sl': str(sl), 'error': str(error)}
@@ -51,7 +51,7 @@ class Telescope(telescope.BaseTelescope):
         with open(configpath, 'w') as configfile:
             config.write(configfile)
 
-        Logger.getLogger().debug("In update coords %s", self.coords)
+        Logger.getLogger().info("In update coords %s", self.coords)
         return self.coords
 
     def move_tele(self, **kwargs):
