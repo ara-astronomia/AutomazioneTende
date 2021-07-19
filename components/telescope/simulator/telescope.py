@@ -51,7 +51,7 @@ class Telescope(telescope.BaseTelescope):
         with open(configpath, 'w') as configfile:
             config.write(configfile)
 
-        Logger.getLogger().info("In update coords %s", self.coords)
+        Logger.getLogger().debug("In update coords %s", self.coords)
         return self.coords
 
     def move_tele(self, **kwargs):
