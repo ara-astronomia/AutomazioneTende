@@ -70,7 +70,7 @@ class Gui:
                         ]]), title="Panel Flat", pad=(3, 10)),
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
-                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento luci cupola"),
+                            sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento luci cupola"), sg.Checkbox('Disable Autolight', default = False, key ='disable_autolight')
                         ]]), title="Light Dome", pad=(3, 10))
                     ],
                     [
