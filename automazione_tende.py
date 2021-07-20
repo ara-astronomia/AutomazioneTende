@@ -7,7 +7,11 @@ from components.curtains.factory_curtain import FactoryCurtain
 from config import Config
 from crac_status import CracStatus
 from logger import Logger
-from status import Status, TelescopeStatus, ButtonStatus, CurtainsStatus, Orientation
+from status import Status
+from status import TelescopeStatus
+from status import ButtonStatus
+from status import CurtainsStatus
+from status import Orientation
 
 
 class AutomazioneTende:
@@ -69,6 +73,7 @@ class AutomazioneTende:
         self.crac_status.curtain_west_steps = self.curtain_west.steps()
         self.crac_status.panel_status = self.panel_control.read()
         self.crac_status.tracking_status = self.telescope.tracking_status
+        self.crac_status.slewing_status = self.telescope.slewing_status
         self.crac_status.sync_status = self.telescope.sync_status
         self.crac_status.power_tele_status = self.power_tele_control.read()
         self.crac_status.light_status = self.light_control.read()
@@ -232,40 +237,43 @@ class AutomazioneTende:
         Logger.getLogger().debug("Stato tetto finale: %s", str(status_roof))
         self.crac_status.roof_status = status_roof
 
-    # POWER SWITCH TELE
     def power_on_tele(self):
-        """ on power switch and update the power switch status in CracStatus object """
+
+        """ turn on the power switch and update its status in CracStatus object """
 
         self.power_tele_control.on()
         self.telescope.sync_time = datetime.datetime.utcnow()
         Logger.getLogger().debug("UTC time di conversione coord per sincronizzazione telescopio %s:", self.telescope.sync_time)
 
     def power_off_tele(self):
-        """ off power switch and update the power switch status in CracStatus object """
+
+        """ turn off power switch and update its status in CracStatus object """
 
         self.telescope.nosync()
         self.power_tele_control.off()
 
-    # POWER SWITCH CCD
     def power_on_ccd(self):
-        """ on auxiliary and update the auxiliary status in CracStatus object """
+
+        """ turn on ccd and update its status in CracStatus object """
 
         self.power_ccd_control.on()
 
     def power_off_ccd(self):
-        """ off auxiliary and update the auxiliary status in CracStatus object """
+
+        """ turn off ccd and update its status in CracStatus object """
 
         self.power_ccd_control.off()
 
-    # PANEL FLAT
     def panel_on(self):
-        """ on panel flat and update the panel status in CracStatus object """
+
+        """ turn on panel flat and update its status in CracStatus object """
 
         self.panel_control.on()
         self.telescope.move_tele(tr=1)
 
     def panel_off(self):
-        """ off panel flat and update the panel status in CracStatus object """
+
+        """ turn off panel flat and update its status in CracStatus object """
 
         self.panel_control.off()
 
@@ -275,14 +283,14 @@ class AutomazioneTende:
             self.power_on_tele()
         self.telescope.sync()
 
-    # LIGHT DOME
     def light_on(self):
-        """ on light dome and update the light status in CracStatus object """
+
+        """ turn on light on dome and update its status in CracStatus object """
 
         self.light_control.on()
 
     def light_off(self):
-        """ off light dome and update the light status in CracStatus object """
+        """ turn off light on dome and update its status in CracStatus object """
 
         self.light_control.off()
 

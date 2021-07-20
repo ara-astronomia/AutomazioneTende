@@ -1,7 +1,6 @@
 from gpiozero import OutputDevice, DigitalInputDevice
 
 from config import Config
-from logger import Logger
 from status import Status
 
 

@@ -115,7 +115,9 @@ try:
                     Logger.getLogger().debug("chiamata al metodo per muovere le tendine (automazioneTende.exec) %s", automazioneTende.started)
                     automazioneTende.exec()
 
-                    conn.sendall(repr(automazioneTende.read()).encode("UTF-8"))
+                    updated_crac_status = repr(automazioneTende.read()).encode("UTF-8")
+                    Logger.getLogger().debug(updated_crac_status)
+                    conn.sendall(updated_crac_status)
 
 except (KeyboardInterrupt, SystemExit) as e:
     Logger.getLogger().info("Intercettato CTRL+C: " + str(e))
