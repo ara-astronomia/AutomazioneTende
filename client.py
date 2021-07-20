@@ -53,6 +53,8 @@ def connection() -> str:
             cs = crac_status.CracStatus(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
 
+
+
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
                 s.close()
                 return GuiKey.EXIT
@@ -186,11 +188,13 @@ def connection() -> str:
             # SLEWING
             if cs.slewing_status == SlewingStatus.ON:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_ON, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_light_on()
+                if v is 'disable_autolight':
+                    g_ui.update_disable_button_light_off()
+                else:
+                    g_ui.update_disable_button_light_on()
             elif cs.slewing_status == SlewingStatus.OFF:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_OFF, text_color="red", background_color="white")
-                #g_ui.update_disable_button_light_on()
-
+                
             # SYNC
             if cs.sync_status == SyncStatus.ON:
                 g_ui.update_status_sync(GuiLabel.TELESCOPE_SYNC_ON, text_color="#2c2825", background_color="green")
