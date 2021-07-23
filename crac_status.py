@@ -84,18 +84,20 @@ class CracStatus:
                 default_value = value["orig"]
                 self.__dict__[f"_{key}"] = default_value
                 self.length += len(value["trans"](default_value))
-
         else:
-            i = 0
-            for key, value in self._structure.items():
-                default_value = value["trans"](value["orig"])
-                length = len(default_value)
-                end = i + length
-                self.logger.debug("%s code VALUE: %s", key, code[i:end])
-                self.logger.debug("%s length VALUE: %s", key, length)
-                self.__reverse__(code[i:end], key)
-                self.length += length
-                i = end
+            self.update(code)
+    
+    def update(self, code: str):
+        i = 0
+        for key, value in self._structure.items():
+            default_value = value["trans"](value["orig"])
+            length = len(default_value)
+            end = i + length
+            self.logger.debug("%s code VALUE: %s", key, code[i:end])
+            self.logger.debug("%s length VALUE: %s", key, length)
+            self.__reverse__(code[i:end], key)
+            self.length += length
+            i = end
 
     def __repr__(self):
         code = ""
@@ -115,6 +117,10 @@ class CracStatus:
 
     def __assign__(self, value, name):
         self.__check_type__(value, name)
+        if self.__dict__[f"_{name}"] != value:
+            self.__dict__[f"_{name}_changed"] = True
+        else:
+            self.__dict__[f"_{name}_changed"] = False
         self.__dict__[f"_{name}"] = value
 
     def __reverse__(self, value, name):

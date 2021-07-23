@@ -45,12 +45,13 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
-            LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
-            s.sendall(v.encode("utf-8"))
+            encoded_value = v.encode("utf-8")
+            LoggerClient.getLogger().info("invio paramentri con sendall: %s", encoded_value)
+            s.sendall(encoded_value)
 
             rcv = s.recv(cs.length)
             data = rcv.decode("utf-8")
-            cs = crac_status.CracStatus(data)
+            cs.update(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
@@ -138,7 +139,7 @@ def connection() -> str:
                     g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.telescope_status not in [TelescopeStatus.FLATTER]:
+            if cs.telescope_status is not TelescopeStatus.FLATTER:
                 LoggerClient.getLogger().info("pannello flat disattivato")
                 g_ui.update_disable_panel_all()
 
@@ -186,8 +187,13 @@ def connection() -> str:
             # SLEWING
             if cs.slewing_status == SlewingStatus.ON:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_ON, text_color="#2c2825", background_color="green")
-                if g_ui.read_autolight() is False:
+                LoggerClient.getLogger().info("cs.__dict__['_slewing_status_changed'] = : %s", cs.__dict__["_slewing_status_changed"])
+                if g_ui.is_autolight() and cs.__dict__["_slewing_status_changed"]:
                     g_ui.update_disable_button_light_on()
+                    s.sendall(GuiKey.LIGHT_ON.encode("utf-8"))
+                    rcv = s.recv(cs.length)
+                    data = rcv.decode("utf-8")
+                    cs.update(data)
             elif cs.slewing_status == SlewingStatus.OFF:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_OFF, text_color="red", background_color="white")
 
