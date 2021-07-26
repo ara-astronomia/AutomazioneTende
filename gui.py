@@ -35,6 +35,7 @@ class Gui:
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8)
+        self.was_light_turned_on = False
 #        sg.theme('DarkBlue')
         layout = [
                     [sg.Menu([], tearoff=True)],
