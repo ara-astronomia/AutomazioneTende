@@ -113,3 +113,5 @@ venv.bak/
 telescope.ini
 
 *.pid
+
+Pipfile.lock
