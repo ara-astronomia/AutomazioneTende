@@ -18,6 +18,14 @@ def connection() -> str:
     cs = crac_status.CracStatus()
     LoggerClient.getLogger().debug("Data cs start connection method: %s", cs)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+
+        def connect_to_server(element_changed: str) -> str:
+            LoggerClient.getLogger().info("invio paramentri con sendall: %s", element_changed)
+            s.sendall(element_changed.encode("utf-8"))
+            rcv = s.recv(cs.length)
+            data = rcv.decode("utf-8")
+            return data
+
         s.connect((HOST, PORT))
         while True:
             timeout = config.Config.getInt("sleep", "automazione")
@@ -45,12 +53,14 @@ def connection() -> str:
                     g_ui.status_alert(GuiLabel.ALERT_ROOF_CLOSED)
                     continue
 
-            LoggerClient.getLogger().info("invio paramentri con sendall: %s", v.encode("utf-8"))
-            s.sendall(v.encode("utf-8"))
+            elif v is GuiKey.LIGHT_ON:
+                g_ui.was_light_turned_on = True
 
-            rcv = s.recv(cs.length)
-            data = rcv.decode("utf-8")
-            cs = crac_status.CracStatus(data)
+            elif v is GuiKey.LIGHT_OFF:
+                g_ui.was_light_turned_on = False
+
+            data = connect_to_server(v)
+            cs.update(data)
             LoggerClient.getLogger().debug("Data cs in the middle of connection method: %s", cs)
 
             if v is GuiKey.EXIT or v is GuiKey.SHUTDOWN:
@@ -138,7 +148,7 @@ def connection() -> str:
                     g_ui.update_disable_button_close_roof()
 
             # PANEL FLAT
-            if cs.telescope_status not in [TelescopeStatus.FLATTER]:
+            if cs.telescope_status is not TelescopeStatus.FLATTER:
                 LoggerClient.getLogger().info("pannello flat disattivato")
                 g_ui.update_disable_panel_all()
 
@@ -186,10 +196,20 @@ def connection() -> str:
             # SLEWING
             if cs.slewing_status == SlewingStatus.ON:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_ON, text_color="#2c2825", background_color="green")
-                g_ui.update_disable_button_light_on()
+                LoggerClient.getLogger().info("cs.__dict__['_slewing_status_changed'] = : %s", cs.__dict__["_slewing_status_changed"])
+                LoggerClient.getLogger().info("g_ui.was_light_turned_on = : %s", g_ui.was_light_turned_on)
+                if g_ui.is_autolight() and cs.__dict__["_slewing_status_changed"] and cs.__dict__["_slewing_status_changed"]:
+                    g_ui.update_disable_button_light_on()
+                    data = connect_to_server(GuiKey.LIGHT_ON)
+                    cs.update(data)
             elif cs.slewing_status == SlewingStatus.OFF:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_OFF, text_color="red", background_color="white")
-                #g_ui.update_disable_button_light_on()
+                LoggerClient.getLogger().info("cs.__dict__['_slewing_status_changed'] = : %s", cs.__dict__["_slewing_status_changed"])
+                LoggerClient.getLogger().info("g_ui.was_light_turned_on = : %s", g_ui.was_light_turned_on)
+                if g_ui.is_autolight() and cs.__dict__["_slewing_status_changed"] and not g_ui.was_light_turned_on:
+                    g_ui.update_disable_button_light_off()
+                    data = connect_to_server(GuiKey.LIGHT_OFF)
+                    cs.update(data)
 
             # SYNC
             if cs.sync_status == SyncStatus.ON:

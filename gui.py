@@ -35,6 +35,7 @@ class Gui:
         self.t = self.l / 4.25
         self.delta_pt = 1.5 * self.t
         self.h = int(self.l / 1.8)
+        self.was_light_turned_on = False
 #        sg.theme('DarkBlue')
         layout = [
                     [sg.Menu([], tearoff=True)],
@@ -50,9 +51,9 @@ class Gui:
                             sg.Button('Flat', key=GuiKey.FLAT_TELE, disabled=False, size=(5, 1) , tooltip='porta il telescopio in posizione di flat')
                         ]]), title="Telescopio", pad=(3, 0)),
                         sg.Frame(layout=([[
-                            sg.Button('Attiva', key=GuiKey.ENABLED_CURTAINS, disabled=True, size=(6, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Disattiva', key=GuiKey.DISABLED_CURTAINS, disabled=True,  size=(6, 1), tooltip='schiacccia per attivare'),
-                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1), tooltip='schiacccia per attivare')
+                            sg.Button('Attiva', key=GuiKey.ENABLED_CURTAINS, disabled=True, size=(6, 1), tooltip='clicca per attivare'),
+                            sg.Button('Disattiva', key=GuiKey.DISABLED_CURTAINS, disabled=True,  size=(6, 1), tooltip='clicca per attivare'),
+                            sg.Button('Calibra', key=GuiKey.CALIBRATE_CURTAINS, disabled=True,  size=(6, 1), tooltip='clicca per attivare')
                         ]]), title="Tende", pad=(3, 0))
                     ],
                     [
@@ -71,6 +72,7 @@ class Gui:
                         sg.Frame(layout=([[
                             sg.Button(GuiLabel.ON, key=GuiKey.LIGHT_ON, disabled=False, size=(4, 1), tooltip="accensioni luci cupola, controllare se i telescopio è in fase di ripresa"),
                             sg.Button(GuiLabel.OFF, key=GuiKey.LIGHT_OFF, disabled=True, size=(4, 1), button_color=('black', 'red'), tooltip="spegnimento luci cupola"),
+                            sg.Checkbox('Enable Autolight', key="autolight", default=True)
                         ]]), title="Light Dome", pad=(3, 10))
                     ],
                     [
@@ -148,6 +150,17 @@ class Gui:
 
         canvas = self.win.FindElement('canvas')
         canvas.TKCanvas.itemconfigure(self.image, state='normal')
+
+    def is_autolight(self):
+
+        """
+            read the status of the checkbox that enable/disable the autolight
+            when telescope is slewing
+        """
+
+        autolight = self.win.FindElement('autolight').Get()
+        Logger.getLogger().debug('autolight status is %s', autolight)
+        return autolight
 
     def base_draw(self) -> None:
         p1 = ((int((self.l / 2) - (self.delta_pt / 2))) - (0.9 * self.t), self.h)
