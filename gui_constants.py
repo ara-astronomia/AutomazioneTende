@@ -30,6 +30,8 @@ class GuiLabel:
     TELESCOPE_ERROR = "Errore"
     TELESCOPE_TRACKING_ON = "Track On"
     TELESCOPE_TRACKING_OFF = "Track Off"
+    TELESCOPE_SLEWING_ON = "Slewing On"
+    TELESCOPE_SLEWING_OFF = "Slewing Off"
     ROOF_CLOSED = "Chiuso"
     ROOF_OPEN = "Aperto"
     ON = "On"

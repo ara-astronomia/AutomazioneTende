@@ -25,16 +25,16 @@ class RoofControlTest(unittest.TestCase):
 
     def test_open_roof(self):
         roofControl = self.getRoofControl()
-        with patch.object(roofControl.roof_open_switch, 'wait_for_press', return_value=True) as mockedroofopen:
-            with patch.object(roofControl.roof_closed_switch, 'wait_for_press', return_value=True) as mockedroofclosed:
+        with patch.object(roofControl.roof_open_switch, 'wait_for_active', return_value=True) as mockedroofopen:
+            with patch.object(roofControl.roof_closed_switch, 'wait_for_active', return_value=True) as mockedroofclosed:
                 roofControl.open()
                 mockedroofopen.assert_called_once()
                 mockedroofclosed.assert_not_called()
 
-    def test_open_roof(self):
+    def test_close_roof(self):
         roofControl = self.getRoofControl()
-        with patch.object(roofControl.roof_open_switch, 'wait_for_press', return_value=True) as mockedroofopen:
-            with patch.object(roofControl.roof_closed_switch, 'wait_for_press', return_value=True) as mockedroofclosed:
+        with patch.object(roofControl.roof_open_switch, 'wait_for_active', return_value=True) as mockedroofopen:
+            with patch.object(roofControl.roof_closed_switch, 'wait_for_active', return_value=True) as mockedroofclosed:
                 roofControl.close()
                 mockedroofclosed.assert_called_once()
                 mockedroofopen.assert_not_called()

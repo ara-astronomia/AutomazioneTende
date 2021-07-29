@@ -6,6 +6,7 @@ from status import TelescopeStatus
 from status import ButtonStatus
 from status import TrackingStatus
 from status import SyncStatus
+from status import SlewingStatus
 
 from logger import Logger
 APP = "SERVER"
@@ -30,7 +31,7 @@ def __convert_coords__(coords: Dict[str, float]) -> str:
     az = int(coords["az"] * 100)
     if az > 36000:
         ValueError("Azimut telescopio non valido")
-    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:04}{az:05}')
+    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:05}{az:05}')
     return f'{alt:05}{az:05}'
 
 
@@ -44,17 +45,18 @@ def __reverse_coords__(value: str) -> Dict:
 
 def __structure__():
     status = Status.CLOSED
-    coords = {"alt": 0.00, "az": 0.00}
     parked = TelescopeStatus.PARKED
+    coords = {"alt": 0.00, "az": 0.00}
     disabled = CurtainsStatus.DISABLED
     tracking = TrackingStatus.OFF
+    slewing = SlewingStatus.OFF
     button = ButtonStatus.OFF
     sync = SyncStatus.OFF
 
     data = {}
     data["roof_status"] = {"orig": status, "trans": repr, "reverse": status.get_value}
     data["telescope_status"] = {"orig": parked, "trans": repr, "reverse": parked.get_value}
-    data["telescope_coords"] = {"len": 9, "orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
+    data["telescope_coords"] = {"len": 10, "orig": coords, "trans": __convert_coords__, "reverse": __reverse_coords__}
     data["curtain_east_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
     data["curtain_east_steps"] = {"orig": 0, "trans": __convert_steps__, "reverse": int}
     data["curtain_west_status"] = {"orig": disabled, "trans": repr, "reverse": disabled.get_value}
@@ -65,6 +67,7 @@ def __structure__():
     data["light_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["power_ccd_status"] = {"orig": button, "trans": repr, "reverse": button.get_value}
     data["sync_status"] = {"orig": sync, "trans": repr, "reverse": sync.get_value}
+    data["slewing_status"] = {"orig": slewing, "trans": repr, "reverse": slewing.get_value}
     return data
 
 
@@ -81,18 +84,20 @@ class CracStatus:
                 default_value = value["orig"]
                 self.__dict__[f"_{key}"] = default_value
                 self.length += len(value["trans"](default_value))
-
         else:
-            i = 0
-            for key, value in self._structure.items():
-                default_value = value["trans"](value["orig"])
-                length = len(default_value)
-                end = i + length
-                self.logger.debug("%s code VALUE: %s", key, code[i:end])
-                self.logger.debug("%s length VALUE: %s", key, length)
-                self.__reverse__(code[i:end], key)
-                self.length += length
-                i = end
+            self.update(code)
+    
+    def update(self, code: str):
+        i = 0
+        for key, value in self._structure.items():
+            default_value = value["trans"](value["orig"])
+            length = len(default_value)
+            end = i + length
+            self.logger.debug("%s code VALUE: %s", key, code[i:end])
+            self.logger.debug("%s length VALUE: %s", key, length)
+            self.__reverse__(code[i:end], key)
+            self.length += length
+            i = end
 
     def __repr__(self):
         code = ""
@@ -112,6 +117,10 @@ class CracStatus:
 
     def __assign__(self, value, name):
         self.__check_type__(value, name)
+        if self.__dict__[f"_{name}"] != value:
+            self.__dict__[f"_{name}_changed"] = True
+        else:
+            self.__dict__[f"_{name}_changed"] = False
         self.__dict__[f"_{name}"] = value
 
     def __reverse__(self, value, name):
@@ -181,6 +190,14 @@ class CracStatus:
     @tracking_status.setter
     def tracking_status(self, value: Dict[str, int]) -> None:
         self.__assign__(value, "tracking_status")
+
+    @property
+    def slewing_status(self):
+        return self._slewing_status
+
+    @slewing_status.setter
+    def slewing_status(self, value: Dict[str, int]) -> None:
+        self.__assign__(value, "slewing_status")
 
     @property
     def sync_status(self):
@@ -262,12 +279,13 @@ if __name__ == "__main__":
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
+    print(cs.slewing_status)
     print(cs.panel_status)
     print(cs.power_tele_status)
     print(cs.light_status)
     print(cs.power_ccd_status)
     print(cs.length)
-    cs = CracStatus("CPP100012045D000D000TSSSS")
+    cs = CracStatus("CPP100012045D000D000TNSSSS")
     print(cs.roof_status)
     print(cs.telescope_status)
     print(cs.telescope_coords)
@@ -277,6 +295,7 @@ if __name__ == "__main__":
     print(cs.curtain_west_status)
     print(cs.curtain_west_steps)
     print(cs.tracking_status)
+    print(cs.slewing_status)
     print(cs.panel_status)
     print(cs.power_tele_status)
     print(cs.light_status)
