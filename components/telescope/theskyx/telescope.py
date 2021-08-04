@@ -60,17 +60,18 @@ class Telescope(BaseTelescope):
         else:
             self.__update_status__()
 
-    def sync_tele(self, **kwargs) -> Dict[str, float]:
+    def sync_tele(self, ra_dec) -> bool:
         Logger.getLogger().info("sincronizzo il telescopio")
         try:
-            data = self.__call_thesky__(script=self.script_sync_tele, **kwargs)
+            ra_dec_decimal = self.convert_ar_to_decimal(ra_dec)
+            data = self.__call_thesky__(script=self.script_sync_tele, **ra_dec_decimal)
             Logger.getLogger().info("data per il sync: %s", data)
         except (ConnectionError, TimeoutError, json.decoder.JSONDecodeError):
             self.__disconnection__()
             return False
         else:
             self.__parse_result__(data.decode("utf-8"))
-            Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", kwargs)
+            Logger.getLogger().debug("sincronizzo il telescopio a queste coordinate %s", ra_dec)
             return True
 
     def close_connection(self) -> None:

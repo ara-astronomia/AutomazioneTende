@@ -15,7 +15,7 @@ flat_alt = config.Config.getValue("flat_alt", "telescope")
 flat_az = config.Config.getValue("flat_az", "telescope")
 
 try:
-    opts, _ = getopt.getopt(sys.argv[1:], "mst:", ["mock", "sky", "telescope"])
+    opts, _ = getopt.getopt(sys.argv[1:], "mst:", ["mock", "sky", "telescope="])
 except getopt.GetoptError:
     Logger.getLogger().exception("parametri errati")
     exit(2)  # esce dall'applicazione con errore

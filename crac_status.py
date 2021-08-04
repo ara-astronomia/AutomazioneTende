@@ -86,12 +86,13 @@ class CracStatus:
                 self.length += len(value["trans"](default_value))
         else:
             self.update(code)
-    
+
     def update(self, code: str):
         i = 0
         for key, value in self._structure.items():
             default_value = value["trans"](value["orig"])
             length = len(default_value)
+            self.__dict__[f"_{key}"] = default_value
             end = i + length
             self.logger.debug("%s code VALUE: %s", key, code[i:end])
             self.logger.debug("%s length VALUE: %s", key, length)
