@@ -1,5 +1,4 @@
 import socket
-import time
 import config
 import crac_status
 import gui

@@ -8,16 +8,17 @@ from status import TrackingStatus
 from status import SyncStatus
 from status import SlewingStatus
 
-from logger import Logger
+
 APP = "SERVER"
 
 
-def init():
+def logger():
     global APP
     if APP == "SERVER":
-        from logger import Logger
+        from logger import Logger as log
     else:
-        from logger import LoggerClient as Logger
+        from logger import LoggerClient as log
+    return log.getLogger()
 
 
 def __convert_steps__(steps: SupportsRound) -> str:
@@ -31,7 +32,7 @@ def __convert_coords__(coords: Dict[str, float]) -> str:
     az = int(coords["az"] * 100)
     if az > 36000:
         ValueError("Azimut telescopio non valido")
-    Logger.getLogger().debug("converted coords VALUE: %s", f'{alt:05}{az:05}')
+    logger().debug("converted coords VALUE: %s", f'{alt:05}{az:05}')
     return f'{alt:05}{az:05}'
 
 
@@ -39,7 +40,7 @@ def __reverse_coords__(value: str) -> Dict:
     alt = round(float(f"{value[0:3]}.{value[3:5]}"), 2)
     az = round(float(f"{value[5:8]}.{value[8:10]}"), 2)
     coords = {"alt": alt, "az": az}
-    Logger.getLogger().debug("coords VALUE: %s", coords)
+    logger().debug("coords VALUE: %s", coords)
     return coords
 
 
@@ -76,8 +77,6 @@ class CracStatus:
     _structure = __structure__()
 
     def __init__(self, code: str = None):
-        self.logger = Logger.getLogger()
-
         self.length = 0
         if not code:
             for key, value in self._structure.items():
@@ -86,15 +85,18 @@ class CracStatus:
                 self.length += len(value["trans"](default_value))
         else:
             self.update(code)
-    
+
     def update(self, code: str):
+        if not code:
+            return
         i = 0
         for key, value in self._structure.items():
             default_value = value["trans"](value["orig"])
             length = len(default_value)
+            self.__dict__[f"_{key}"] = default_value
             end = i + length
-            self.logger.debug("%s code VALUE: %s", key, code[i:end])
-            self.logger.debug("%s length VALUE: %s", key, length)
+            logger().debug("%s code VALUE: %s", key, code[i:end])
+            logger().debug("%s length VALUE: %s", key, length)
             self.__reverse__(code[i:end], key)
             self.length += length
             i = end
@@ -103,7 +105,7 @@ class CracStatus:
         code = ""
         for key, value in self._structure.items():
             code += value["trans"](self.__dict__[f"_{key}"])
-        self.logger.debug("FULL CODE VALUE: %s", code)
+        logger().debug("FULL CODE VALUE: %s", code)
         return code
 
     def __check_type__(self, value, name):
@@ -246,10 +248,10 @@ class CracStatus:
         return self.curtain_east_status is CurtainsStatus.DANGER or self.curtain_west_status is CurtainsStatus.DANGER
 
     def is_in_anomaly(self):
-        self.logger.debug("roof status %s", self.roof_status)
-        self.logger.debug("telescope status %s", self.telescope_status)
-        self.logger.debug("curtain east status %s", self.curtain_east_status)
-        self.logger.debug("curtain west status %s", self.curtain_west_status)
+        logger().debug("roof status %s", self.roof_status)
+        logger().debug("telescope status %s", self.telescope_status)
+        logger().debug("curtain east status %s", self.curtain_east_status)
+        logger().debug("curtain west status %s", self.curtain_west_status)
 
         return (
                     self.roof_status is Status.CLOSED and

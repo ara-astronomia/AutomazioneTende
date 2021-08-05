@@ -48,15 +48,20 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
+    def sync_tele(self):
+        raise NotImplementedError()
+
     def sync(self):
         alt_deg = config.Config.getFloat("park_alt", "telescope")
         az_deg = config.Config.getFloat("park_az", "telescope")
         data = self.altaz2radec(self.sync_time, alt=alt_deg, az=az_deg)
-        if self.sync_tele(**data):
-            self.sync_status = SyncStatus.ON
-        else:
-            self.sync_status = SyncStatus.OFF
+        self.sync_tele(data)
+        self.sync_status = SyncStatus.ON
         return data
+
+    def nosync(self):
+        self.sync_status = SyncStatus.OFF
+        self.sync_time = None
 
     def altaz2radec(self, obstime, alt, az):
         Logger.getLogger().debug('obstime: %s', obstime)
@@ -65,36 +70,32 @@ class BaseTelescope:
         time = Time(timestring)
         Logger.getLogger().debug("astropy time: %s", time)
         aa = AltAz(location=self.observing_location, obstime=time)
-        alt_az = SkyCoord(alt * u.deg, az * u.deg, frame=aa, equinox=self.equinox)
+        alt_az = SkyCoord(alt=(alt * u.deg), az=(az * u.deg), frame=aa, equinox=self.equinox)
         ra_dec = alt_az.transform_to('fk5')
-        ra = float((ra_dec.ra / 15) / u.deg)
-        dec = float(ra_dec.dec / u.deg)
-        Logger.getLogger().debug('ar park (orario decimale): %s', ra)
-        Logger.getLogger().debug('dec park (declinazione decimale): %s', dec)
-        return {"ra": ra, "dec": dec}
+        Logger.getLogger().info('ar e dec: %s', ra_dec)
+        return ra_dec
 
     def radec2altaz(self, obstime, ra, dec):
-        Logger.getLogger().debug("astropy ra received: %s", ra)
-        Logger.getLogger().debug("astropy dec received: %s", dec)
+        Logger.getLogger().info("astropy ra received: %s", ra)
+        Logger.getLogger().info("astropy dec received: %s", dec)
         timestring = obstime.strftime(format="%Y-%m-%d %H:%M:%S")
         Logger.getLogger().debug("astropy timestring: %s", timestring)
         observing_time = Time(timestring)
         aa = AltAz(location=self.observing_location, obstime=observing_time)
-        coord = SkyCoord(str(ra)+"h", str(dec)+"d", equinox=self.equinox, frame="fk5")
+        coord = SkyCoord(ra=(float(ra) * u.deg), dec=(float(dec) * u.deg), equinox=self.equinox, frame="fk5")
         altaz_coords = coord.transform_to(aa)
         altaz_coords = {"alt": float(altaz_coords.alt / u.deg), "az": float(altaz_coords.az / u.deg)}
-        Logger.getLogger().debug("astropy altaz calculated: alt %s az %s", altaz_coords["alt"], altaz_coords["az"])
+        Logger.getLogger().info("astropy altaz calculated: alt %s az %s", altaz_coords["alt"], altaz_coords["az"])
         return altaz_coords
 
-    def nosync(self):
-        self.sync_status = SyncStatus.OFF
-        self.sync_time = None
+    def convert_ar_to_decimal(self, ra_dec):
+        ra_dec_ary = ra_dec.to_string('decimal').split()
+        return {"ra": float(ra_dec_ary[0]), "dec": float(ra_dec_ary[1])}
 
     def __update_status__(self):
-
         if self.coords["error"]:
             self.status = TelescopeStatus.ERROR
-            Logger.getLogger().error("Errore Telescopio: "+str(self.coords['error']))
+            Logger.getLogger().error("Errore Telescopio: " + str(self.coords['error']))
         elif self.__within_park_alt_range__() and self.__within_park_az_range__():
             self.status = TelescopeStatus.PARKED
         elif self.__within_flat_alt_range__() and self.__within_flat_az_range__():

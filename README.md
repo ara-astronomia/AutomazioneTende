@@ -115,19 +115,19 @@ pycodestyle *.py
 ### Run the server with the hardware mocked
 
 ```shell
-python server.py -m
+python server.py -m -t simulator
 ```
 
 ### Run the server with coords looking up on theSkyX
 
 ```shell
-python server.py -s
+python server.py -t theskyx
 ```
 
 ### Of course you can use both hardware mock and theSkyX
 
 ```shell
-python server.py -m -s
+python server.py -m -t theskyx
 ```
 
 ### Run the client

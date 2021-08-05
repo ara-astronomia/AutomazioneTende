@@ -3,4 +3,4 @@ RUN apt update && apt upgrade -y
 WORKDIR /crac
 COPY . .
 RUN pip install pipenv && pipenv install --dev
-CMD ["pipenv", "run", "python", "server.py", "-m"]
+CMD ["pipenv", "run", "python", "server.py", "-m", "--telescope=simulator"]
