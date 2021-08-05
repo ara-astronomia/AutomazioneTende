@@ -1,7 +1,7 @@
 import configparser
 import datetime
 import os
-from status import SyncStatus, TrackingStatus
+from status import TrackingStatus
 from components.telescope import telescope
 from logger import Logger
 from threading import Thread
