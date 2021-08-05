@@ -13,8 +13,10 @@ class Telescope(telescope.BaseTelescope):
     def __init__(self):
         super().__init__()
         self.connected = False
+        self.telescope_connected = True
         self.configparser = configparser.ConfigParser()
-        self.simulate_sync = None
+        self.simulate_sync = Thread(target=self.__simulate_sync__)
+        self.simulate_sync.start()
 
     def open_connection(self):
         self.connected = True
@@ -73,12 +75,6 @@ class Telescope(telescope.BaseTelescope):
         coords = self.radec2altaz(datetime.datetime.utcnow(), **ra_dec_decimal)
         Logger.getLogger().debug("Coordinate %s %s", coords["alt"], coords["az"])
         self.update_coords(tr=1, alt=coords["alt"], az=coords["az"])
-        self.sync_status = SyncStatus.ON
-        self.tracking_status = TrackingStatus.ON
-        if not self.simulate_sync:
-            Logger.getLogger().debug("Sync status on thread when simulate_sync not exist %s", self.sync_status)
-            self.simulate_sync = Thread(target=self.__simulate_sync__)
-            self.simulate_sync.start()
         return True
 
     def nosync(self):
@@ -87,16 +83,16 @@ class Telescope(telescope.BaseTelescope):
         self.simulate_sync = None
 
     def __simulate_sync__(self):
-        Logger.getLogger().debug("Sync status on thread %s", self.sync_status)
-        Logger.getLogger().debug("Track status on thread %s", self.tracking_status)
-        while self.sync_status == SyncStatus.ON and self.tracking_status == TrackingStatus.ON:
+        while self.telescope_connected:
             self.read()
-            ra_dec = self.altaz2radec(self.sync_time, alt=self.coords["alt"], az=self.coords["az"])
-            ra_dec_decimal = self.convert_ar_to_decimal(ra_dec)
-            self.sync_time = datetime.datetime.utcnow()
-            coords = self.radec2altaz(self.sync_time, **ra_dec_decimal)
-            Logger.getLogger().debug("Coordinate %s %s", coords["alt"], coords["az"])
-            self.update_coords(tr=1, alt=coords["alt"], az=coords["az"])
+            Logger.getLogger().debug("Track status on thread %s", self.tracking_status)
+            if self.tracking_status == TrackingStatus.ON:
+                ra_dec = self.altaz2radec(self.sync_time, alt=self.coords["alt"], az=self.coords["az"])
+                ra_dec_decimal = self.convert_ar_to_decimal(ra_dec)
+                self.sync_time = datetime.datetime.utcnow()
+                coords = self.radec2altaz(self.sync_time, **ra_dec_decimal)
+                Logger.getLogger().debug("Coordinate %s %s", coords["alt"], coords["az"])
+                self.update_coords(tr=1, alt=coords["alt"], az=coords["az"])
             sleep(10)
 
     def __is_number_or_input__(self, s, message, kind=int, start=0, stop=1):
@@ -118,3 +114,5 @@ class Telescope(telescope.BaseTelescope):
 
     def close_connection(self):
         self.connected = False
+        self.telescope_connected = False
+        self.simulate_sync = None
