@@ -7,7 +7,6 @@ from components.telescope.telescope import BaseTelescope
 from logger import Logger
 from typing import Dict
 from status import TelescopeStatus
-from status import SyncStatus
 
 
 class Telescope(BaseTelescope):
@@ -16,7 +15,7 @@ class Telescope(BaseTelescope):
         super().__init__()
         self.hostname = config.Config.getValue("theskyx_server")
         self.port: int = 3040
-        self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
+        self.script: str = os.path.join(os.path.dirname(__file__), 'get_telescope_status.js')
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
         self.connected: bool = False
