@@ -19,6 +19,7 @@ class Telescope(BaseTelescope):
         self.script: str = os.path.join(os.path.dirname(__file__), 'get_alt_az.js')
         self.script_move_track: str = os.path.join(os.path.dirname(__file__), 'set_move_track.js')
         self.script_sync_tele: str = os.path.join(os.path.dirname(__file__), 'sync_tele.js')
+        self.script_disconnect_tele: str = os.path.join(os.path.dirname(__file__), 'disconnect_tele.js')
         self.connected: bool = False
 
     def open_connection(self) -> None:
