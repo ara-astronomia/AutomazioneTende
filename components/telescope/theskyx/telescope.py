@@ -78,6 +78,9 @@ class Telescope(BaseTelescope):
             self.s.close()
             self.connected = False
 
+    def disconnect(self) -> None:
+        return self.__call_thesky__(script=self.script_disconnect_tele)
+
     def __disconnection__(self):
         Logger.getLogger().exception("Connessione con The Sky persa: ")
         self.status = TelescopeStatus.LOST

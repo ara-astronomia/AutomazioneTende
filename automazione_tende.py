@@ -250,6 +250,7 @@ class AutomazioneTende:
         """ turn off power switch and update its status in CracStatus object """
 
         self.telescope.nosync()
+        self.telescope.disconnect()
         self.power_tele_control.off()
 
     def power_on_ccd(self):
@@ -320,7 +321,8 @@ class AutomazioneTende:
         Logger.getLogger().debug("curtain_east_status %s", self.curtain_east.read())
         Logger.getLogger().debug("curtain_west_steps %s", self.curtain_west.steps())
         Logger.getLogger().debug("curtain_west_status %s", self.curtain_west.read())
-        self.read_altaz_mount_coordinate()
+        if self.power_tele_control.read() is ButtonStatus.ON:
+            self.read_altaz_mount_coordinate()
 
         if self.telescope.status not in [TelescopeStatus.FLATTER, TelescopeStatus.SECURE]:
             self.panel_off()

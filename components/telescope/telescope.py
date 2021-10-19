@@ -48,6 +48,12 @@ class BaseTelescope:
     def read(self):
         raise NotImplementedError()
 
+    def sync_tele(self):
+        raise NotImplementedError()
+
+    def disconnect(self):
+        raise NotImplementedError()
+
     def sync(self):
         alt_deg = config.Config.getFloat("park_alt", "telescope")
         az_deg = config.Config.getFloat("park_az", "telescope")
