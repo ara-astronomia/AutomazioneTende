@@ -198,7 +198,7 @@ def connection() -> str:
                 g_ui.update_status_slewing(GuiLabel.TELESCOPE_SLEWING_ON, text_color="#2c2825", background_color="green")
                 LoggerClient.getLogger().info("cs.__dict__['_slewing_status_changed'] = : %s", cs.__dict__["_slewing_status_changed"])
                 LoggerClient.getLogger().info("g_ui.was_light_turned_on = : %s", g_ui.was_light_turned_on)
-                if g_ui.is_autolight() and cs.__dict__["_slewing_status_changed"] and cs.__dict__["_slewing_status_changed"]:
+                if g_ui.is_autolight() and cs.__dict__["_slewing_status_changed"]:
                     g_ui.update_disable_button_light_on()
                     data = connect_to_server(GuiKey.LIGHT_ON)
                     cs.update(data)
